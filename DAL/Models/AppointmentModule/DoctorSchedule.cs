@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using DAL.Shared;
 
-namespace DAL.Models
+namespace DAL.Models.AppointmentModule
 {
     public class DoctorSchedule : BaseEntity
     {

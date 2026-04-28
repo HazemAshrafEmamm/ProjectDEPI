@@ -1,7 +1,9 @@
 using System;
+using DAL.Models.Users;
 using DAL.Shared;
+using DAL.Shared.Enums;
 
-namespace DAL.Models
+namespace DAL.Models.AppointmentModule
 {
     public class Appointment : BaseEntity
     {

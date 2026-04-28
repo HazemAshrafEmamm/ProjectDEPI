@@ -6,17 +6,13 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Identity.Client;
+using DAL.Models.NursingModule;
 
-namespace DAL.Models
+namespace DAL.Models.Users
 {
-    public class Nurse
+    public class Nurse : ApplicationUser
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-
-        [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; } = null!;
-
+        
         public string Specialization { get; set; } = string.Empty;
 
         public virtual ICollection<NursingRequest> NursingRequests { get; set; } = new List<NursingRequest>();

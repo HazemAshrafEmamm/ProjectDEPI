@@ -9,15 +9,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Identity.Client;
 
 
-namespace DAL.Models
+namespace DAL.Models.Users
 {
-    public class Pharmacist
+    public class Pharmacist : ApplicationUser
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-
-        [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; } = null!;
 
         public string PharmacyName { get; set; } = string.Empty;
 
