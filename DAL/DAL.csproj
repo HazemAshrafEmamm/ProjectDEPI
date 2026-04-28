@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Repository\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,35 @@
+@model IEnumerable<BLL.Dtos.User.UserDto>
+
+<h2>Users</h2>
+
+<a asp-action="Create" class="btn btn-primary">Create New User</a>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Active</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Name</td>
+            <td>@user.Email</td>
+            <td>@user.Role</td>
+            <td>@user.IsActive</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@user.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@user.Id">Edit</a> |
+                <form asp-action="Delete" asp-route-id="@user.Id" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-link">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,4 +1,10 @@
+using BLL.AbstractServices;
+using BLL.ImplementationService;
 using DAL.Data;
+using DAL.Models;
+using DAL.RepositoryImplementations;
+using DAL.RepositoryInterfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace PL
@@ -10,8 +16,12 @@ namespace PL
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+            builder.Services.AddControllersWithViews();
 
 
             //DbContext
@@ -20,6 +30,7 @@ namespace PL
                     options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryDbContext"));
                 }
             );
+            
 
             var app = builder.Build();
 
