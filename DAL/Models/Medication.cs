@@ -15,7 +15,7 @@ namespace DAL.Models
         public bool ?Is_available { get; set; }
         public DateTime Created_at { get; set; }= DateTime.Now;
 
-        /*Navigation Properties*/
+        ///*Navigation Properties*/
         public virtual List<Order_Item> Order_Item { get; set; }
 
         public int? PharmacistId { get; set; }
