@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DAL.Models;
+using DAL.Models.Users;
 
 namespace DAL.Data
 {
@@ -12,7 +13,11 @@ namespace DAL.Data
     {
         
         public DbSet<User> Users { get; set; }
-        
+
+        public DbSet<Patient> Patients { get; set; } 
+
+        public DbSet<Doctor> Doctors { get; set; }   
+
         public TabibyDbContext(DbContextOptions<TabibyDbContext> options) : base(options)
         {
         }

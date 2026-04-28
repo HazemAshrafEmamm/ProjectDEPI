@@ -1,4 +1,5 @@
-﻿using DAL.Shared;
+﻿using DAL.Models.Users;
+using DAL.Shared;
 using DAL.Shared.Enums;
 using System;
 using System.Collections.Generic;
