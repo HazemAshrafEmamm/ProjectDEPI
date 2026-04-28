@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Identity.Client;
+using DAL.Models.OrderModule;
 
 
 namespace DAL.Models.Users
