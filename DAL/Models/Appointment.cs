@@ -12,9 +12,12 @@ namespace DAL.Models
         public DateTime AppointmentDate { get; set; }
         public TimeSpan AppointmentTime { get; set; }
         
-        public string Status { get; set; } = string.Empty;
+        public AppointmentStatus Status { get; set; }
         public string? Notes { get; set; }
 
-        public DoctorSchedule? Schedule { get; set; }
+        public DoctorSchedule Schedule { get; set; } = null!;
+
+        public ApplicationUser? Patient { get; set; }
+        public ApplicationUser? Doctor { get; set; }
     }
 }
