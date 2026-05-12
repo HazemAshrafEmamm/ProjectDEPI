@@ -1,5 +1,7 @@
 using BLL.AbstractServices;
+using BLL.Common;
 using BLL.ImplementationService;
+using DAL.Common;
 using DAL.Data;
 using DAL.Models;
 using DAL.RepositoryImplementations;
@@ -16,8 +18,8 @@ namespace PL
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddBuissinesInDAL();
+            builder.Services.AddBuissinesInBLL();
 
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
@@ -44,7 +46,7 @@ namespace PL
 
             app.UseHttpsRedirection();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DAL.Models;
 using DAL.Models.Users;
+using DAL.Models.OrderModule;
 
 namespace DAL.Data
 {
@@ -17,6 +18,7 @@ namespace DAL.Data
         public DbSet<Patient> Patients { get; set; } 
 
         public DbSet<Doctor> Doctors { get; set; }   
+        public DbSet<Medication> Medications { get; set; }
 
         public TabibyDbContext(DbContextOptions<TabibyDbContext> options) : base(options)
         {
