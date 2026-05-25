@@ -1,22 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DAL.Models;
+using DAL.Models.OrderModule;
+using DAL.Models.Users;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DAL.Models;
-using DAL.Models.Users;
 
 namespace DAL.Data
 {
     public class TabibyDbContext : IdentityDbContext
     {
-        
-        public DbSet<User> Users { get; set; }
 
-        public DbSet<Patient> Patients { get; set; } 
-
-        public DbSet<Doctor> Doctors { get; set; }   
 
         public TabibyDbContext(DbContextOptions<TabibyDbContext> options) : base(options)
         {
@@ -32,6 +29,9 @@ namespace DAL.Data
         public DbSet<Patient> Patients { get; set; }
 
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Medication> Medications { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Order_Item> Order_Items { get; set; }
 
     }
 }

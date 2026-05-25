@@ -1,9 +1,7 @@
 using BLL.AbstractServices;
-using BLL.Common;
 using BLL.ImplementationService;
-using DAL.Common;
 using DAL.Data;
-using DAL.Models;
+using DAL.Models.Users;
 using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +15,9 @@ namespace PL
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddBuissinesInDAL();
-            builder.Services.AddBuissinesInBLL();
-            builder.Services.AddScoped<IGenaricRepository, GenaricRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
 
-            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
 
             builder.Services.AddControllersWithViews();
 
@@ -30,10 +25,19 @@ namespace PL
             //DbContext
             builder.Services.AddDbContext<TabibyDbContext>(
                 options => {
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryDbContext"));
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("TabibyDbContext"));
                 }
             );
-            
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
+                options =>
+                {
+                    //options.Password.RequireUppercase = true;//by default is true
+                    //options.Password.RequireLowercase = true;//by default is true
+                    //options.User.RequireUniqueEmail = true;//by default is true
+                })
+                .AddEntityFrameworkStores<TabibyDbContext>()
+                .AddDefaultTokenProviders();
+
 
             var app = builder.Build();
 

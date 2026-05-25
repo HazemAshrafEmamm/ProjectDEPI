@@ -10,16 +10,7 @@ namespace DAL.Models.OrderModule
 {
     public class Medication : BaseEntity
     {
-        public Medication( string name, decimal price, int stock, bool is_available,  int pharmacistId)
-        {
-            Name = name;
-            Price = price;
-            Stock = stock;
-            Is_available = is_available;
-            PharmacistId = pharmacistId;
-            this.CreatedAt = DateTime.Now;
-            
-        }
+
         public string Name { get; set; }
         public decimal Price { get; set; }
         public int Stock { get; set; }

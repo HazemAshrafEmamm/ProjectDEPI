@@ -14,7 +14,6 @@ namespace DAL.Models.OrderModule
         public DateTime Order_date { get; set; }
         public OrderStatus Status { get; set; }
         public decimal Total { get; set; }
-        public DateTime created_at { get; set; }=DateTime.Now;
 
         /*Navigation Properties*/
 

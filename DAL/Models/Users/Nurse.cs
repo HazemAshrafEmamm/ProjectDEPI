@@ -7,12 +7,15 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Identity.Client;
 using DAL.Models.NursingModule;
+using DAL.Shared;
 
 namespace DAL.Models.Users
 {
-    public class Nurse : ApplicationUser
+    public class Nurse : BaseEntity
     {
-        
+        public int UserId { get; set; }
+        public virtual ApplicationUser User { get; set; }
+
         public string Specialization { get; set; } = string.Empty;
 
         public virtual ICollection<NursingRequest> NursingRequests { get; set; } = new List<NursingRequest>();
