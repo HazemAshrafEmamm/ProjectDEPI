@@ -2,16 +2,17 @@ using DAL.Models;
 
 namespace DAL.Data.Configurations;
 
+using DAL.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-public class UserConfig : IEntityTypeConfiguration<User>
+public class UserConfig : IEntityTypeConfiguration<ApplicationUser>
 {
-    public void Configure(EntityTypeBuilder<User> entity)
+    public void Configure(EntityTypeBuilder<ApplicationUser> entity)
     {
         entity.HasKey(u => u.Id);
 
-        entity.Property(u => u.Name)
+        entity.Property(u => u.Fullname)
             .IsRequired()
             .HasMaxLength(100);
 
@@ -24,10 +25,6 @@ public class UserConfig : IEntityTypeConfiguration<User>
 
         entity.Property(u => u.PasswordHash)
             .IsRequired();
-
-        entity.Property(u => u.Role)
-            .IsRequired()
-            .HasConversion<string>(); // store enum as string
 
         entity.Property(u => u.IsActive)
             .HasDefaultValue(true);
