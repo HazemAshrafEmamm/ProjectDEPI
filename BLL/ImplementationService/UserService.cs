@@ -1,17 +1,17 @@
 using BLL.AbstractServices;
 using BLL.Dtos.User;
 using DAL.Models;
-using DAL.RepositoryInterfaces;
+using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
 
 namespace BLL.ImplementationService;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _repository;
+    private readonly IGenaricRepository _repository;
     private readonly IPasswordHasher<User> _passwordHasher;
 
-    public UserService(IUserRepository repository,
+    public UserService(IGenaricRepository repository,
         IPasswordHasher<User> passwordHasher)
     {
         _repository = repository;

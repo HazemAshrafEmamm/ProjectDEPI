@@ -1,5 +1,6 @@
 ﻿using DAL.Models.Users;
 using DAL.Shared;
+using DAL.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace DAL.Models.OrderModule
     public class Order : BaseEntity
     {
         public DateTime Order_date { get; set; }
-        public string Status { get; set; }
+        public OrderStatus Status { get; set; }
         public decimal Total { get; set; }
         public DateTime created_at { get; set; }=DateTime.Now;
 
