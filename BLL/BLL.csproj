@@ -7,13 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DAL\DAL.csproj" />
+    <PackageReference Include="AutoMapper" Version="15.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.15">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\" />
-    <Folder Include="AbstractServices\" />
-    <Folder Include="ImplementationService\" />
+    <ProjectReference Include="..\DAL\DAL.csproj" />
   </ItemGroup>
 
 </Project>
