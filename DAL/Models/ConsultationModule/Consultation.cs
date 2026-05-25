@@ -15,8 +15,8 @@ namespace DAL.Models.Consultation
     
     public class Consultation : BaseEntity
     {
-        public int PatientId { get; set; }
-        public int DoctorId { get; set; }
+        public string PatientId { get; set; }
+        public string DoctorId { get; set; }
 
         public ConsultationStatus Status { get; set; } 
 

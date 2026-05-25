@@ -18,9 +18,6 @@ namespace DAL.Models.NursingModule
 
         public string Comment { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedAt { get; set; }
-
         // Navigation Properties
         public virtual NursingRequest NursingRequest { get; set; }
     }

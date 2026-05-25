@@ -19,7 +19,7 @@ namespace DAL.Models.OrderModule
 
         /*Navigation Properties*/
         public virtual List<Order_Item> Order_Item { get; set; }
-        public int PharmacistId { get; set; }
+        public string PharmacistId { get; set; }
 
         public virtual Pharmacist Pharmacist { get; set; }
     }
