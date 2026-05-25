@@ -10,6 +10,4 @@ public interface IGenaricRepository<TEntity> where TEntity : BaseEntity , new()
     Task AddAsync(TEntity user);
     void Update(TEntity user);
     void Delete(TEntity user);
-
-    Task SaveChangesAsync();
 }

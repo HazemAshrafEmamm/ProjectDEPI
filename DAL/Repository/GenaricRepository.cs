@@ -1,11 +1,10 @@
 using DAL.Data;
-using DAL.Models;
 using DAL.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository;
 
-public class GenaricRepository<TEntity> : IGenaricRepository<TEntity> where TEntity : BaseEntity , new()
+public class GenaricRepository<TEntity> : IGenaricRepository<TEntity> where TEntity : BaseEntity, new()
 {
     private readonly TabibyDbContext _context;
 
@@ -14,7 +13,7 @@ public class GenaricRepository<TEntity> : IGenaricRepository<TEntity> where TEnt
         _context = context;
     }
 
-    public async Task<TEntity> GetByIdAsync(int id)
+    public async Task<TEntity?> GetByIdAsync(int id)
     {
         return await _context.Set<TEntity>().FindAsync(id);
     }
@@ -29,18 +28,13 @@ public class GenaricRepository<TEntity> : IGenaricRepository<TEntity> where TEnt
         await _context.Set<TEntity>().AddAsync(entity);
     }
 
-    public void Update(TEntity Entity)
+    public void Update(TEntity entity)
     {
-        _context.Set<TEntity>().Update(Entity);
+        _context.Set<TEntity>().Update(entity);
     }
 
-    public void Delete(TEntity Entity)
+    public void Delete(TEntity entity)
     {
-        _context.Set<TEntity>().Remove(Entity);
-    }
-
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
+        _context.Set<TEntity>().Remove(entity);
     }
 }
