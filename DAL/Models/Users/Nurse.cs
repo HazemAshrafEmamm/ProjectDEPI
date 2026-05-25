@@ -16,5 +16,6 @@ namespace DAL.Models.Users
         public string Specialization { get; set; } = string.Empty;
 
         public virtual ICollection<NursingRequest> NursingRequests { get; set; } = new List<NursingRequest>();
+        
     }
 }
