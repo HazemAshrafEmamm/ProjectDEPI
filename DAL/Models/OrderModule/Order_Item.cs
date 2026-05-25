@@ -15,10 +15,10 @@ namespace DAL.Models.OrderModule
 
         /*Navigation Properties*/
 
-        public int MedicationId { get; set; }
+        public string MedicationId { get; set; }
         public virtual Medication Medication { get; set; }
 
-        public int OrderId { get; set; }
+        public string OrderId { get; set; }
         public virtual Order Order { get; set; }
 
     }

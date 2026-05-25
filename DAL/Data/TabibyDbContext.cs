@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Data
 {
-    public class TabibyDbContext : IdentityDbContext
+    public class TabibyDbContext : IdentityDbContext<ApplicationUser>
     {
 
 

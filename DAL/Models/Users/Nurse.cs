@@ -13,7 +13,7 @@ namespace DAL.Models.Users
 {
     public class Nurse : BaseEntity
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public virtual ApplicationUser User { get; set; }
 
         public string Specialization { get; set; } = string.Empty;

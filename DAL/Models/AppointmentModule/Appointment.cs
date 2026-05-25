@@ -19,7 +19,7 @@ namespace DAL.Models.AppointmentModule
 
         public DoctorSchedule Schedule { get; set; } = null!;
 
-        public ApplicationUser? Patient { get; set; }
-        public ApplicationUser? Doctor { get; set; }
+        public Patient? Patient { get; set; }
+        public Doctor? Doctor { get; set; }
     }
 }
