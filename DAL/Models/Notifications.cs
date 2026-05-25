@@ -13,15 +13,13 @@ namespace DAL.Models
 {
     public class Notification : BaseEntity
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public string Message { get; set; }
 
         public NotificationType Type { get; set; }
 
         public bool IsRead { get; set; } = false;
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedAt { get; set; }
 
         // Navigation Properties
         public virtual ApplicationUser User { get; set; }
