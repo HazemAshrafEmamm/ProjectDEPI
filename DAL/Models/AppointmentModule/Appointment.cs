@@ -9,7 +9,7 @@ namespace DAL.Models.AppointmentModule
     {
         public string PatientId { get; set; } = string.Empty;
         public string DoctorId { get; set; } = string.Empty;
-        public int ScheduleId { get; set; }
+        public string ScheduleId { get; set; }
         
         public DateTime AppointmentDate { get; set; }
         public TimeSpan AppointmentTime { get; set; }

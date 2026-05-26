@@ -13,9 +13,9 @@ namespace BLL.Mapper
     {
         public DomainProfile()
         {
-            CreateMap<Medication,CreateMedicationVM>().ReverseMap();
+            CreateMap<Medication,CreateMedicationDto>().ReverseMap();
             CreateMap<Medication, EditMedicationDTO>().ReverseMap();
-            CreateMap<Medication, GetAllMedicationDTO>().ReverseMap();
+            CreateMap<Medication, AllMedicationDTO>().ReverseMap();
         }
     }
 }

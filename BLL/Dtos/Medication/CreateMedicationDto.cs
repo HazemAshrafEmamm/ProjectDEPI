@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Dtos.Medication
 {
-    public class CreateMedicationVM
+    public class CreateMedicationDto
     {
         public string name { get; set; }
         public decimal price { get; set; }

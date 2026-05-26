@@ -1,4 +1,7 @@
 ﻿using DAL.Models;
+using DAL.Models.AppointmentModule;
+using DAL.Models.Consultation;
+using DAL.Models.NursingModule;
 using DAL.Models.OrderModule;
 using DAL.Models.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -26,12 +29,31 @@ namespace DAL.Data
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(TabibyDbContext).Assembly);
         }
 
-        public DbSet<Patient> Patients { get; set; }
-
+        // Users
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Patient> Patients { get; set; }
+        public DbSet<Nurse> Nurses { get; set; }
+        public DbSet<Pharmacist> Pharmacists { get; set; }
+
+        // Order Module
         public DbSet<Medication> Medications { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Order_Item> Order_Items { get; set; }
+
+        // Appointment Module
+        public DbSet<DoctorSchedule> DoctorSchedules { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+
+        // Consultation Module
+        public DbSet<Consultation> Consultations { get; set; }
+        public DbSet<ConsultationReview> ConsultationReviews { get; set; }
+
+        // Nursing Module
+        public DbSet<NursingRequest> NursingRequests { get; set; }
+        public DbSet<NursingReview> NursingReviews { get; set; }
+
+        // Notifications
+        public DbSet<Notification> Notifications { get; set; }
 
     }
 }
