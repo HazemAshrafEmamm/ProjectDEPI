@@ -1,0 +1,15 @@
+ [
+    {
+      "Id": "patient-001",
+      "UserId": "user-001",
+      "Address": "شارع التحرير، القاهرة",
+      "DateOfBirth": "1990-05-15"
+    },
+    {
+      "Id": "patient-002",
+      "UserId": "user-002",
+      "Address": "شارع الفردوس، الجيزة",
+      "DateOfBirth": "1988-08-22"
+    }
+  ]
+

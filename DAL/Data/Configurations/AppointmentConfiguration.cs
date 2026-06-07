@@ -9,7 +9,6 @@ namespace DAL.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Appointment> builder)
         {
-            builder.HasKey(a => a.Id);
 
             builder.Property(a => a.AppointmentDate)
                    .IsRequired();

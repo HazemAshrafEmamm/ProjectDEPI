@@ -8,7 +8,6 @@ namespace DAL.Data.Configurations.UsersConfig
     {
         public void Configure(EntityTypeBuilder<Pharmacist> builder)
         {
-            builder.HasKey(p => p.Id);
 
             // Pharmacist → ApplicationUser (Composition: delete Pharmacist deletes User)
             builder.HasOne(p => p.User)

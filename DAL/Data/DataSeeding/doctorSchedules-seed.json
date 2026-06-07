@@ -1,0 +1,43 @@
+[
+    {
+      "Id": "schedule-001",
+      "DoctorId": "doctor-001",
+      "DayOfWeek": 1,
+      "StartTime": "09:00:00",
+      "EndTime": "14:00:00",
+      "IsAvailable": true
+    },
+    {
+      "Id": "schedule-002",
+      "DoctorId": "doctor-001",
+      "DayOfWeek": 3,
+      "StartTime": "16:00:00",
+      "EndTime": "20:00:00",
+      "IsAvailable": true
+    },
+    {
+      "Id": "schedule-003",
+      "DoctorId": "doctor-001",
+      "DayOfWeek": 5,
+      "StartTime": "09:00:00",
+      "EndTime": "14:00:00",
+      "IsAvailable": true
+    },
+    {
+      "Id": "schedule-004",
+      "DoctorId": "doctor-002",
+      "DayOfWeek": 2,
+      "StartTime": "10:00:00",
+      "EndTime": "15:00:00",
+      "IsAvailable": true
+    },
+  {
+    "Id": "schedule-005",
+    "DoctorId": "doctor-002",
+    "DayOfWeek": 4,
+    "StartTime": "15:00:00",
+    "EndTime": "19:00:00",
+    "IsAvailable": true
+  }
+]
+

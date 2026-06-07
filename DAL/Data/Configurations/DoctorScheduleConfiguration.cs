@@ -8,7 +8,6 @@ namespace DAL.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<DoctorSchedule> builder)
         {
-            builder.HasKey(ds => ds.Id);
 
             builder.Property(ds => ds.DayOfWeek)
                    .IsRequired();

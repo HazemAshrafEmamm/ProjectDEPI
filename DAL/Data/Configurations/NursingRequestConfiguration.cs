@@ -8,7 +8,6 @@ namespace DAL.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<NursingRequest> builder)
         {
-            builder.HasKey(nr => nr.Id);
 
             builder.Property(nr => nr.CareType)
                    .IsRequired()

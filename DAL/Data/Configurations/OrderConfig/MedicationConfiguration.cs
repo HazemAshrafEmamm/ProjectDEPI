@@ -8,7 +8,6 @@ namespace DAL.Data.Configurations.OrderConfig
     {
         public void Configure(EntityTypeBuilder<Medication> builder)
         {
-            builder.HasKey(m => m.Id);
 
             builder.Property(m => m.Name)
                    .IsRequired()

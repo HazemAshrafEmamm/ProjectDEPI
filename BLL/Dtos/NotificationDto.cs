@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Shared
+namespace BLL.Dtos
 {
-    public abstract class BaseEntity
+    public class NotificationDto
     {
         public string Id { get; set; }
+        public string Message { get; set; } = null!;
+        public bool IsRead { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
     }
 }

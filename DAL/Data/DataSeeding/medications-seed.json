@@ -1,0 +1,50 @@
+[
+    {
+      "Id": "med-001",
+      "Name": "أسبرين 500mg",
+      "Price": 15.50,
+      "Stock": 100,
+      "IsAvailable": true,
+      "PharmacistId": "pharmacist-001"
+    },
+    {
+      "Id": "med-002",
+      "Name": "أموكسيسيلين 250mg",
+      "Price": 45.00,
+      "Stock": 50,
+      "IsAvailable": true,
+      "PharmacistId": "pharmacist-001"
+    },
+    {
+      "Id": "med-003",
+      "Name": "باراسيتامول 500mg",
+      "Price": 12.00,
+      "Stock": 150,
+      "IsAvailable": true,
+      "PharmacistId": "pharmacist-002"
+    },
+    {
+      "Id": "med-004",
+      "Name": "ميتفورمين 850mg",
+      "Price": 35.00,
+      "Stock": 80,
+      "IsAvailable": true,
+      "PharmacistId": "pharmacist-002"
+    },
+    {
+      "Id": "med-005",
+      "Name": "ليسينوبريل 10mg",
+      "Price": 55.00,
+      "Stock": 60,
+      "IsAvailable": true,
+      "PharmacistId": "pharmacist-001"
+    },
+    {
+      "Id": "med-006",
+      "Name": "أزيثروميسين 500mg",
+      "Price": 75.00,
+      "Stock": 40,
+      "IsAvailable": true,
+      "PharmacistId": "pharmacist-002"
+    }
+ ]

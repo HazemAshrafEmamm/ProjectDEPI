@@ -10,7 +10,7 @@ namespace BLL.AbstractServices
     public interface IMedicationService
     {
        Task<int> AddMedicationAsync(CreateMedicationDto medication);
-       Task<int> UpdateMedicationAsync(CreateMedicationDto medication);
+       Task<int> UpdateMedicationAsync(UpdateMedicationDto medication);
        Task<int> DeleteMedicationAsync(string id);
        Task<MedicationDto> GetMedicationByIdAsync(string id);
        Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync();

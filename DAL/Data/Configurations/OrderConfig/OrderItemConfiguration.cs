@@ -8,7 +8,6 @@ namespace DAL.Data.Configurations.OrderConfig
     {
         public void Configure(EntityTypeBuilder<Order_Item> builder)
         {
-            builder.HasKey(oi => oi.Id);
 
             builder.Property(oi => oi.quantity)
                    .IsRequired();

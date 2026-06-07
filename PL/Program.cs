@@ -1,20 +1,27 @@
 
+using BLL.AbstractServices;
+using BLL.Hubs;
+using BLL.ImplementationService;
 using DAL.Data;
 using DAL.Models.Users;
 using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace PL
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<DataSeeder, DataSeeder>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddSignalR();
 
 
 
@@ -47,12 +54,16 @@ namespace PL
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            using var scope = app.Services.CreateScope();
+            var seed = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+            await seed.SeedDatabaseAsync();
 
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapHub<NotificationHub>("/notificationHub");
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",

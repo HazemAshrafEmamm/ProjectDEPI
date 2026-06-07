@@ -1,0 +1,13 @@
+[
+    {
+      "Id": "pharmacist-001",
+      "UserId": "user-007",
+      "PharmacyName": "صيدلية النجار الحديثة"
+    },
+    {
+      "Id": "pharmacist-002",
+      "UserId": "user-008",
+      "PharmacyName": "صيدلية الأمل للدواء"
+    }
+  ]
+

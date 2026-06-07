@@ -1,0 +1,75 @@
+[
+    {
+      "Id": "user-001",
+      "Fullname": "أحمد محمد علي",
+      "UserName": "ahmad_ali",
+      "Email": "ahmad@tabiby.com",
+      "Password": "P@ssw0rd",
+      "IsActive": true,
+      "Role": "Patient"
+    },
+    {
+      "Id": "user-002",
+      "Fullname": "فاطمة سالم حسن",
+      "UserName": "fatima_hassan",
+      "Email": "fatima@tabiby.com",
+      "Password": "P@ssw0rd",
+      "IsActive": true,
+      "Role": "Patient"
+    },
+    {
+      "Id": "user-003",
+      "Fullname": "د. محمود الشرقاوي",
+      "UserName": "dr_mahmoud",
+      "Email": "dr.mahmoud@tabiby.com",
+      "Password": "P@ssw0rd",
+      "IsActive": true,
+      "Role": "Doctor"
+    },
+    {
+      "Id": "user-004",
+      "Fullname": "د. نور الدين عمارة",
+      "UserName": "dr_nour",
+      "Email": "dr.nour@tabiby.com",
+      "Password": "P@ssw0rd",
+      "IsActive": true,
+      "Role": "Doctor"
+    },
+    {
+      "Id": "user-005",
+      "Fullname": "أمنية علي عبدالله",
+      "UserName": "amnia_nurse",
+      "Email": "amnia@tabiby.com",
+      "Password": "P@ssw0rd",
+      "IsActive": true,
+      "Role": "Nurse"
+    },
+    {
+      "Id": "user-006",
+      "Fullname": "سارة مصطفى محمود",
+      "UserName": "sarah_nurse",
+      "Email": "sarah@tabiby.com",
+      "Password": "P@ssw0rd",
+      "IsActive": true,
+      "Role": "Nurse"
+    },
+    {
+      "Id": "user-007",
+      "Fullname": "صيدلي خالد النجار",
+      "UserName": "khaled_pharm",
+      "Email": "khaled@tabiby.com",
+      "Password": "P@ssw0rd",
+      "IsActive": true,
+      "Role": "Pharmacist"
+    },
+    {
+      "Id": "user-008",
+      "Fullname": "صيدلية إسلام حسني",
+      "UserName": "islam_pharm",
+      "Email": "islam@tabiby.com",
+      "Password": "P@ssw0rd",
+      "IsActive": true,
+      "Role": "Pharmacist"
+    }
+  ]
+

@@ -9,8 +9,6 @@ namespace DAL.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Consultation> builder)
         {
-            builder.HasKey(c => c.Id);
-
             builder.Property(c => c.Status)
                    .HasConversion<string>()
                    .HasDefaultValue(ConsultationStatus.Requested);
