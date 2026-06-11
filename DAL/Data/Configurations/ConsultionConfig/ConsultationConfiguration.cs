@@ -11,7 +11,7 @@ namespace DAL.Data.Configurations.ConsultionConfig
         {
             builder.Property(c => c.Status)
                    .HasConversion<string>()
-                   .HasDefaultValue(ConsultationStatus.Requested);
+                   .HasDefaultValue(ConsultationStatus.Pending);
 
             builder.Property(c => c.RequestedAt)
                    .IsRequired();

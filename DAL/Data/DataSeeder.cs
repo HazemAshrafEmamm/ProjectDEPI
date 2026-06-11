@@ -32,43 +32,27 @@ namespace DAL.Data
             try
             {
                 // Check if data already exists
-                if (await _context.Users.AnyAsync())
-                {
-                    Console.WriteLine("Database already seeded. Skipping...");
-                    return;
-                }
+                //if (await _context.Users.AnyAsync())
+                //{
+                //    Console.WriteLine("Database already seeded. Skipping...");
+                //    return;
+                //}
 
                 Console.WriteLine("Starting database seeding...");
 
-                // 0. Seed Roles 
+                // 1. Seed Roles 
                 await SeedRolesAsync();
                 Console.WriteLine(" Roles Schedules seeded successfully");
 
-                // 1. Seed Users
+                // 2. Seed Users
                 await SeedUsersAsync();
                 Console.WriteLine("✓ Users seeded successfully");
 
-                // 2. Seed Patients
-                await SeedPatientsAsync();
-                Console.WriteLine("✓ Patients seeded successfully");
-
-                // 3. Seed Doctors
-                await SeedDoctorsAsync();
-                Console.WriteLine("✓ Doctors seeded successfully");
-
-                // 4. Seed Nurses
-                await SeedNursesAsync();
-                Console.WriteLine("✓ Nurses seeded successfully");
-
-                // 5. Seed Pharmacists
-                await SeedPharmacistsAsync();
-                Console.WriteLine("✓ Pharmacists seeded successfully");
-
-                // 6. Seed Medications
+                // 3. Seed Medications
                 await SeedMedicationsAsync();
                 Console.WriteLine("✓ Medications seeded successfully");
 
-                // 7. Seed Doctor Schedules
+                // 4. Seed Doctor Schedules
                 await SeedDoctorSchedulesAsync();
                 Console.WriteLine(" Doctor Schedules seeded successfully");
 
@@ -85,53 +69,61 @@ namespace DAL.Data
 
         private async Task SeedUsersAsync()
         {
-            var usersSeedPath = Path.Combine(_seedPath, SEED_DATA_FOLDER, "users-seed.json");
-            if (!File.Exists(usersSeedPath))
+            var path = Path.Combine(_seedPath, SEED_DATA_FOLDER, "users-seed.json");
+            if (!File.Exists(path)) { Console.WriteLine("✗ Users file not found"); return; }
+
+            var json = await File.ReadAllTextAsync(path);
+            var seedData = JsonSerializer.Deserialize<List<UserSeedDto>>(json,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (seedData is null) return;
+
+            foreach (var dto in seedData)
             {
-                Console.WriteLine(" Users seed file not found");
-                return;
-            }
+                var existing = await _userManager.FindByEmailAsync(dto.Email);
+                if (existing != null) continue;
 
-            var json = await File.ReadAllTextAsync(usersSeedPath);
-            var seedData = JsonSerializer.Deserialize<List<UserSeedDto>>(json);
-
-            if (seedData== null) return;
-
-            foreach (var userSeed in seedData)
-            {
-                var existingUser = await _userManager.FindByEmailAsync(userSeed.Email);
-                if (existingUser != null) continue;
-
-                var user = new ApplicationUser
+                ApplicationUser user = dto.UserType switch
                 {
-                    Id = userSeed.Id,
-                    UserName = userSeed.UserName,
-                    Email = userSeed.Email,
-                    Fullname = userSeed.Fullname,
-                    IsActive = userSeed.IsActive
+                    "Doctor" => new Doctor
+                    {
+                        Specialty = dto.Specialty ?? string.Empty,
+                        Location = dto.Location ?? string.Empty
+                    },
+                    "Patient" => new Patient
+                    {
+                        Address = dto.Address ?? string.Empty,
+                        DateOfBirth = dto.DateOfBirth ?? DateTime.UtcNow
+                    },
+                    "Nurse" => new Nurse
+                    {
+                        Specialization = dto.Specialization ?? string.Empty
+                    },
+                    "Pharmacist" => new Pharmacist
+                    {
+                        PharmacyName = dto.PharmacyName ?? string.Empty
+                    },
+                    _ => new ApplicationUser()
                 };
 
-                var result = await _userManager.CreateAsync(user, userSeed.Password);
+                user.Id = dto.Id;
+                user.UserName = dto.UserName;
+                user.UserType = dto.UserType;
+                user.Email = dto.Email;
+                user.Fullname = dto.Fullname;
+                user.IsActive = dto.IsActive;
+
+                var result = await _userManager.CreateAsync(user, dto.Password);
 
                 if (!result.Succeeded)
                 {
-                    Console.WriteLine($"User failed {user.Email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    Console.WriteLine($" Failed to create {dto.Email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                     continue;
                 }
 
-                if (!string.IsNullOrWhiteSpace(userSeed.Role))
-                {
-                    if (await _roleManager.RoleExistsAsync(userSeed.Role))
-                    {
-                        await _userManager.AddToRoleAsync(user, userSeed.Role);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Role not found: {userSeed.Role}");
-                    }
-                }
+                if (!string.IsNullOrWhiteSpace(dto.Role) && await _roleManager.RoleExistsAsync(dto.Role))
+                    await _userManager.AddToRoleAsync(user, dto.Role);
             }
-            await _context.SaveChangesAsync();
         }
 
         private async Task SeedRolesAsync()
@@ -158,124 +150,41 @@ namespace DAL.Data
             }
         }
 
-        private async Task SeedPatientsAsync()
+        private async Task SeedMedicationsAsync()
         {
-            var patientsSeedPath = Path.Combine(_seedPath, SEED_DATA_FOLDER, "patients-seed.json");
-            if (!File.Exists(patientsSeedPath)) return;
+            var path = Path.Combine(_seedPath, SEED_DATA_FOLDER, "medications-seed.json");
+            if (!File.Exists(path)) return;
 
-            var json = await File.ReadAllTextAsync(patientsSeedPath);
-            var seedData = JsonSerializer.Deserialize<List<Patient>>(json);
+            var json = await File.ReadAllTextAsync(path);
+            var seedData = JsonSerializer.Deserialize<List<Medication>>(json,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (seedData is null) return;
 
-            foreach (var patientSeed in seedData)
+            foreach (var item in seedData)
             {
-                var existingPatient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientSeed.Id);
-                if (existingPatient != null) continue;
-
-                _context.Patients.Add(patientSeed);
+                if (await _context.Medications.AnyAsync(m => m.Id == item.Id)) continue;
+                _context.Medications.Add(item);
             }
 
             await _context.SaveChangesAsync();
         }
 
-        private async Task SeedDoctorsAsync()
-        {
-            var doctorsSeedPath = Path.Combine(_seedPath, SEED_DATA_FOLDER, "doctors-seed.json");
-            if (!File.Exists(doctorsSeedPath)) return;
-
-            var json = await File.ReadAllTextAsync(doctorsSeedPath);
-            var seedData = JsonSerializer.Deserialize<List<Doctor>>(json);
-
-            if (seedData == null) return;
-
-            foreach (var doctorSeed in seedData)
-            {
-                var existingDoctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Id == doctorSeed.Id);
-                if (existingDoctor != null) continue;
-
-                _context.Doctors.Add(doctorSeed);
-            }
-            await _context.SaveChangesAsync();
-        }
-
-        private async Task SeedNursesAsync()
-        {
-            var nursesSeedPath = Path.Combine(_seedPath, SEED_DATA_FOLDER, "nurses-seed.json");
-            if (!File.Exists(nursesSeedPath)) return;
-
-            var json = await File.ReadAllTextAsync(nursesSeedPath);
-            var seedData = JsonSerializer.Deserialize<List<Nurse>>(json);
-
-            if (seedData == null) return;
-
-            foreach (var nurseSeed in seedData)
-            {
-                var existingNurse = await _context.Nurses.FirstOrDefaultAsync(n => n.Id == nurseSeed.Id);
-                if (existingNurse != null) continue;
-
-                _context.Nurses.Add(nurseSeed);
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
-        private async Task SeedPharmacistsAsync()
-        {
-            var pharmacistsSeedPath = Path.Combine(_seedPath, SEED_DATA_FOLDER, "pharmacists-seed.json");
-            if (!File.Exists(pharmacistsSeedPath)) return;
-
-            var json = await File.ReadAllTextAsync(pharmacistsSeedPath);
-            var seedData = JsonSerializer.Deserialize<List<Pharmacist>>(json);
-
-            if (seedData == null) return;
-
-            foreach (var pharmacistSeed in seedData)
-            {
-                var existingPharmacist = await _context.Pharmacists.FirstOrDefaultAsync(p => p.Id == pharmacistSeed.Id);
-                if (existingPharmacist != null) continue;
-                _context.Pharmacists.Add(pharmacistSeed);
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
-        private async Task SeedMedicationsAsync()
-        {
-            var medicationsSeedPath = Path.Combine(_seedPath, SEED_DATA_FOLDER, "medications-seed.json");
-            if (!File.Exists(medicationsSeedPath)) return;
-
-            var json = await File.ReadAllTextAsync(medicationsSeedPath);
-            var seedData = JsonSerializer.Deserialize<List<Medication>>(json);
-
-            if (seedData == null) return;
-
-            foreach (var medicationSeed in seedData)
-            {
-                var existingMedication = await _context.Medications.FirstOrDefaultAsync(m => m.Id == medicationSeed.Id);
-                if (existingMedication != null) continue;
-
-                _context.Medications.Add(medicationSeed);
-            }
-
-            await _context.SaveChangesAsync();
-        }
         private async Task SeedDoctorSchedulesAsync()
         {
-            var schedulesSeedPath = Path.Combine(_seedPath, SEED_DATA_FOLDER, "doctorSchedules-seed.json");
-            if (!File.Exists(schedulesSeedPath)) return;
+            var path = Path.Combine(_seedPath, SEED_DATA_FOLDER, "doctorSchedules-seed.json");
+            if (!File.Exists(path)) return;
 
-            var json = await File.ReadAllTextAsync(schedulesSeedPath);
-            var seedData = JsonSerializer.Deserialize<List<DoctorSchedule>>(json);
+            var json = await File.ReadAllTextAsync(path);
+            var seedData = JsonSerializer.Deserialize<List<DoctorSchedule>>(json,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            if (seedData == null) return;
+            if (seedData is null) return;
 
-            foreach (var scheduleSeed in seedData)
+            foreach (var item in seedData)
             {
-                var existingSchedule = await _context.DoctorSchedules.FirstOrDefaultAsync(s => s.Id == scheduleSeed.Id);
-                if (existingSchedule != null) continue;
-
-                _context.DoctorSchedules.Add(scheduleSeed);
+                if (await _context.DoctorSchedules.AnyAsync(s => s.Id == item.Id)) continue;
+                _context.DoctorSchedules.Add(item);
             }
 
             await _context.SaveChangesAsync();
@@ -284,18 +193,27 @@ namespace DAL.Data
         public class UserSeedDto
         {
             public int Id { get; set; }
-
+            public string UserType { get; set; } = null!;  
             public string Fullname { get; set; } = null!;
-
             public string UserName { get; set; } = null!;
-
             public string Email { get; set; } = null!;
-
             public string Password { get; set; } = null!;
-
             public bool IsActive { get; set; }
-
             public string Role { get; set; } = null!;
+
+            // Doctor
+            public string? Specialty { get; set; }
+            public string? Location { get; set; }
+
+            // Patient
+            public string? Address { get; set; }
+            public DateTime? DateOfBirth { get; set; }
+
+            // Nurse
+            public string? Specialization { get; set; }
+
+            // Pharmacist
+            public string? PharmacyName { get; set; }
         }
     }
 }

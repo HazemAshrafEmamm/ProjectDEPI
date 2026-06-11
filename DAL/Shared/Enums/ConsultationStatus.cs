@@ -8,7 +8,7 @@ namespace DAL.Shared.Enums
 {
     public enum ConsultationStatus
     {
-        Requested,
+        Pending,
         Accepted,
         InProgress,
         Completed,

@@ -8,9 +8,11 @@ namespace DAL.Shared.Enums
 {
     public enum NotificationType
     {
-        AppointmentReminder,
+        AppointmentReminder = 1,
         OrderUpdate,
         ConsultationUpdate,
+        ConsultationRequest,
+        ConsultationReview,
         Message,
         System
     }

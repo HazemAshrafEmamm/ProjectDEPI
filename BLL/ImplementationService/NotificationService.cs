@@ -49,13 +49,13 @@ namespace BLL.ImplementationService
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task SendNotificationAsync(string message, string Type, int UserId)
+        public async Task SendNotificationAsync(string message, NotificationType Type, int UserId)
         {
             var notification = new Notification
             {
                 UserId = UserId,
                 Message = message,
-                Type = Enum.Parse<NotificationType>(Type),
+                Type = Type,
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow
             };
