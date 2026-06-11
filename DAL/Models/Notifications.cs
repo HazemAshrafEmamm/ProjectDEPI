@@ -13,7 +13,7 @@ namespace DAL.Models
 {
     public class Notification : BaseEntity
     {
-        public string UserId { get; set; }
+        public int UserId { get; set; }
         public string Message { get; set; }
 
         public NotificationType Type { get; set; }

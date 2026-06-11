@@ -10,37 +10,37 @@ namespace BLL.ImplementationService
 {
     public class OrderService : IOrderService
     {
-        public Task<OrderDto> AddItemToOrderAsync(string orderId, OrderItemDto orderItemDto, string patientId)
+        public Task<OrderDto> AddItemToOrderAsync(int orderId, OrderItemDto orderItemDto, int patientId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OrderDto> CancelOrderAsync(string orderId, string patientId)
+        public Task<OrderDto> CancelOrderAsync(int orderId, int patientId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OrderDto> CreateOrderAsync(string patientId, CreateOrderDto dto)
+        public Task<OrderDto> CreateOrderAsync(int patientId, CreateOrderDto dto)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<OrderDto>> GetMyOrdersAsync(string patientId)
+        public Task<IEnumerable<OrderDto>> GetMyOrdersAsync(int patientId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OrderDto> GetOrderAsync(string orderId, string patientId)
+        public Task<OrderDto> GetOrderAsync(int orderId, int patientId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OrderDto> RemoveItemAsync(string orderId, string itemId, string patientId)
+        public Task<OrderDto> RemoveItemAsync(int orderId, int itemId, int patientId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<OrderDto> UpdateItemAsync(string orderId, OrderItemDto orderItemDto, string patientId)
+        public Task<OrderDto> UpdateItemAsync(int orderId, OrderItemDto orderItemDto, int patientId)
         {
             throw new NotImplementedException();
         }

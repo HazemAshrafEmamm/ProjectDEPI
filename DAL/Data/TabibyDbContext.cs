@@ -4,6 +4,7 @@ using DAL.Models.Consultation;
 using DAL.Models.NursingModule;
 using DAL.Models.OrderModule;
 using DAL.Models.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Data
 {
-    public class TabibyDbContext : IdentityDbContext<ApplicationUser>
+    public class TabibyDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>
     {
 
 
@@ -46,6 +47,8 @@ namespace DAL.Data
 
         // Consultation Module
         public DbSet<Consultation> Consultations { get; set; }
+        public DbSet<ConsultationMessage> ConsultationMessages { get; set; }
+
         public DbSet<ConsultationReview> ConsultationReviews { get; set; }
 
         // Nursing Module

@@ -23,21 +23,17 @@ namespace DAL.Data.Configurations
             builder.Property(nr => nr.CreatedAt)
                    .ValueGeneratedOnAdd();
 
-            // ⚠️ Multiple Cascade Paths:
-            // NursingRequest له Patient و Nurse
-            // نفس المشكلة → واحد Cascade والتاني NoAction
 
             builder.HasOne(nr => nr.Patient)
                    .WithMany()
                    .HasForeignKey(nr => nr.PatientId)
-                   .OnDelete(DeleteBehavior.Cascade);  // Patient هو الـ owner
+                   .OnDelete(DeleteBehavior.Cascade); 
 
             builder.HasOne(nr => nr.Nurse)
                    .WithMany(n => n.NursingRequests)
                    .HasForeignKey(nr => nr.NurseId)
-                   .OnDelete(DeleteBehavior.NoAction);  // ⛔ مش Cascade
+                   .OnDelete(DeleteBehavior.NoAction);  
 
-            // NursingRequest → NursingReview: Cascade
             builder.HasOne(nr => nr.Review)
                    .WithOne(r => r.NursingRequest)
                    .HasForeignKey<NursingReview>(r => r.NursingRequestId)

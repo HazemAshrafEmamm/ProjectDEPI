@@ -15,8 +15,8 @@ namespace DAL.Models.Consultation
     
     public class Consultation : BaseEntity
     {
-        public string PatientId { get; set; }
-        public string DoctorId { get; set; }
+        public int PatientId { get; set; }
+        public int DoctorId { get; set; }
 
         public ConsultationStatus Status { get; set; } 
 
@@ -25,6 +25,8 @@ namespace DAL.Models.Consultation
         public DateTime CreatedAt { get; set; }
 
         // Navigation Properties
+        public virtual ICollection<ConsultationMessage> Messages { get; set; } = new List<ConsultationMessage>();
+
         public virtual Patient Patient { get; set; }
         public virtual Doctor Doctor { get; set; }
         public virtual ConsultationReview Review { get; set; }

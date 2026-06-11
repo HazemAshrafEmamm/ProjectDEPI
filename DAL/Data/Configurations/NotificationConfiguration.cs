@@ -20,8 +20,6 @@ namespace DAL.Data.Configurations
             builder.Property(n => n.IsRead)
                    .HasDefaultValue(false);
 
-            // Notification → ApplicationUser: Cascade
-            // لو الـ User اتحذف الـ notifications بتتحذف معاه
             builder.HasOne(n => n.User)
                    .WithMany()
                    .HasForeignKey(n => n.UserId)

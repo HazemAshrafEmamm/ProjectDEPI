@@ -9,7 +9,7 @@ namespace DAL.Specifications.NotificationSpecs
 {
     public class NotificationsByUserIdSpecs : BaseSpecification<Notification>
     {
-        public NotificationsByUserIdSpecs(string userId) : base(N => N.UserId == userId)
+        public NotificationsByUserIdSpecs(int userId) : base(N => N.UserId == userId)
         {
             
         }

@@ -9,18 +9,16 @@ namespace BLL.AbstractServices
 {
     public interface IOrderService
     {
-        Task<OrderDto> GetOrderAsync(string orderId, string patientId);
-        Task<IEnumerable<OrderDto>> GetMyOrdersAsync(string patientId);
+        Task<OrderDto> GetOrderAsync(int orderId, int patientId);
+        Task<IEnumerable<OrderDto>> GetMyOrdersAsync(int patientId);
 
-        Task<OrderDto> CreateOrderAsync(string patientId, CreateOrderDto dto);
-        Task<OrderDto> CancelOrderAsync(string orderId, string patientId);
+        Task<OrderDto> CreateOrderAsync(int patientId, CreateOrderDto dto);
+        Task<OrderDto> CancelOrderAsync(int orderId, int patientId);
 
+        Task<OrderDto> AddItemToOrderAsync(int orderId, OrderItemDto orderItemDto, int patientId);
 
-        Task<OrderDto> AddItemToOrderAsync(string orderId, OrderItemDto orderItemDto, string patientId);
+        Task<OrderDto> UpdateItemAsync(int orderId,OrderItemDto orderItemDto, int patientId);
 
-        Task<OrderDto> UpdateItemAsync(string orderId,OrderItemDto orderItemDto, string patientId);
-
-        Task<OrderDto> RemoveItemAsync(string orderId, string itemId, string patientId);
-
+        Task<OrderDto> RemoveItemAsync(int orderId, int itemId, int patientId);
     }
 }

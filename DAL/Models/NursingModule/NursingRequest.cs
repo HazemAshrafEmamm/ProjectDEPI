@@ -13,9 +13,9 @@ namespace DAL.Models.NursingModule
     public class NursingRequest : BaseEntity
     {
 
-        public string PatientId { get; set; }
+        public int PatientId { get; set; }
 
-        public string NurseId { get; set; }
+        public int NurseId { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime RequestedDate { get; set; }

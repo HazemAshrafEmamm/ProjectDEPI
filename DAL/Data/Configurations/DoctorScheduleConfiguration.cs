@@ -21,15 +21,11 @@ namespace DAL.Data.Configurations
             builder.Property(ds => ds.IsAvailable)
                    .HasDefaultValue(true);
 
-            // DoctorSchedule → Doctor: Cascade
-            // لو الدكتور اتحذف السكيدول بتاعه بيتحذف
             builder.HasOne<DAL.Models.Users.Doctor>()
                    .WithMany()
                    .HasForeignKey(ds => ds.DoctorId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // DoctorSchedule → Appointments: Cascade
-            // لو السكيدول اتحذف المواعيد المرتبطة بيه بتتحذف
             builder.HasMany(ds => ds.Appointments)
                    .WithOne(a => a.Schedule)
                    .HasForeignKey(a => a.ScheduleId)

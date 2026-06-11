@@ -14,7 +14,7 @@ public class GenaricRepository<TEntity> : IGenaricRepository<TEntity> where TEnt
         _context = context;
     }
 
-    public async Task<TEntity?> GetByIdAsync(string id)
+    public async Task<TEntity?> GetByIdAsync(int id)
     {
         return await _context.Set<TEntity>().FindAsync(id);
     }

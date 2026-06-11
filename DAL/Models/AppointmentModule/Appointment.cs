@@ -7,9 +7,9 @@ namespace DAL.Models.AppointmentModule
 {
     public class Appointment : BaseEntity
     {
-        public string PatientId { get; set; } = string.Empty;
-        public string DoctorId { get; set; } = string.Empty;
-        public string ScheduleId { get; set; }
+        public int PatientId { get; set; }
+        public int DoctorId { get; set; } 
+        public int ScheduleId { get; set; }
         
         public DateTime AppointmentDate { get; set; }
         public TimeSpan AppointmentTime { get; set; }

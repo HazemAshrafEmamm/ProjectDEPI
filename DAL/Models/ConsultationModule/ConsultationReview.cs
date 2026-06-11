@@ -12,11 +12,9 @@ namespace DAL.Models.Consultation
     public class ConsultationReview : BaseEntity
     {
 
-        public string ConsultationId { get; set; }
+        public int ConsultationId { get; set; }
         public int Rating { get; set; }
         public string Comment { get; set; }
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedAt { get; set; }
 
         public virtual Consultation Consultation { get; set; }

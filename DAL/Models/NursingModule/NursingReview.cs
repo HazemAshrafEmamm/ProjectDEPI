@@ -12,7 +12,7 @@ namespace DAL.Models.NursingModule
     public class NursingReview : BaseEntity
     {
 
-        public string NursingRequestId { get; set; }
+        public int NursingRequestId { get; set; }
 
         public int Rating { get; set; }
 

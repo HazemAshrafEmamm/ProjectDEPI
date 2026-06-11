@@ -16,7 +16,7 @@ namespace BLL.ImplementationService
 {
     public class NotificationService(IUnitOfWork _unitOfWork , IHubContext<NotificationHub> hubContext) : INotificationService
     {
-        public async Task DeleteNotificationAsync(string notificationId)
+        public async Task DeleteNotificationAsync(int notificationId)
         {
             var notification = await _unitOfWork.GetRepository<Notification>().GetByIdAsync(notificationId);
             if (notification == null)
@@ -25,13 +25,13 @@ namespace BLL.ImplementationService
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<List<string>> GetNotificationsAsync(string UserId)
+        public async Task<List<string>> GetNotificationsAsync(int UserId)
         {
             var notifications = await _unitOfWork.GetRepository<Notification>().GetAllAsync(new NotificationsByUserIdSpecs(UserId));
             return notifications.Select(n => n.Message).ToList();
         }
 
-        public async Task<int> GetUnreadCountAsync(string userId)
+        public async Task<int> GetUnreadCountAsync(int userId)
         {
             var spec = new UnreadNotificationsForUserSpecification(userId);
 
@@ -39,7 +39,7 @@ namespace BLL.ImplementationService
             return unreadNotifications.Count();
         }
 
-        public async Task MarkAsReadAsync(string notificationId)
+        public async Task MarkAsReadAsync(int notificationId)
         {
             var notification = await _unitOfWork.GetRepository<Notification>().GetByIdAsync(notificationId);
             if (notification == null)
@@ -49,7 +49,7 @@ namespace BLL.ImplementationService
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task SendNotificationAsync(string message, string Type, string UserId)
+        public async Task SendNotificationAsync(string message, string Type, int UserId)
         {
             var notification = new Notification
             {
@@ -63,7 +63,7 @@ namespace BLL.ImplementationService
             await _unitOfWork.SaveChangesAsync();
 
 
-            await hubContext.Clients.User(UserId).SendAsync("NewNotification", new NotificationDto
+            await hubContext.Clients.User(UserId.ToString()).SendAsync("NewNotification", new NotificationDto
             {
                 Id = notification.Id,
                 Message = message,

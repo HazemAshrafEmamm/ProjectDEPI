@@ -1,0 +1,15 @@
+﻿using BLL.Dtos.Medication;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BLL.AbstractServices.MedicationModule
+{
+    public interface IMedicationService
+    {
+       Task<MedicationDto> GetMedicationByIdAsync(int id);
+       Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync();
+    }
+}

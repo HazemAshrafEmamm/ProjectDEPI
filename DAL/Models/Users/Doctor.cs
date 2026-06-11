@@ -7,12 +7,8 @@ using DAL.Shared;
 
 namespace DAL.Models.Users
 {
-    public class Doctor : BaseEntity
+    public class Doctor : ApplicationUser
     {
-        public string UserId { get; set; }  // forign key
-    
-        public ApplicationUser User { get; set; }  // navigation property 
-
         public string Specialty { get; set; }
 
         public string Location { get; set; }

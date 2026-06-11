@@ -13,11 +13,8 @@ using DAL.Shared;
 
 namespace DAL.Models.Users
 {
-    public class Pharmacist : BaseEntity
+    public class Pharmacist : ApplicationUser
     {
-        public string UserId { get; set; } // forign key 
-
-        public ApplicationUser User { get; set; } // navigation property 
         public string PharmacyName { get; set; } = string.Empty;
 
         public virtual ICollection<Medication> Medications { get; set; } = new List<Medication>();

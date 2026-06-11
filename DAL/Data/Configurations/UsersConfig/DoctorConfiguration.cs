@@ -9,11 +9,6 @@ namespace DAL.Data.Configurations.UsersConfig
         public void Configure(EntityTypeBuilder<Doctor> builder)
         {
 
-            // Doctor → ApplicationUser (Composition: delete Doctor deletes User)
-            builder.HasOne(d => d.User)
-                   .WithOne()
-                   .HasForeignKey<Doctor>(d => d.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.Property(d => d.Specialty)
                    .IsRequired()
@@ -22,8 +17,7 @@ namespace DAL.Data.Configurations.UsersConfig
             builder.Property(d => d.Location)
                    .HasMaxLength(250);
 
-            // Doctor → DoctorSchedules (One-to-Many)
-            // Configured in DoctorScheduleConfiguration
+
         }
     }
 }

@@ -8,7 +8,7 @@ namespace BLL.Dtos.Order
 {
     public class CreateOrderItemDto
     {
-        public string MedicationId { get; set; }
+        public int MedicationId { get; set; }
         public int Quantity { get; set; }
     }
 }

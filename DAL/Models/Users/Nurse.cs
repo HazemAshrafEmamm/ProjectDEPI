@@ -11,10 +11,8 @@ using DAL.Shared;
 
 namespace DAL.Models.Users
 {
-    public class Nurse : BaseEntity
+    public class Nurse : ApplicationUser
     {
-        public string UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
 
         public string Specialization { get; set; } = string.Empty;
 

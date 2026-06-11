@@ -8,8 +8,8 @@ namespace BLL.Dtos.Order
 {
     public class OrderItemDto
     {
-        public string Id { get; set; }
-        public string MedicationId { get; set; }
+        public int Id { get; set; }
+        public int MedicationId { get; set; }
         public string MedicationName { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }

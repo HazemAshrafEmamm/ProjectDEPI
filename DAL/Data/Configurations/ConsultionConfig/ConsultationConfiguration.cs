@@ -3,7 +3,7 @@ using DAL.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DAL.Data.Configurations
+namespace DAL.Data.Configurations.ConsultionConfig
 {
     public class ConsultationConfiguration : IEntityTypeConfiguration<Consultation>
     {
@@ -19,22 +19,18 @@ namespace DAL.Data.Configurations
             builder.Property(c => c.CreatedAt)
                    .ValueGeneratedOnAdd();
 
-            // ⚠️ Multiple Cascade Paths:
-            // Consultation له Patient و Doctor
-            // نفس المشكلة → واحد Cascade والتاني NoAction
+
 
             builder.HasOne(c => c.Patient)
                    .WithMany()
                    .HasForeignKey(c => c.PatientId)
-                   .OnDelete(DeleteBehavior.Cascade);  // Patient هو الـ owner
+                   .OnDelete(DeleteBehavior.Cascade); 
 
             builder.HasOne(c => c.Doctor)
                    .WithMany()
                    .HasForeignKey(c => c.DoctorId)
-                   .OnDelete(DeleteBehavior.NoAction);  // ⛔ مش Cascade
+                   .OnDelete(DeleteBehavior.NoAction);  
 
-            // Consultation → ConsultationReview: Cascade
-            // لو الـ consultation اتحذفت الـ review بتتحذف معاها
             builder.HasOne(c => c.Review)
                    .WithOne(r => r.Consultation)
                    .HasForeignKey<ConsultationReview>(r => r.ConsultationId)

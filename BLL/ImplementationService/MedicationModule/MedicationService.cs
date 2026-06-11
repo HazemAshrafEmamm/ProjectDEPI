@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BLL.AbstractServices;
+using BLL.AbstractServices.MedicationModule;
 using BLL.Dtos.Medication;
 using DAL.Models.OrderModule;
 using DAL.Repository;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.ImplementationService
+namespace BLL.ImplementationService.MedicationModule
 {
     public class MedicationService : IMedicationService
     {
@@ -23,23 +23,7 @@ namespace BLL.ImplementationService
             _mapper = mapper;
             _repo = _unitOfWork.GetRepository<Medication>();
         }
-        public async Task<int> AddMedicationAsync(CreateMedicationDto medication)
-        {
-            var medicationEntity = _mapper.Map<Medication>(medication);
-            await _repo.AddAsync(medicationEntity);
-            return await _unitOfWork.SaveChangesAsync();
-        }
-
-        public async Task<int> DeleteMedicationAsync(string id)
-        {
-            var medicationEntity = await _repo.GetByIdAsync(id);
-            if (medicationEntity == null)
-            {
-                throw new Exception("Medication not found");
-            }
-            _repo.Delete(medicationEntity);
-            return await _unitOfWork.SaveChangesAsync();
-        }
+        
 
         public async Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync()
         {
@@ -48,7 +32,7 @@ namespace BLL.ImplementationService
             return medicationDtos;
         }
 
-        public async Task<MedicationDto> GetMedicationByIdAsync(string id)
+        public async Task<MedicationDto> GetMedicationByIdAsync(int id)
         {
             var medicationEntity = await _repo.GetByIdAsync(id);
             if (medicationEntity == null)
@@ -59,19 +43,7 @@ namespace BLL.ImplementationService
             return medicationDto;
         }
 
-        public async Task<int> UpdateMedicationAsync(UpdateMedicationDto medication)
-        {
-            var existingMedication = await _repo.GetByIdAsync(medication.Id);
-
-            if (existingMedication == null)
-                throw new KeyNotFoundException("Medication not found");
-
-            _mapper.Map(medication, existingMedication);
-
-            _repo.Update(existingMedication);
-
-            return await _unitOfWork.SaveChangesAsync();
-        }
+        
 
     }
 }

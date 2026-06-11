@@ -6,7 +6,7 @@ namespace DAL.Repository;
 
 public interface IGenaricRepository<TEntity> where TEntity : BaseEntity , new()
 {
-    Task<TEntity> GetByIdAsync(string id);
+    Task<TEntity> GetByIdAsync(int id);
     Task<IEnumerable<TEntity>> GetAllAsync();
     Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TEntity> Specs);
     Task AddAsync(TEntity user);

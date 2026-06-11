@@ -17,7 +17,7 @@ namespace DAL.Models.OrderModule
 
         /*Navigation Properties*/
 
-        public string PatientId { get; set; }
+        public int PatientId { get; set; }
         public virtual Patient Patient { get; set; }
         public virtual List<Order_Item> Order_Item { get; set; }
 
