@@ -13,14 +13,14 @@ namespace DAL.Data
     {
         private readonly TabibyDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
         private const string SEED_DATA_FOLDER = "DataSeeding";
         private readonly string _seedPath;
 
         public DataSeeder(
             TabibyDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager )
+            RoleManager<IdentityRole<int>> roleManager )
         {
             _context = context;
             _userManager = userManager;
@@ -144,7 +144,7 @@ namespace DAL.Data
             }
 
             var json = await File.ReadAllTextAsync(RolesSeedPath);
-            var roles = JsonSerializer.Deserialize<List<IdentityRole>>(json);
+            var roles = JsonSerializer.Deserialize<List<IdentityRole<int>>>(json);
 
             if (roles is null)
                 return;
@@ -283,7 +283,7 @@ namespace DAL.Data
 
         public class UserSeedDto
         {
-            public string Id { get; set; } = null!;
+            public int Id { get; set; }
 
             public string Fullname { get; set; } = null!;
 

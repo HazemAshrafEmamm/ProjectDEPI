@@ -16,7 +16,7 @@ namespace PL.Controllers
             return View(medications);
         }
         [HttpGet("Id")]
-        public async Task<IActionResult> GetMedicationById(string Id)
+        public async Task<IActionResult> GetMedicationById(int Id)
         {
             var medication = await _medicationService.GetMedicationByIdAsync(Id);
             return View(medication);

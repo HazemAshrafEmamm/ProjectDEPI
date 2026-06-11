@@ -24,12 +24,14 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("ConsultationMessage", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("ConsultationId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConsultationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -42,9 +44,8 @@ namespace DAL.Data.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<string>("SenderUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("SenderUserId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
@@ -63,8 +64,11 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.AppointmentModule.Appointment", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("datetime2");
@@ -75,21 +79,18 @@ namespace DAL.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DoctorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("PatientId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("ScheduleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -113,8 +114,11 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.AppointmentModule.DoctorSchedule", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -122,9 +126,8 @@ namespace DAL.Data.Migrations
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
 
-                    b.Property<string>("DoctorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
 
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
@@ -149,20 +152,21 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.Consultation.Consultation", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DoctorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("PatientId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("RequestedAt")
                         .HasColumnType("datetime2");
@@ -187,19 +191,20 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.Consultation.ConsultationReview", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ConsultationId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ConsultationId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Rating")
@@ -218,8 +223,11 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.Notification", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -241,9 +249,8 @@ namespace DAL.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -254,8 +261,11 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.NursingModule.NursingRequest", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CareType")
                         .IsRequired()
@@ -266,13 +276,11 @@ namespace DAL.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("NurseId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("NurseId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("PatientId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("RequestedDate")
                         .ValueGeneratedOnAdd()
@@ -299,8 +307,11 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.NursingModule.NursingReview", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
                         .IsRequired()
@@ -309,9 +320,8 @@ namespace DAL.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("NursingRequestId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("NursingRequestId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -329,13 +339,16 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.OrderModule.Medication", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Is_available")
+                    b.Property<bool>("IsAvailable")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
@@ -345,9 +358,8 @@ namespace DAL.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("PharmacistId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("PharmacistId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
@@ -367,8 +379,11 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.OrderModule.Order", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -376,9 +391,8 @@ namespace DAL.Data.Migrations
                     b.Property<DateTime>("Order_date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PatientId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -401,19 +415,20 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.OrderModule.Order_Item", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("MedicationId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("MedicationId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("OrderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -435,8 +450,11 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DAL.Models.Users.ApplicationUser", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -444,6 +462,11 @@ namespace DAL.Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -506,132 +529,19 @@ namespace DAL.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("DAL.Models.Users.Doctor", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("Specialty")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Doctors");
-                });
-
-            modelBuilder.Entity("DAL.Models.Users.Nurse", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Nurses");
-                });
-
-            modelBuilder.Entity("DAL.Models.Users.Patient", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Patients");
-                });
-
-            modelBuilder.Entity("DAL.Models.Users.Pharmacist", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PharmacyName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Pharmacists");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -655,7 +565,7 @@ namespace DAL.Data.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -669,9 +579,8 @@ namespace DAL.Data.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -680,7 +589,7 @@ namespace DAL.Data.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -694,9 +603,8 @@ namespace DAL.Data.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -705,7 +613,7 @@ namespace DAL.Data.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -716,9 +624,8 @@ namespace DAL.Data.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -727,13 +634,13 @@ namespace DAL.Data.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -742,10 +649,10 @@ namespace DAL.Data.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -759,6 +666,62 @@ namespace DAL.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("DAL.Models.Users.Doctor", b =>
+                {
+                    b.HasBaseType("DAL.Models.Users.ApplicationUser");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Specialty")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasDiscriminator().HasValue("Doctor");
+                });
+
+            modelBuilder.Entity("DAL.Models.Users.Nurse", b =>
+                {
+                    b.HasBaseType("DAL.Models.Users.ApplicationUser");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasDiscriminator().HasValue("Nurse");
+                });
+
+            modelBuilder.Entity("DAL.Models.Users.Patient", b =>
+                {
+                    b.HasBaseType("DAL.Models.Users.ApplicationUser");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.HasDiscriminator().HasValue("Patient");
+                });
+
+            modelBuilder.Entity("DAL.Models.Users.Pharmacist", b =>
+                {
+                    b.HasBaseType("DAL.Models.Users.ApplicationUser");
+
+                    b.Property<string>("PharmacyName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasDiscriminator().HasValue("Pharmacist");
                 });
 
             modelBuilder.Entity("ConsultationMessage", b =>
@@ -928,60 +891,16 @@ namespace DAL.Data.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("DAL.Models.Users.Doctor", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.HasOne("DAL.Models.Users.ApplicationUser", "User")
-                        .WithOne()
-                        .HasForeignKey("DAL.Models.Users.Doctor", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DAL.Models.Users.Nurse", b =>
-                {
-                    b.HasOne("DAL.Models.Users.ApplicationUser", "User")
-                        .WithOne()
-                        .HasForeignKey("DAL.Models.Users.Nurse", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DAL.Models.Users.Patient", b =>
-                {
-                    b.HasOne("DAL.Models.Users.ApplicationUser", "User")
-                        .WithOne()
-                        .HasForeignKey("DAL.Models.Users.Patient", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DAL.Models.Users.Pharmacist", b =>
-                {
-                    b.HasOne("DAL.Models.Users.ApplicationUser", "User")
-                        .WithOne()
-                        .HasForeignKey("DAL.Models.Users.Pharmacist", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.HasOne("DAL.Models.Users.ApplicationUser", null)
                         .WithMany()
@@ -990,7 +909,7 @@ namespace DAL.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.HasOne("DAL.Models.Users.ApplicationUser", null)
                         .WithMany()
@@ -999,9 +918,9 @@ namespace DAL.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1014,7 +933,7 @@ namespace DAL.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.HasOne("DAL.Models.Users.ApplicationUser", null)
                         .WithMany()

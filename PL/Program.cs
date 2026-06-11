@@ -34,13 +34,14 @@ namespace PL
                     options.UseSqlServer(builder.Configuration.GetConnectionString("TabibyDbContext"));
                 }
             );
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(
                 options =>
                 {
                     //options.Password.RequireUppercase = true;//by default is true
                     //options.Password.RequireLowercase = true;//by default is true
                     //options.User.RequireUniqueEmail = true;//by default is true
                 })
+                .AddRoleManager<RoleManager<IdentityRole<int>>>()
                 .AddEntityFrameworkStores<TabibyDbContext>()
                 .AddDefaultTokenProviders();
 

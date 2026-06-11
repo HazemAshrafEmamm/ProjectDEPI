@@ -19,7 +19,7 @@ namespace DAL.Data.Configurations.OrderConfig
             builder.Property(m => m.Stock)
                    .IsRequired();
 
-            builder.Property(m => m.Is_available)
+            builder.Property(m => m.IsAvailable)
                    .HasDefaultValue(true);
 
             // Medication → Order_Items: Restrict
