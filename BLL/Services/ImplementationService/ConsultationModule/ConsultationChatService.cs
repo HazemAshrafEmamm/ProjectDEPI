@@ -25,7 +25,7 @@ namespace BLL.Services.ImplementationService.ConsultationModule
             if(consultation.Status != ConsultationStatus.Accepted) 
                     throw new Exception("Consultation is not active");
 
-            var messages = await _unitOfWork.GetRepository<ConsultationMessage>().GetAllAsync(new ConsultationMessagesByConsultationIdSpec(consultationId));
+            var messages = await _unitOfWork.GetRepository<ConsultationMessage>().GetAllAsync(new ConsultationMessagesSpecByConsultationId(consultationId));
 
             return _mapper.Map<IEnumerable<ConsultationMessageDto>>(messages);
         }
@@ -69,8 +69,12 @@ namespace BLL.Services.ImplementationService.ConsultationModule
             };
             await _unitOfWork.GetRepository<ConsultationMessage>().AddAsync(message);
             await _unitOfWork.SaveChangesAsync();
-            var messageDto = _mapper.Map<ConsultationMessageDto>(message);  
-            
+
+            var savedMessage = await _unitOfWork.GetRepository<ConsultationMessage>()
+                                                 .GetAllAsync(new ConsultationMessageByIdSpec(message.Id));
+
+            var messageDto = _mapper.Map<ConsultationMessageDto>(savedMessage.Last());
+
             await _chatHub.Clients.Group($"consultation_{consultationId}")
                         .SendAsync("ReceiveMessage", messageDto);
 

@@ -7,6 +7,6 @@ namespace BLL.Services.AbstractServices.MedicationModule
     {
         Task<int> CreateMedicationAsync(CreateMedicationDto medication);
         Task<int> UpdateMedicationAsync(UpdateMedicationDto medication);
-        Task<int> DeleteMedicationAsync(string id);
+        Task<int> DeleteMedicationAsync(int id);
     }
 }

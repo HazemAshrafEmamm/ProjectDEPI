@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BLL.Dtos.Medication;
+using BLL.Services.AbstractServices.MedicationModule;
 using DAL.Models.OrderModule;
 using DAL.Repository;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.ImplementationService.MedicationModule
 {
-    public class PharmacistService 
+    public class PharmacistService : IPharmacistService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

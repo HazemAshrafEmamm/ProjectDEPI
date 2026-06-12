@@ -25,6 +25,10 @@ namespace DAL.Specifications
                     query = query.Include(include);
                 }
             }
+            if (specs?.OrderBy != null)
+                query = query.OrderBy(specs.OrderBy);
+            else if (specs?.OrderByDescending != null)
+                query = query.OrderByDescending(specs.OrderByDescending);
 
             return query;
         }

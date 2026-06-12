@@ -12,6 +12,8 @@ namespace DAL.Specifications
     {
         public Expression<Func<TEntity, bool>>? Criteria { get; set; }
         public List<Expression<Func<TEntity, object>>> Includes { get; set; }
+        Expression<Func<TEntity, object>>? OrderBy { get; }      
+        Expression<Func<TEntity, object>>? OrderByDescending { get; }
 
     }
 }

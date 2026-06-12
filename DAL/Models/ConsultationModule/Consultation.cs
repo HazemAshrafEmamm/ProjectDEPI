@@ -29,6 +29,6 @@ namespace DAL.Models.Consultation
 
         public virtual Patient Patient { get; set; }
         public virtual Doctor Doctor { get; set; }
-        public virtual ConsultationReview Review { get; set; }
+        public virtual ConsultationReview? Review { get; set; }
     }
 }
