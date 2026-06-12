@@ -1,4 +1,4 @@
-﻿using BLL.AbstractServices.MedicationModule;
+﻿using BLL.Services.AbstractServices.MedicationModule;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PL.Controllers

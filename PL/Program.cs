@@ -1,7 +1,6 @@
-
-using BLL.AbstractServices;
 using BLL.Hubs;
-using BLL.ImplementationService;
+using BLL.Services.AbstractServices;
+using BLL.Services.ImplementationService;
 using DAL.Data;
 using DAL.Models.Users;
 using DAL.Repository;

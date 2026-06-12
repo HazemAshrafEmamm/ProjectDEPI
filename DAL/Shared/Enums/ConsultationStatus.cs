@@ -10,7 +10,6 @@ namespace DAL.Shared.Enums
     {
         Pending,
         Accepted,
-        InProgress,
         Completed,
         Rejected
     }

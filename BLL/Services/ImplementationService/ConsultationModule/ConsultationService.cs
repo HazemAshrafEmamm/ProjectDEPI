@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using BLL.AbstractServices;
-using BLL.AbstractServices.ConsultionModule;
 using BLL.Dtos.Consultion;
+using BLL.Services.AbstractServices;
+using BLL.Services.AbstractServices.ConsultationModule;
 using DAL.Models.Consultation;
 using DAL.Models.Users;
 using DAL.Repository;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.ImplementationService.ConsultationModule
+namespace BLL.Services.ImplementationService.ConsultationModule
 {
     public class ConsultationService
         (IUnitOfWork _unitOfWork , IMapper _mapper , INotificationService _notificationService) : IConsultationService
@@ -29,7 +29,7 @@ namespace BLL.ImplementationService.ConsultationModule
             {
                 PatientId = PatientId,
                 DoctorId = createDto.DoctorId,
-                Status = ConsultationStatus.InProgress,
+                Status = ConsultationStatus.Pending,
             };
 
             await _unitOfWork.GetRepository<Consultation>().AddAsync(consultation);

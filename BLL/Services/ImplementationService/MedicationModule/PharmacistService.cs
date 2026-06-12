@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.ImplementationService.MedicationModule
+namespace BLL.Services.ImplementationService.MedicationModule
 {
     public class PharmacistService 
     {

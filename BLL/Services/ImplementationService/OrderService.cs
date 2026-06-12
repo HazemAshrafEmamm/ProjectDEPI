@@ -1,12 +1,12 @@
-﻿using BLL.AbstractServices;
-using BLL.Dtos.Order;
+﻿using BLL.Dtos.Order;
+using BLL.Services.AbstractServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.ImplementationService
+namespace BLL.Services.ImplementationService
 {
     public class OrderService : IOrderService
     {

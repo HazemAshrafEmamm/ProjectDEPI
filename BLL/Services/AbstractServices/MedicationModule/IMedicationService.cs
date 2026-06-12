@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.AbstractServices.MedicationModule
+namespace BLL.Services.AbstractServices.MedicationModule
 {
     public interface IMedicationService
     {

@@ -1,7 +1,7 @@
 ﻿using BLL.Dtos.Medication;
 
 
-namespace BLL.AbstractServices.MedicationModule
+namespace BLL.Services.AbstractServices.MedicationModule
 {
     public interface IPharmacistService
     {

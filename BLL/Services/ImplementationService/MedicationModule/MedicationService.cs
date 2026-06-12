@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BLL.AbstractServices.MedicationModule;
 using BLL.Dtos.Medication;
+using BLL.Services.AbstractServices.MedicationModule;
 using DAL.Models.OrderModule;
 using DAL.Repository;
 using System;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.ImplementationService.MedicationModule
+namespace BLL.Services.ImplementationService.MedicationModule
 {
     public class MedicationService : IMedicationService
     {

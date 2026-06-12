@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.AbstractServices.ConsultionModule
+namespace BLL.Services.AbstractServices.ConsultationModule
 {
     public interface IConsultationReviewService
     {

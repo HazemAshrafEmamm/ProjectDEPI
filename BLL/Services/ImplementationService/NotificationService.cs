@@ -1,6 +1,6 @@
-﻿using BLL.AbstractServices;
-using BLL.Dtos;
+﻿using BLL.Dtos;
 using BLL.Hubs;
+using BLL.Services.AbstractServices;
 using DAL.Models;
 using DAL.Repository;
 using DAL.Shared.Enums;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.ImplementationService
+namespace BLL.Services.ImplementationService
 {
     public class NotificationService(IUnitOfWork _unitOfWork , IHubContext<NotificationHub> hubContext) : INotificationService
     {

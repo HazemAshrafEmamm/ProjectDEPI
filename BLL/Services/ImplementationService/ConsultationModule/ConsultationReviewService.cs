@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using BLL.AbstractServices;
-using BLL.AbstractServices.ConsultionModule;
 using BLL.Dtos.Consultion;
+using BLL.Services.AbstractServices;
+using BLL.Services.AbstractServices.ConsultationModule;
 using DAL.Models.Consultation;
 using DAL.Repository;
 using DAL.Shared.Enums;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.ImplementationService.ConsultationModule
+namespace BLL.Services.ImplementationService.ConsultationModule
 {
     public class ConsultationReviewService(IUnitOfWork _unitOfWork ,
         IMapper _mapper , INotificationService _notificationService) : IConsultationReviewService

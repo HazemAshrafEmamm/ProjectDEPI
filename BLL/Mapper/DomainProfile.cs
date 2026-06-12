@@ -23,6 +23,7 @@ namespace BLL.Mapper
             CreateMap<ConsultationReview, ConsultationReviewDto>().ReverseMap();
 
             CreateMap<Consultation, ConsultationDto>().ReverseMap();
+            CreateMap<ConsultationMessage, ConsultationMessageDto>().ReverseMap();
 
         }
     }

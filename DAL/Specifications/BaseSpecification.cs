@@ -20,6 +20,17 @@ namespace DAL.Specifications
         {
             Includes.Add(includeExpression);
         }
+        public Expression<Func<TEntity, object>>? OrderBy { get; private set; }
+        public Expression<Func<TEntity, object>>? OrderByDescending { get; private set; }
+        public void ApplyOrderBy(Expression<Func<TEntity, object>> orderByExpression)
+        {
+            OrderBy = orderByExpression;
+        }
+        public void ApplyOrderByDescending(Expression<Func<TEntity, object>> orderByDescExpression)
+        {
+            OrderByDescending = orderByDescExpression;
+        }
+
 
     }
 }
