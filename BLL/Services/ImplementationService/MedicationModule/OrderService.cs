@@ -1,12 +1,12 @@
 ﻿using BLL.Dtos.Order;
-using BLL.Services.AbstractServices;
+using BLL.Services.AbstractServices.MedicationModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.Services.ImplementationService
+namespace BLL.Services.ImplementationService.MedicationModule
 {
     public class OrderService : IOrderService
     {
