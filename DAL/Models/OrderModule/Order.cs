@@ -23,7 +23,7 @@ namespace DAL.Models.OrderModule
 
         public int PatientId { get; set; }
         public virtual Patient Patient { get; set; }
-        public virtual List<Order_Item> Order_Item { get; set; }
+        public virtual List<OrderItem> Order_Item { get; set; }
 
     }
 }

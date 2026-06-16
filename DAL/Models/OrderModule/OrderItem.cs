@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace DAL.Models.OrderModule
 {
-    public class Order_Item : BaseEntity
+    public class OrderItem : BaseEntity
     {
-        public int quantity { get; set; }
-        public decimal unit_price { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string Name { get; set; }
+        public string PictureUrl { get; set; }
 
 
         /*Navigation Properties*/

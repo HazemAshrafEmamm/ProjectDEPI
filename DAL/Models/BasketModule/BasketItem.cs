@@ -1,4 +1,5 @@
-﻿using DAL.Shared;
+﻿using DAL.Models.OrderModule;
+using DAL.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace DomainLayer.Models.BasketModule
 {
-    public class BasketItems : BaseEntity
+    public class BasketItem : BaseEntity
     {
-        public string MedicationName { get; set; } = null!;
+        public Medication Medication { get; set; }
+
+        public int MedicationId { get; set; }
         public string PictureUrl { get; set; } = null!;
         public decimal Price { get; set; }
         public int Quantity { get; set; }

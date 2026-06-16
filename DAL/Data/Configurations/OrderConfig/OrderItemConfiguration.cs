@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Data.Configurations.OrderConfig
 {
-    public class OrderItemConfiguration : IEntityTypeConfiguration<Order_Item>
+    public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
     {
-        public void Configure(EntityTypeBuilder<Order_Item> builder)
+        public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
 
-            builder.Property(oi => oi.quantity)
+            builder.Property(oi => oi.Quantity)
                    .IsRequired();
 
-            builder.Property(oi => oi.unit_price)
+            builder.Property(oi => oi.UnitPrice)
                    .HasColumnType("decimal(10,2)");
 
             // العلاقات اتعرفت في OrderConfiguration و MedicationConfiguration

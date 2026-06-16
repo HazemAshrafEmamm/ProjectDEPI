@@ -49,8 +49,8 @@ namespace BLL.Mapper
             CreateMap<Order, OrderDto>().ReverseMap();
             CreateMap<Order, CreateOrderDto>().ReverseMap();
 
-            CreateMap<Order_Item, OrderItemDto>().ReverseMap();
-            CreateMap<Order_Item, CreateOrderItemDto>().ReverseMap();
+            CreateMap<OrderItem, OrderItemDto>().ReverseMap();
+            CreateMap<OrderItem, CreateOrderItemDto>().ReverseMap();
 
 
         }

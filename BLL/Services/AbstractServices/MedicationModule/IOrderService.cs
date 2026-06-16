@@ -14,11 +14,7 @@ namespace BLL.Services.AbstractServices.MedicationModule
 
         Task<OrderDto> CreateOrderAsync(int patientId, CreateOrderDto dto);
         Task<OrderDto> CancelOrderAsync(int orderId, int patientId);
-
-        Task<OrderDto> AddItemToOrderAsync(int orderId, OrderItemDto orderItemDto, int patientId);
-
         Task<OrderDto> UpdateItemAsync(int orderId,OrderItemDto orderItemDto, int patientId);
 
-        Task<OrderDto> RemoveItemAsync(int orderId, int itemId, int patientId);
     }
 }

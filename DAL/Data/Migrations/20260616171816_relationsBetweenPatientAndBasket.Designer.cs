@@ -4,6 +4,7 @@ using DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Data.Migrations
 {
     [DbContext(typeof(TabibyDbContext))]
-    partial class TabibyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260616171816_relationsBetweenPatientAndBasket")]
+    partial class relationsBetweenPatientAndBasket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -607,6 +610,9 @@ namespace DAL.Data.Migrations
                     b.Property<bool>("IsCheckedOut")
                         .HasColumnType("bit");
 
+                    b.Property<int>("MedicationId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
@@ -617,6 +623,8 @@ namespace DAL.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MedicationId");
 
                     b.HasIndex("PatientId")
                         .IsUnique();
@@ -1033,11 +1041,19 @@ namespace DAL.Data.Migrations
 
             modelBuilder.Entity("DomainLayer.Models.BasketModule.CustomerBasket", b =>
                 {
+                    b.HasOne("DAL.Models.OrderModule.Medication", "Medication")
+                        .WithMany()
+                        .HasForeignKey("MedicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DAL.Models.Users.Patient", "Patient")
                         .WithOne("Basket")
                         .HasForeignKey("DomainLayer.Models.BasketModule.CustomerBasket", "PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Medication");
 
                     b.Navigation("Patient");
                 });

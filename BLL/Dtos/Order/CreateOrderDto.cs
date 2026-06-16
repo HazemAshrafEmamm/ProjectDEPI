@@ -8,7 +8,8 @@ namespace BLL.Dtos.Order
 {
     public class CreateOrderDto
     {
-        public List<CreateOrderItemDto> Items { get; set; }
-
+        public int BasketId { get; set; }
+        
+        public OrderAddressDto Address { get; set; }
     }
 }

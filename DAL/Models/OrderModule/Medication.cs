@@ -1,5 +1,6 @@
 ﻿using DAL.Models.Users;
 using DAL.Shared;
+using DomainLayer.Models.BasketModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,8 @@ namespace DAL.Models.OrderModule
         
 
         /*Navigation Properties*/
-        public virtual List<Order_Item> Order_Item { get; set; }
+        public virtual List<OrderItem> Order_Item { get; set; }
+        public ICollection<BasketItem> BasketItems { get; set; }= new List<BasketItem>();
         public int PharmacistId { get; set; }
 
         public virtual Pharmacist Pharmacist { get; set; }
