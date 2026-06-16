@@ -1,4 +1,5 @@
 using BLL.Hubs;
+using BLL.Mapper;
 using BLL.Services.AbstractServices;
 using BLL.Services.ImplementationService;
 using DAL.Data;
@@ -6,8 +7,8 @@ using DAL.Models.Users;
 using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 namespace PL
 {
     public class Program
@@ -20,9 +21,10 @@ namespace PL
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<DataSeeder, DataSeeder>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddAutoMapper((x) => { }, typeof(DomainProfile).Assembly);
             builder.Services.AddSignalR();
 
-
+            
 
             builder.Services.AddControllersWithViews();
 

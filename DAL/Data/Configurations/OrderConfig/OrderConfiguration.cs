@@ -20,12 +20,13 @@ namespace DAL.Data.Configurations.OrderConfig
             builder.Property(o => o.Total)
                    .HasColumnType("decimal(10,2)");
 
-            // Order → Order_Items: Cascade
-            // لو الأوردر اتحذف Order_Items بتتحذف معاه
+            
             builder.HasMany(o => o.Order_Item)
                    .WithOne(oi => oi.Order)
                    .HasForeignKey(oi => oi.OrderId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.OwnsOne(o => o.Address);
         }
     }
 }

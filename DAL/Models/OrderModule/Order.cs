@@ -13,9 +13,11 @@ namespace DAL.Models.OrderModule
     {
         public DateTime Order_date { get; set; }
         public OrderStatus Status { get; set; }
+        
         public decimal Total { get; set; }
 
         /*Navigation Properties*/
+        public OrderAddress Address { get; set; } = null!;
 
         public int PatientId { get; set; }
         public virtual Patient Patient { get; set; }
