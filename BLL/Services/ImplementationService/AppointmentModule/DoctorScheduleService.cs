@@ -1,4 +1,5 @@
-﻿using BLL.Services.AbstractServices.AppointmentModule;
+﻿using BLL.Dtos.Schedule;
+using BLL.Services.AbstractServices.AppointmentModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             throw new NotImplementedException();
         }
 
-        public Task<DoctorScheduleDto> UpdateScheduleAsync(int scheduleId, CreateDoctorScheduleDto dto, int doctorId)
+        public Task<DoctorScheduleDto> UpdateScheduleAsync(int scheduleId, UpdateDoctorScheduleDto dto, int doctorId)
         {
             throw new NotImplementedException();
         }

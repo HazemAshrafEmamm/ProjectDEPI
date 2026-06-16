@@ -17,8 +17,6 @@ namespace DAL.Data.Configurations.OrderConfig
                    .HasConversion<string>()
                    .HasDefaultValue(OrderStatus.Pending);
 
-            builder.Property(o => o.Total)
-                   .HasColumnType("decimal(10,2)");
 
             
             builder.HasMany(o => o.Order_Item)
