@@ -13,8 +13,10 @@ namespace DAL.Models.OrderModule
     {
         public DateTime Order_date { get; set; }
         public OrderStatus Status { get; set; }
-        
-        public decimal Total { get; set; }
+
+        public decimal Total { get => SubTotal + ShippingPrice; }
+        public decimal SubTotal { get; set; }
+        public decimal ShippingPrice { get; set; } = 20;
 
         /*Navigation Properties*/
         public OrderAddress Address { get; set; } = null!;
