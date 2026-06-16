@@ -12,6 +12,8 @@ namespace BLL.Services.ImplementationService.MedicationModule
     {
         public Task<OrderDto> AddItemToOrderAsync(int orderId, OrderItemDto orderItemDto, int patientId)
         {
+
+
             throw new NotImplementedException();
         }
 
