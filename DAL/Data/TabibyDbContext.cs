@@ -40,7 +40,7 @@ namespace DAL.Data
         // Order Module
         public DbSet<Medication> Medications { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderItem> Order_Items { get; set; }
+        public DbSet<OrderItem> OrderItem { get; set; }
         public DbSet<BasketItem> BasketItems { get; set; }
         public DbSet<CustomerBasket> CustomerBaskets { get; set; }
 

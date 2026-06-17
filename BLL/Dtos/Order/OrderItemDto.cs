@@ -11,6 +11,7 @@ namespace BLL.Dtos.Order
         public int Id { get; set; }
         public int MedicationId { get; set; }
         public string MedicationName { get; set; }
+        public string PictureUrl { get; set; }
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Subtotal => Quantity * UnitPrice;

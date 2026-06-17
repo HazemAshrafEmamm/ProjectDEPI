@@ -11,7 +11,7 @@ namespace DAL.Models.OrderModule
 {
     public class Order : BaseEntity
     {
-        public DateTime Order_date { get; set; }
+        public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
 
         public decimal Total { get => SubTotal + ShippingPrice; }
@@ -23,7 +23,7 @@ namespace DAL.Models.OrderModule
 
         public int PatientId { get; set; }
         public virtual Patient Patient { get; set; }
-        public virtual List<OrderItem> Order_Item { get; set; }
+        public virtual List<OrderItem> OrderItem { get; set; }
 
     }
 }

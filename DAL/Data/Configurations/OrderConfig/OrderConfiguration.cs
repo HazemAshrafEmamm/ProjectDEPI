@@ -10,7 +10,7 @@ namespace DAL.Data.Configurations.OrderConfig
         public void Configure(EntityTypeBuilder<Order> builder)
         {
 
-            builder.Property(o => o.Order_date)
+            builder.Property(o => o.OrderDate)
                    .IsRequired();
 
             builder.Property(o => o.Status)
@@ -19,7 +19,7 @@ namespace DAL.Data.Configurations.OrderConfig
 
 
             
-            builder.HasMany(o => o.Order_Item)
+            builder.HasMany(o => o.OrderItem)
                    .WithOne(oi => oi.Order)
                    .HasForeignKey(oi => oi.OrderId)
                    .OnDelete(DeleteBehavior.Cascade);

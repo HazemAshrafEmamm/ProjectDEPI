@@ -2,10 +2,12 @@
 using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
 using DAL.Models.OrderModule;
+using DAL.Models.Users;
 using DAL.Repository;
 using DAL.Shared.Enums;
 using DAL.Specifications.OrderSpecs;
 using DomainLayer.Models.BasketModule;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +16,44 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.ImplementationService.MedicationModule
 {
-    public class OrderService(IUnitOfWork  _unitOfWork , IMapper _mapper) : IOrderService
+    public class OrderService(IUnitOfWork _unitOfWork, IMapper _mapper, IUserRepository _userRepository) : IOrderService
     {
 
-        public Task<OrderDto> CancelOrderAsync(int orderId, int patientId)
+        public async Task<OrderDto> CancelOrderAsync(int orderId, int patientId)
         {
+            var order = (await _unitOfWork.GetRepository<Order>().GetAllAsync(new OrderByOrderIdAndPatientId(orderId, patientId))).FirstOrDefault();
+            if (order == null)
+                throw new Exception("Order not found");
 
-            throw new NotImplementedException();
+            if (order.Status != OrderStatus.Pending)
+                throw new Exception("Order cannot be canceled");
+
+            var patient = await _userRepository.GetPatientWithBasketAsync(patientId);
+            if (patient == null)
+                throw new Exception("Patient not found");
+            if (order.OrderItem == null || !order.OrderItem.Any())
+                throw new Exception("Order has no items to cancel");
+            
+            var medicationRepo = _unitOfWork.GetRepository<Medication>();
+            foreach (var item in order.OrderItem)
+            {
+                var medication = await medicationRepo.GetByIdAsync(item.MedicationId);
+                if (medication != null)
+                {
+                    medication.Stock += item.Quantity;
+                }
+            }   
+        
+            var Basket = patient.Basket;
+            if(Basket != null)
+            {
+                Basket.IsCheckedOut = false;
+            }
+
+
+            order.Status = OrderStatus.Cancelled;
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<OrderDto>(order);
         }
 
         public async Task<OrderDto> CreateOrderAsync(int patientId, CreateOrderDto dto)
@@ -67,7 +100,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
                 PatientId = patientId,
                 SubTotal = SubTotal,
                 Address = Address,
-                Order_Item = orderItems,
+                OrderItem = orderItems,
                 Status = OrderStatus.Pending,
             };
 
@@ -80,7 +113,6 @@ namespace BLL.Services.ImplementationService.MedicationModule
             return _mapper.Map<OrderDto>(Order);
 
         }
-        
 
         public async Task<IEnumerable<OrderDto>> GetMyOrdersAsync(int patientId)
         {
@@ -90,19 +122,25 @@ namespace BLL.Services.ImplementationService.MedicationModule
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
-        public Task<OrderDto> GetOrderAsync(int orderId, int patientId)
+        public async Task<OrderDto> GetOrderAsync(int orderId, int patientId)
         {
-            throw new NotImplementedException();
+            var order = (await _unitOfWork.GetRepository<Order>().GetAllAsync(new OrderByOrderIdAndPatientId(orderId, patientId))).FirstOrDefault();
+            if (order == null)
+                throw new Exception("Order not found");
+            return _mapper.Map<OrderDto>(order);
+        }
+        public async Task<OrderDto> UpdateOrderStatus(int orderId, UpdateOrderStatus dto)
+        {
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(orderId);
+            if (order == null)
+                throw new Exception("Order not found");
+
+            order.Status = dto.Status;
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<OrderDto>(order);
         }
 
-        public Task<OrderDto> RemoveItemAsync(int orderId, int itemId, int patientId)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<OrderDto> UpdateItemAsync(int orderId, OrderItemDto orderItemDto, int patientId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

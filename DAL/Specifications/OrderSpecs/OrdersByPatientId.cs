@@ -11,7 +11,7 @@ namespace DAL.Specifications.OrderSpecs
     {
         public OrdersByPatientId(int patientId) : base(o => o.PatientId == patientId)
         {
-            AddInclude(o => o.Order_Item);
+            AddInclude(o => o.OrderItem);
             AddInclude(o => o.Address);
         }
     }
