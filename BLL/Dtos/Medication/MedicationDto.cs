@@ -10,11 +10,11 @@ namespace BLL.Dtos.Medication
 {
     public class MedicationDto
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
         public int Stock { get; set; }
         public bool Is_available { get; set; }
-        public string PharmacistId { get; set; }
 
     }
 }

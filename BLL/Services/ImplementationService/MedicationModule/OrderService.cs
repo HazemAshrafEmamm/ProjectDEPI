@@ -7,6 +7,7 @@ using DAL.Repository;
 using DAL.Shared.Enums;
 using DAL.Specifications.OrderSpecs;
 using DomainLayer.Models.BasketModule;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,13 @@ namespace BLL.Services.ImplementationService.MedicationModule
 {
     public class OrderService(IUnitOfWork _unitOfWork, IMapper _mapper, IUserRepository _userRepository) : IOrderService
     {
-
+        public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
+        {
+            var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync();
+            if (orders == null)
+                return Enumerable.Empty<OrderDto>();
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
         public async Task<OrderDto> CancelOrderAsync(int orderId, int patientId)
         {
             var order = (await _unitOfWork.GetRepository<Order>().GetAllAsync(new OrderByOrderIdAndPatientIdSpecs(orderId, patientId))).FirstOrDefault();
@@ -145,7 +152,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
 
             return _mapper.Map<OrderDto>(order);
         }
-        public async Task<OrderDto> UpdateOrderStatus(int orderId, UpdateOrderStatus dto)
+        public async Task<OrderDto> UpdateOrderStatusAsync(int orderId, UpdateOrderStatus dto)
         {
             var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(orderId);
             if (order == null)

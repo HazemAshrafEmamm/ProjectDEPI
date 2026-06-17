@@ -8,10 +8,9 @@ namespace BLL.Dtos.Medication
 {
     public class CreateMedicationDto
     {
-        public string name { get; set; }
-        public decimal price { get; set; }
-        public int stock { get; set; }
-        public bool is_available { get; set; }
-        public int pharmacistId { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
+        public bool IsAvailable { get; set; }
     }
 }

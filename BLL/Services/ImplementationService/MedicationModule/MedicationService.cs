@@ -23,7 +23,25 @@ namespace BLL.Services.ImplementationService.MedicationModule
             _mapper = mapper;
             _repo = _unitOfWork.GetRepository<Medication>();
         }
-        
+
+        public async Task<MedicationDto> CreateMedicationAsync(CreateMedicationDto medicationDto)
+        {
+            var medicationEntity = _mapper.Map<Medication>(medicationDto);
+            await _repo.AddAsync(medicationEntity);
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<MedicationDto>(medicationEntity);
+        }
+
+        public async Task DeleteMedicationAsync(int id)
+        {
+            var medicationEntity = await _repo.GetByIdAsync(id);
+            if (medicationEntity == null)
+            {
+                throw new Exception("Medication not found");
+            }
+            _repo.Delete(medicationEntity);
+            await _unitOfWork.SaveChangesAsync();
+        }
 
         public async Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync()
         {
@@ -42,8 +60,21 @@ namespace BLL.Services.ImplementationService.MedicationModule
             var medicationDto = _mapper.Map<MedicationDto>(medicationEntity);
             return medicationDto;
         }
+        public async Task UpdateMedicationAsync(MedicationDto medicationDto)
+        {
+            var medicationEntity = await _repo.GetByIdAsync(medicationDto.Id);
+            if (medicationEntity == null)
+            {
+                throw new Exception("Medication not found");
+            }
+            medicationEntity.Name = medicationDto.Name;
+            medicationEntity.Price = medicationDto.Price;
+            medicationEntity.Stock = medicationDto.Stock;
+            medicationEntity.IsAvailable = medicationDto.Is_available;
+             _repo.Update(medicationEntity);
+            await _unitOfWork.SaveChangesAsync();
+        }
 
-        
 
     }
 }
