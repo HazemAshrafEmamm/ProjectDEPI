@@ -8,10 +8,11 @@ namespace DAL.Shared.Enums
 {
     public enum OrderStatus
     {
-        Pending,
+        Pending = 0,
         Processing,
         Shipped,
         Delivered,
-        Cancelled
+        Cancelled,
+        Rejected,
     }
 }

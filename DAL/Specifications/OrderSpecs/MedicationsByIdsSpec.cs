@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace DAL.Specifications.OrderSpecs
 {
-    public class OrderByOrderIdAndPatientId : BaseSpecification<Order>
+    public class MedicationsByIdsSpec : BaseSpecification<Medication>
     {
-        public OrderByOrderIdAndPatientId(int orderId, int patientId)
-            : base(o => o.Id == orderId && o.PatientId == patientId)
+        public MedicationsByIdsSpec(List<int> ids)
+            : base(m => ids.Contains(m.Id))
         {
         }
     }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DAL.Specifications.OrderSpecs
 {
-    public class OrdersByPatientId : BaseSpecification<Order>
+    public class OrdersByPatientIdSpecs : BaseSpecification<Order>
     {
-        public OrdersByPatientId(int patientId) : base(o => o.PatientId == patientId)
+        public OrdersByPatientIdSpecs(int patientId) : base(o => o.PatientId == patientId)
         {
             AddInclude(o => o.OrderItem);
             AddInclude(o => o.Address);
