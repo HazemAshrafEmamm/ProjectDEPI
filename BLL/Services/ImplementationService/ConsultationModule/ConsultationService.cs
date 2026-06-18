@@ -40,9 +40,10 @@ namespace BLL.Services.ImplementationService.ConsultationModule
             return _mapper.Map<ConsultationDto>(consultation);
         }
 
-        public async Task DeleteConsultationAsync(int ConsultationId)
+        public async Task DeleteConsultationAsync(int ConsultationId, int RequesterId)
         {
-            var Consultation = await _unitOfWork.GetRepository<Consultation>().GetByIdAsync(ConsultationId);
+            var Consultation = (await _unitOfWork.GetRepository<Consultation>()
+                                .GetAllAsync(new ConsultationByIdSpecs(ConsultationId, RequesterId))).FirstOrDefault();
             if (Consultation is null)
                 throw new KeyNotFoundException("Consultation not found.");
              _unitOfWork.GetRepository<Consultation>().Delete(Consultation);

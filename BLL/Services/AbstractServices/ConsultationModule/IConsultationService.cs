@@ -13,6 +13,6 @@ namespace BLL.Services.AbstractServices.ConsultationModule
             Task<IEnumerable<ConsultationDto>> GetMyConsultationsAsync(int PatientId);
             Task<ConsultationDto> RequestConsultationAsync(int PatientId, CreateConsultationDto createDto);
             Task<ConsultationDto> UpdateConsultationStatusAsync(int consultationId, int PatientId, UpdateConsultionStatusDto updateStatusDto);
-            Task DeleteConsultationAsync(int ConsultationId);
+            Task DeleteConsultationAsync(int ConsultationId,int RequesterId);
     }
 }

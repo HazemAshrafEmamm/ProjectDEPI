@@ -16,12 +16,19 @@ namespace DAL.Specifications
         }
         public Expression<Func<TEntity, bool>>? Criteria { get; set; }
         public List<Expression<Func<TEntity, object>>> Includes { get; set; } = [];
+        public int Take { get; private set; }
+        public int Skip { get; private set; }
+        public bool IsPaginated { get; private set; } 
         public void AddInclude(Expression<Func<TEntity, object>> includeExpression)
         {
             Includes.Add(includeExpression);
         }
         public Expression<Func<TEntity, object>>? OrderBy { get; private set; }
         public Expression<Func<TEntity, object>>? OrderByDescending { get; private set; }
+
+
+
+
         public void ApplyOrderBy(Expression<Func<TEntity, object>> orderByExpression)
         {
             OrderBy = orderByExpression;
@@ -30,7 +37,12 @@ namespace DAL.Specifications
         {
             OrderByDescending = orderByDescExpression;
         }
-
+        protected virtual void ApplyPaging(int pageSize, int PageIndex)
+        {
+            IsPaginated = true;
+            Take = pageSize;
+            Skip = (PageIndex - 1) * pageSize;
+        }
 
     }
 }
