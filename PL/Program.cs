@@ -1,8 +1,14 @@
 using BLL.Hubs;
 using BLL.Mapper;
 using BLL.Services.AbstractServices;
+using BLL.Services.AbstractServices.ConsultationModule;
+using BLL.Services.AbstractServices.MedicationModule;
+using BLL.Services.AbstractServices.Users;
 using BLL.Services.ImplementationService;
+using BLL.Services.ImplementationService.ConsultationModule;
+using BLL.Services.ImplementationService.MedicationModule;
 using DAL.Data;
+using DAL.Models.Consultation;
 using DAL.Models.Users;
 using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
@@ -19,8 +25,14 @@ namespace PL
 
             // Add services to the container.
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
             builder.Services.AddScoped<DataSeeder, DataSeeder>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IMedicationService, MedicationService>();
+            builder.Services.AddScoped<IConsultationService, ConsultationService>();
+            
             builder.Services.AddAutoMapper((x) => { }, typeof(DomainProfile).Assembly);
             builder.Services.AddSignalR();
 

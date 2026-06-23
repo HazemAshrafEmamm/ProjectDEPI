@@ -1,4 +1,5 @@
 ﻿using BLL.Dtos.Consultion;
+using BLL.Dtos.Doctor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace BLL.Services.AbstractServices.ConsultationModule
 {
     public interface IConsultationService
     {
+            Task<DoctorInfoDto> GetDoctorInfoAsync(int doctorId);
+            Task<IEnumerable<DoctorInfoDto>> SearchDoctorsAsync(SearchDoctorDto searchDto);
             Task<ConsultationDto> GetConsultationByIdAsync(int ConsultationId , int RequesterId);
             Task<IEnumerable<ConsultationDto>> GetMyConsultationsAsync(int PatientId);
             Task<ConsultationDto> RequestConsultationAsync(int PatientId, CreateConsultationDto createDto);

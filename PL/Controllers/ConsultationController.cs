@@ -1,61 +1,69 @@
-﻿using BLL.Dtos.Consultion;
+using BLL.Dtos.Consultion;
 using BLL.Dtos.Doctor;
 using BLL.Services.AbstractServices.ConsultationModule;
 using BLL.Services.AbstractServices.Users;
 using Microsoft.AspNetCore.Mvc;
 using PL.Extention;
+using PresentationLayer.Controller;
 using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
-    public class ConsultationController(IDoctorService _doctorService, IConsultationService _consultationService) : Controller
+    public class ConsultationController(IConsultationService _consultationService) : ApiControllerBase
     {
-        public async Task<IActionResult> Index([FromBody] SearchDoctorDto searchDto)
+        [HttpGet("GetAllDoctors")]
+        public async Task<IActionResult> GetAllDoctors([FromQuery] SearchDoctorDto searchDto)
         {
-            var doctors = await _doctorService.SearchDoctorsAsync(searchDto);
-            return View(doctors);
+            var doctors = await _consultationService.SearchDoctorsAsync(searchDto);
+            return Ok(doctors);
         }
-        [HttpPost]
-        public async Task<IActionResult> RequestConsultation(CreateConsultationDto createConsultationDto)
+
+        [HttpPost("RequestConsultation")]
+        public async Task<IActionResult> RequestConsultation([FromBody] CreateConsultationDto createConsultationDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
-            var UserId = ClaimsPrincipalExtensions.GetUserId(User);
-            var cons = await _consultationService.RequestConsultationAsync(UserId, createConsultationDto);
+
+            var userId = ClaimsPrincipalExtensions.GetUserId(User);
+            var cons = await _consultationService.RequestConsultationAsync(userId, createConsultationDto);
+
             if (cons == null)
-            {
                 return BadRequest("Failed to request consultation.");
-            }
-            return RedirectToAction("MyConsultations"); //to do
+
+            return Ok(cons);
         }
         [HttpGet]
+        [HttpGet("MyConsultations")]
         public async Task<IActionResult> MyConsultations()
         {
-            var UserId = ClaimsPrincipalExtensions.GetUserId(User);
-            var consultations = await _consultationService.GetMyConsultationsAsync(UserId);
+            var userId = ClaimsPrincipalExtensions.GetUserId(User);
+            var consultations = await _consultationService.GetMyConsultationsAsync(userId);
+
             if (consultations == null)
                 return BadRequest("Failed to retrieve consultations.");
-            return View(consultations);
+
+            return Ok(consultations);
         }
-        
-        [HttpGet("/{Id}")]
-        public async Task<IActionResult> GetMyConsultationById(int Id)
+
+
+        [HttpGet("GetMyConsultationById/{id}")]
+        public async Task<IActionResult> GetMyConsultationById(int id)
         {
-            var UserId = ClaimsPrincipalExtensions.GetUserId(User);
-            var consultation = await _consultationService.GetConsultationByIdAsync(UserId, Id);
+            var userId = ClaimsPrincipalExtensions.GetUserId(User);
+            var consultation = await _consultationService.GetConsultationByIdAsync(userId, id);
+
             if (consultation == null)
-                return BadRequest("Failed to retrieve consultation.");
-            return View(consultation);
+                return NotFound("Consultation not found.");
+
+            return Ok(consultation);
         }
-        [HttpDelete]
-        public async Task<IActionResult> DeleteConsultation(int Id, int RequeterId)
+        [HttpDelete("DeleteConsultation/{id}")]
+        public async Task<IActionResult> DeleteConsultation(int id, [FromQuery] int requesterId)
         {
             try
             {
-                await _consultationService.DeleteConsultationAsync(Id, RequeterId);
-                return RedirectToAction("MyConsultations");
+                await _consultationService.DeleteConsultationAsync(id, requesterId);
+                return NoContent();
             }
             catch (KeyNotFoundException)
             {

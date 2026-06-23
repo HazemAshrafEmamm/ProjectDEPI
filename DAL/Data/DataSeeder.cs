@@ -32,11 +32,11 @@ namespace DAL.Data
             try
             {
                 // Check if data already exists
-                //if (await _context.Users.AnyAsync())
-                //{
-                //    Console.WriteLine("Database already seeded. Skipping...");
-                //    return;
-                //}
+                if (await _context.Users.AnyAsync())
+                {
+                    Console.WriteLine("Database already seeded. Skipping...");
+                    return;
+                }
 
                 Console.WriteLine("Starting database seeding...");
 

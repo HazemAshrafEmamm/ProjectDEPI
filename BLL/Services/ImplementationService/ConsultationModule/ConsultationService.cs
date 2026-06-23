@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BLL.Dtos.Consultion;
+using BLL.Dtos.Doctor;
 using BLL.Services.AbstractServices;
 using BLL.Services.AbstractServices.ConsultationModule;
 using DAL.Models.Consultation;
@@ -18,6 +19,15 @@ namespace BLL.Services.ImplementationService.ConsultationModule
     public class ConsultationService
         (IUnitOfWork _unitOfWork , IMapper _mapper , INotificationService _notificationService) : IConsultationService
     {
+        public Task<DoctorInfoDto> GetDoctorInfoAsync(int doctorId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<DoctorInfoDto>> SearchDoctorsAsync(SearchDoctorDto searchDto)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<ConsultationDto> RequestConsultationAsync(int PatientId, CreateConsultationDto createDto)
         {
             var existingConsultation = (await _unitOfWork.GetRepository<Consultation>()

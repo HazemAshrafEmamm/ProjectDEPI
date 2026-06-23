@@ -1,25 +1,29 @@
-﻿using BLL.Services.AbstractServices.MedicationModule;
+using BLL.Services.AbstractServices.MedicationModule;
 using Microsoft.AspNetCore.Mvc;
+using PresentationLayer.Controller;
 
 namespace PL.Controllers
 {
-    public class MedicationController(IMedicationService _medicationService) : Controller
+    public class MedicationController(IMedicationService _medicationService) : ApiControllerBase
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllMedications()
         {
             var medications = await _medicationService.GetAllMedicationsAsync();
-            return View(medications);
+            if (medications == null)
+                return NotFound("No medications found.");
+
+            return Ok(medications);
         }
-        [HttpGet("Id")]
-        public async Task<IActionResult> GetMedicationById(int Id)
+
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetMedicationById(int id)
         {
-            var medication = await _medicationService.GetMedicationByIdAsync(Id);
-            return View(medication);
+            var medication = await _medicationService.GetMedicationByIdAsync(id);
+            if (medication == null)
+                return NotFound($"Medication with ID {id} not found.");
+
+            return Ok(medication);
         }
     }
 }

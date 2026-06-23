@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
+using DAL.Exceptions;
 using DAL.Models.OrderModule;
 using DAL.Models.Users;
 using DAL.Repository;
@@ -128,8 +129,8 @@ namespace BLL.Services.ImplementationService.MedicationModule
         public async Task<IEnumerable<OrderDto>> GetMyOrdersAsync(int patientId)
         {
             var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync(new OrdersByPatientIdSpecs(patientId));
-            if(orders == null || !orders.Any())
-                return Enumerable.Empty<OrderDto>();
+            if (orders == null || !orders.Any())
+                throw new OrdersNotFoundByPatientIdException(patientId);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 

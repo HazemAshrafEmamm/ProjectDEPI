@@ -1,35 +1,24 @@
 ﻿using BLL.Dtos.Medication;
 using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PL.Models.MedicationModels;
-using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
-    [Authorize(Roles = "Pharmacist")]
-    [ValidateAntiForgeryToken]
     public class PharmacistController(IOrderService _orderService , IMedicationService _medicationService) : Controller
     {
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        [HttpGet("Medications")]
+        public async Task<IActionResult> GetAllMedications()
         {
             var medications = await _medicationService.GetAllMedicationsAsync();
-            return View(medications);
+            if (medications == null)
+                return NotFound("No medications found.");
+
+            return Ok(medications);
         }
-        [HttpGet("Medication/{Id}")]
-        public async Task<IActionResult> GetMedicationById(int Id)
-        {
-            var medication = await _medicationService.GetMedicationByIdAsync(Id);
-            return View(medication);
-        }
-        [HttpGet]
-        public async Task<IActionResult> UpdateMedication(int Id)
-        {
-            var medication = await _medicationService.GetMedicationByIdAsync(Id);
-            return View(medication);
-        }
+
+
         [HttpPost]
         public async Task<IActionResult> UpdateMedication(int Id , UpdateMedicationModel model)
         {
@@ -37,59 +26,80 @@ namespace PL.Controllers
                 return View(model);
             var medication = await _medicationService.GetMedicationByIdAsync(Id);
             if (medication == null)
-                return NotFound();
+                return NotFoundException($"Medication with ID {Id} not found.");
             medication.Id = Id;
             medication.Name = model.Name;
             medication.Price = model.Price;
             medication.Stock = model.Stock;
             medication.Is_available = model.Is_available;
             await _medicationService.UpdateMedicationAsync(medication);
-            return RedirectToAction("Index");
+
+            return Ok(medication);
         }
-        [HttpGet]
-        public IActionResult CreateMedication()
-        {            
-            return View();
+        [HttpGet("Medications/{id}")]
+        public async Task<IActionResult> GetMedicationById(int id)
+        {
+            var medication = await _medicationService.GetMedicationByIdAsync(id);
+            if (medication == null)
+                return NotFound($"Medication with ID {id} not found.");
+
+            return Ok(medication);
         }
-        [HttpPost]
-        public async Task<IActionResult> CreateMedication(CreateMedicationDto dto)
+        [HttpPost("Medications")]
+        public async Task<IActionResult> CreateMedication([FromBody] CreateMedicationDto dto)
         {
             if (!ModelState.IsValid)
-                return View(dto);
+                return BadRequest(ModelState);
 
-            await _medicationService.CreateMedicationAsync(dto);
-            return RedirectToAction("Index");
+            var medication = await _medicationService.CreateMedicationAsync(dto);
+            if (medication == null)
+                return BadRequest("Failed to create medication.");
+
+            return CreatedAtAction(nameof(GetMedicationById), new { id = medication.Id }, medication);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DeleteMedication(int Id)
+        [HttpDelete("Medications/{id}")]
+        public async Task<IActionResult> DeleteMedication(int id)
         {
+            var medication = await _medicationService.GetMedicationByIdAsync(id);
+            if (medication == null)
+                return NotFound($"Medication with ID {id} not found.");
 
-            await _medicationService.DeleteMedicationAsync(Id);
-            return RedirectToAction("Index");
+            await _medicationService.DeleteMedicationAsync(id);
+            return NoContent();
         }
 
 
-        [HttpGet]
+        [HttpGet("Orders")]
         public async Task<IActionResult> GetAllOrders()
         {
             var orders = await _orderService.GetAllOrdersAsync();
-            return View(orders);
+            if (orders == null)
+                return NotFound("No orders found.");
+
+            return Ok(orders);
         }
 
-        [HttpGet("Order/{Id}")]
-        public async Task<IActionResult> GetOrderForMerchantAsync(int Id)
+        [HttpGet("Orders/{id}")]
+        public async Task<IActionResult> GetOrder(int id)
         {
-            var order = await _orderService.GetOrderForMerchantAsync(Id);
-            return View(order);
+            var order = await _orderService.GetOrderForMerchantAsync(id);
+            if (order == null)
+                return NotFoundException($"Order with ID {id} not found.");
+
+            return Ok(order);
         }
-        [HttpPost]
-        public async Task<IActionResult> UpdateOrderStatus(int orderId, UpdateOrderStatus dto)
+        [HttpPut("Orders/{orderId}/Status")]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] UpdateOrderStatus dto)
         {
             if (!ModelState.IsValid)
-                return View(dto);
+                return BadRequest(ModelState);
+
             var order = await _orderService.UpdateOrderStatusAsync(orderId, dto);
-            return View(order);
+            if (order == null)
+                return NotFoundException($"Order with ID {orderId} not found.");
+
+            return Ok(order);
         }
 
     }
