@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,6 @@ namespace BLL.Dtos.Medication
         public string Name { get; set; }
         public decimal Price { get; set; }
         public IFormFile? Image { get; set; }
-
         public int Stock { get; set; }
         public bool IsAvailable { get; set; }
     }

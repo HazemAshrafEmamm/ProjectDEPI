@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Dtos.Medication;
 using BLL.Services.AbstractServices;
 using BLL.Services.AbstractServices.MedicationModule;
@@ -38,6 +38,9 @@ namespace BLL.Services.ImplementationService.MedicationModule
             if(!isPharmacist)
                 throw new UnauthorizedAccessException("Only pharmacists can create medications.");
             var medicationEntity = _mapper.Map<Medication>(medicationDto);
+
+            medicationEntity.PharmacistId = PharmacistId;
+
             if(medicationDto.Image != null)
             {
                 var imageUrl = await _attach.Upload(medicationDto.Image, "medications");
@@ -79,7 +82,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
         {
             var isPharmacist = await ValidatePharmacist(PharmacistId);
             if (!isPharmacist)
-                throw new UnauthorizedAccessException("Only pharmacists can create medications.");
+                throw new UnauthorizedAccessException("Only pharmacists can update medications.");
 
             var medicationEntity = await _repo.GetByIdAsync(medicationDto.Id)
                 ?? throw new MedicationNotFoundException(medicationDto.Id);
@@ -87,7 +90,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
             medicationEntity.Name = medicationDto.Name;
             medicationEntity.Price = medicationDto.Price;
             medicationEntity.Stock = medicationDto.Stock;
-            medicationEntity.IsAvailable = medicationDto.Is_available;
+            medicationEntity.IsAvailable = medicationDto.IsAvailable;
              _repo.Update(medicationEntity);
             await _unitOfWork.SaveChangesAsync();
         }

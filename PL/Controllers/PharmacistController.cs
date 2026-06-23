@@ -1,7 +1,8 @@
-﻿using BLL.Dtos.Medication;
+using BLL.Dtos.Medication;
 using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
 using DAL.Exceptions.OrderModule;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PL.Extention;
 using PL.Models.MedicationModels;
@@ -9,6 +10,7 @@ using PresentationLayer.Controller;
 
 namespace PL.Controllers
 {
+    [Authorize]
     public class PharmacistController(IOrderService _orderService , IMedicationService _medicationService) : ApiControllerBase
     {
         [HttpGet("Medications")]
@@ -31,7 +33,7 @@ namespace PL.Controllers
             medication.Name = model.Name;
             medication.Price = model.Price;
             medication.Stock = model.Stock;
-            medication.Is_available = model.Is_available;
+            medication.IsAvailable = model.IsAvailable;
             await _medicationService.UpdateMedicationAsync(userId, medication);
 
             return Ok(medication);
@@ -44,12 +46,11 @@ namespace PL.Controllers
             return Ok(medication);
         }
         [HttpPost("CreateMedication")]
-        public async Task<IActionResult> CreateMedication([FromBody] CreateMedicationDto dto)
+        public async Task<IActionResult> CreateMedication([FromForm] CreateMedicationDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var userId = ClaimsPrincipalExtensions.GetUserId(User);
-
 
             var medication = await _medicationService.CreateMedicationAsync(userId, dto);
 

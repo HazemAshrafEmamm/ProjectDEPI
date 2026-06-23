@@ -2,6 +2,7 @@ using BLL.Dtos.Consultion;
 using BLL.Dtos.Doctor;
 using BLL.Services.AbstractServices.ConsultationModule;
 using BLL.Services.AbstractServices.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PL.Extention;
 using PresentationLayer.Controller;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
+    [Authorize]
     public class ConsultationController(IConsultationService _consultationService) : ApiControllerBase
     {
         [HttpGet("GetAllDoctors")]
@@ -49,10 +51,10 @@ namespace PL.Controllers
             return Ok(consultation);
         }
         [HttpDelete("DeleteConsultation/{id}")]
-        public async Task<IActionResult> DeleteConsultation(int id, [FromQuery] int requesterId)
+        public async Task<IActionResult> DeleteConsultation(int id)
         {
-
-                await _consultationService.DeleteConsultationAsync(id, requesterId);
+                var requesterIdFromToken = ClaimsPrincipalExtensions.GetUserId(User);
+            await _consultationService.DeleteConsultationAsync(id, requesterIdFromToken);
                 return NoContent();
             
         }

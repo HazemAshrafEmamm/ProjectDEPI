@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using DAL.Models.Users;
 using Microsoft.AspNetCore.Identity;
@@ -93,7 +93,6 @@ namespace BLL.Services.ImplementationService
                 Subject = "Reset Password",
                 Body = resetLink
             };
-
             return await EmailSettings.SendEmail(mail);
         }
 
@@ -103,7 +102,8 @@ namespace BLL.Services.ImplementationService
             if (user is null)
                 return IdentityResult.Failed(new IdentityError { Description = "Invalid Request" });
 
-            return await _userManager.ResetPasswordAsync(user, token, newPassword);
+            var decodedToken = Uri.UnescapeDataString(token);// change
+            return await _userManager.ResetPasswordAsync(user, decodedToken, newPassword);
         }
 
 

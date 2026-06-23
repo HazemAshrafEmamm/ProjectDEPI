@@ -1,4 +1,4 @@
-﻿
+
 using BLL.Dtos.IdentityDtos;
 using BLL.Services.ImplementationService;
 using DAL.Models;
@@ -43,7 +43,7 @@ namespace PL.Controllers
                 return BadRequest(new { message = "Invalid Email Address" });
 
             var resetLink = Url.Action("ResetPassword", "Auth",
-                new { email = dto.Email, token }, Request.Scheme);
+                new { email = dto.Email,token }, Request.Scheme);
 
             var sent = await _authenticationService.SendResetEmailAsync(dto.Email, resetLink!);
             if (!sent)

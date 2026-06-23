@@ -19,6 +19,7 @@ namespace PL.Utilites
         {
             try
             {
+
                 var client = new SmtpClient("smtp.gmail.com", 587);
                 client.EnableSsl = true;
                 client.Credentials = new NetworkCredential(_senderEmail, _appPassword);

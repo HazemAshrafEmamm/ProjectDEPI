@@ -1,4 +1,4 @@
-﻿using DAL.Models.OrderModule;
+using DAL.Models.OrderModule;
 using DAL.Models.Users;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace BLL.Dtos.Medication
         public string Name { get; set; }
         public decimal Price { get; set; }
         public int Stock { get; set; }
-        public bool Is_available { get; set; }
-
+        public bool IsAvailable { get; set; }
+        public string? PictureUrl { get; set; }
     }
 }

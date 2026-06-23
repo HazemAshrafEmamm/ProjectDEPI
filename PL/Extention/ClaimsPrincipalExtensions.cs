@@ -6,7 +6,12 @@ namespace PL.Extention
     {
         public static int GetUserId(this ClaimsPrincipal user)
         {
-            return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                throw new UnauthorizedAccessException("User Id claim not found.");
+
+            return int.Parse(userId);
         }
     }
 }

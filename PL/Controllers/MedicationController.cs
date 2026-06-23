@@ -1,5 +1,7 @@
 using BLL.Services.AbstractServices.MedicationModule;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PL.Extention;
 using PresentationLayer.Controller;
 
 namespace PL.Controllers
@@ -18,7 +20,6 @@ namespace PL.Controllers
         public async Task<IActionResult> GetMedicationById(int id)
         {
             var medication = await _medicationService.GetMedicationByIdAsync(id);
-
             return Ok(medication);
         }
     }
