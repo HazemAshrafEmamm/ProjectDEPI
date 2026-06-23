@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
 using BLL.Dtos.Medication;
+using BLL.Services.AbstractServices;
 using BLL.Services.AbstractServices.MedicationModule;
+using DAL.Exceptions;
+using DAL.Exceptions.OrderModule;
 using DAL.Models.OrderModule;
+using DAL.Models.Users;
 using DAL.Repository;
 using System;
 using System.Collections.Generic;
@@ -16,29 +20,43 @@ namespace BLL.Services.ImplementationService.MedicationModule
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IGenaricRepository<Medication> _repo;
+        private readonly IAttachmentService _attach;
+        private readonly IUserRepository _userRepository;
 
-        public MedicationService(IUnitOfWork unitOfWork, IMapper mapper)
+        public MedicationService(IUnitOfWork unitOfWork, IMapper mapper , IAttachmentService attach, IUserRepository userRepository)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _repo = _unitOfWork.GetRepository<Medication>();
+            _attach = attach;
+            _userRepository = userRepository;
         }
 
-        public async Task<MedicationDto> CreateMedicationAsync(CreateMedicationDto medicationDto)
+        public async Task<MedicationDto> CreateMedicationAsync(int PharmacistId,CreateMedicationDto medicationDto)
         {
+            var isPharmacist = await ValidatePharmacist(PharmacistId);
+            if(!isPharmacist)
+                throw new UnauthorizedAccessException("Only pharmacists can create medications.");
             var medicationEntity = _mapper.Map<Medication>(medicationDto);
+            if(medicationDto.Image != null)
+            {
+                var imageUrl = await _attach.Upload(medicationDto.Image, "medications");
+                medicationEntity.PictureUrl = imageUrl;
+            }
             await _repo.AddAsync(medicationEntity);
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<MedicationDto>(medicationEntity);
         }
 
-        public async Task DeleteMedicationAsync(int id)
+        public async Task DeleteMedicationAsync(int PharmacistId, int id)
         {
-            var medicationEntity = await _repo.GetByIdAsync(id);
-            if (medicationEntity == null)
-            {
-                throw new Exception("Medication not found");
-            }
+            var isPharmacist = await ValidatePharmacist(PharmacistId);
+            if (!isPharmacist)
+                throw new UnauthorizedAccessException("Only pharmacists can create medications.");
+
+            var medicationEntity = await _repo.GetByIdAsync(id)
+                ?? throw new MedicationNotFoundException(id);
+
             _repo.Delete(medicationEntity);
             await _unitOfWork.SaveChangesAsync();
         }
@@ -46,33 +64,40 @@ namespace BLL.Services.ImplementationService.MedicationModule
         public async Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync()
         {
             var medications = await _repo.GetAllAsync();
-            var medicationDtos = _mapper.Map<IEnumerable<AllMedicationDto>>(medications);
-            return medicationDtos;
+            return _mapper.Map<IEnumerable<AllMedicationDto>>(medications);
         }
 
         public async Task<MedicationDto> GetMedicationByIdAsync(int id)
         {
-            var medicationEntity = await _repo.GetByIdAsync(id);
-            if (medicationEntity == null)
-            {
-                throw new Exception("Medication not found");
-            }
+            var medicationEntity = await _repo.GetByIdAsync(id)
+                ?? throw new MedicationNotFoundException(id);
+
             var medicationDto = _mapper.Map<MedicationDto>(medicationEntity);
             return medicationDto;
         }
-        public async Task UpdateMedicationAsync(MedicationDto medicationDto)
+        public async Task UpdateMedicationAsync(int PharmacistId,MedicationDto medicationDto)
         {
-            var medicationEntity = await _repo.GetByIdAsync(medicationDto.Id);
-            if (medicationEntity == null)
-            {
-                throw new Exception("Medication not found");
-            }
+            var isPharmacist = await ValidatePharmacist(PharmacistId);
+            if (!isPharmacist)
+                throw new UnauthorizedAccessException("Only pharmacists can create medications.");
+
+            var medicationEntity = await _repo.GetByIdAsync(medicationDto.Id)
+                ?? throw new MedicationNotFoundException(medicationDto.Id);
+
             medicationEntity.Name = medicationDto.Name;
             medicationEntity.Price = medicationDto.Price;
             medicationEntity.Stock = medicationDto.Stock;
             medicationEntity.IsAvailable = medicationDto.Is_available;
              _repo.Update(medicationEntity);
             await _unitOfWork.SaveChangesAsync();
+        }
+        private async Task<bool> ValidatePharmacist(int Id)
+        {
+            var pharmacist = await _userRepository.GetPharmacistWithMedicationsAsync(Id)
+                ?? throw new PharmacistNotFoundException(Id);
+            if (pharmacist.UserType == "Pharmacist")
+                return true;
+            return false;
         }
 
 

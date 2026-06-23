@@ -18,5 +18,12 @@ namespace DAL.Repository
                             .Include(p => p.Basket)
                             .FirstOrDefaultAsync(p => p.Id == patientId);
         }
+        public async Task<Pharmacist?> GetPharmacistWithMedicationsAsync(int pharmacistId)
+        {
+            return await _context
+                            .Set<Pharmacist>()
+                            .Include(p => p.Medications)
+                            .FirstOrDefaultAsync(p => p.Id == pharmacistId);
+        }
     }
 }

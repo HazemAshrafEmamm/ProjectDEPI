@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using ServiceAbstractionLayer;
 using PL.Utilites;
-using DomainLayer.Exceptions;
+using DAL.Exceptions;
 
 namespace BLL.Services.ImplementationService
 {
@@ -25,9 +25,9 @@ namespace BLL.Services.ImplementationService
         }
         public async Task<UserDto> GetCurrentUserAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user is null)
-                throw new Exception($"User Not Found '{email}'");
+            var user = await _userManager.FindByEmailAsync(email)
+                            ?? throw new UserNotFoundException(email);
+
             return new UserDto()
             {
                 Email = user.Email!,
@@ -37,14 +37,13 @@ namespace BLL.Services.ImplementationService
         }
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {
-            var User = await _userManager.FindByEmailAsync(loginDto.Email);
-            if (User is null)
-                throw new Exception($"User Not Found '{loginDto.Email}'");
+            var User = await _userManager.FindByEmailAsync(loginDto.Email)
+                ?? throw new UserNotFoundException(loginDto.Email);
 
-            var res = await _userManager.CheckPasswordAsync(User, loginDto.Password);
+            var passwordValid = await _userManager.CheckPasswordAsync(User, loginDto.Password);
 
-            if (!res)
-                throw new Exception();
+            if (!passwordValid)
+                throw new InvalidCredentialsException();
 
             return new UserDto
             {

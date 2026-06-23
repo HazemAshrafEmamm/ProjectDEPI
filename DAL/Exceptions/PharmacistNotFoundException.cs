@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DAL.Exceptions
 {
-    public class UnauthorizedException(string msg= "UnauthorizedException") : Exception(msg)
+    public sealed class PharmacistNotFoundException(int id) : NotFoundException($"Pharmacist with ID {id} not found.")
     {
     }
 }

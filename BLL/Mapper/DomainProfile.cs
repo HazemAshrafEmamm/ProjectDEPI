@@ -31,8 +31,12 @@ namespace BLL.Mapper
 
             // Medication Mappings
             CreateMap<Medication, MedicationDto>().ReverseMap();
-            CreateMap<Medication, CreateMedicationDto>().ReverseMap();
-            CreateMap<Medication, UpdateMedicationDto>().ReverseMap();
+            CreateMap<Medication, CreateMedicationDto>()
+                        .ForMember(dest => dest.Image, opt => opt.Ignore())
+                        .ReverseMap();
+            CreateMap<Medication, UpdateMedicationDto>()
+            .ForMember(dest => dest.Image, opt => opt.Ignore())
+            .ReverseMap();
             CreateMap<Medication, AllMedicationDto>().ReverseMap();
 
             // Consultation Mappings

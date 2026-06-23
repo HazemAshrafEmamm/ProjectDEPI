@@ -1,4 +1,4 @@
-﻿using DomainLayer.Exceptions;
+﻿using DAL.Exceptions;
 using Shared.ErrorModels;
 using System.Text.Json;
 

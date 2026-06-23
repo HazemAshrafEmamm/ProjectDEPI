@@ -14,7 +14,9 @@ using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ServiceAbstractionLayer;
 using System.Text;
+using TalabatDemo.CustomMiddleWares;
 namespace PL
 {
     public class Program
@@ -32,6 +34,8 @@ namespace PL
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IMedicationService, MedicationService>();
             builder.Services.AddScoped<IConsultationService, ConsultationService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IAttachmentService, AttachmentService>();
             
             builder.Services.AddAutoMapper((x) => { }, typeof(DomainProfile).Assembly);
             builder.Services.AddSignalR();
@@ -57,7 +61,17 @@ namespace PL
                 .AddRoleManager<RoleManager<IdentityRole<int>>>()
                 .AddEntityFrameworkStores<TabibyDbContext>()
                 .AddDefaultTokenProviders();
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost", builder =>
+                {
+                    builder
+                        .WithOrigins("http://localhost:3000", "http://localhost:3001")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
 
             var app = builder.Build();
 
@@ -73,16 +87,17 @@ namespace PL
             await seed.SeedDatabaseAsync();
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowLocalhost");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<CustomExceptionHandlerMiddleWare>();
+
+
 
             app.MapHub<NotificationHub>("/notificationHub");
             app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
+            app.UseStaticFiles();
 
             app.Run();
         }

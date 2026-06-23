@@ -2,6 +2,8 @@
 using BLL.Dtos.Consultion;
 using BLL.Services.AbstractServices;
 using BLL.Services.AbstractServices.ConsultationModule;
+using DAL.Exceptions;
+using DAL.Exceptions.ConsultationModule;
 using DAL.Models.Consultation;
 using DAL.Repository;
 using DAL.Shared.Enums;
@@ -20,20 +22,21 @@ namespace BLL.Services.ImplementationService.ConsultationModule
         public async Task<ConsultationReviewDto> AddReviewAsync(int consultationId,int patientId, CreateConsultationReviewDto dto)
         {
             var consultation = await _unitOfWork.GetRepository<Consultation>()
-                                                .GetByIdAsync(consultationId);
+                                                .GetByIdAsync(consultationId) ?? throw new ConsultationNotFoundException(consultationId);
 
-            if (consultation == null || consultation.PatientId != patientId)
-                throw new Exception("Consultation not found or access denied.");
-            
-            if(consultation.Status != ConsultationStatus.Completed)
-                throw new Exception("Consultation is not completed yet.");
+
+            if (consultation.PatientId != patientId)
+                throw new UnauthorizedException("You do not have access to this consultation.");
+
+            if (consultation.Status != ConsultationStatus.Completed)
+                throw new ConsultationNotCompletedException(consultationId);
 
             var repo = _unitOfWork.GetRepository<ConsultationReview>();
 
             var existingReview = (await repo.GetAllAsync(new ReviewByConsultationIdSpec(consultationId))).FirstOrDefault();
             
             if (existingReview != null)
-                throw new Exception("A review for this consultation already exists.");
+                throw new ConsultationReviewAlreadyExistsException(consultationId);
 
             var review = _mapper.Map<ConsultationReview>(dto);
             

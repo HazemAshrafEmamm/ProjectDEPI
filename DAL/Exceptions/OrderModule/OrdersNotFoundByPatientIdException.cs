@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.Exceptions
+namespace DAL.Exceptions.OrderModule
 {
     public sealed class OrdersNotFoundByPatientIdException(int patientId) 
                : NotFoundException($"Orders for Patient with ID: '{patientId}' were not found.")

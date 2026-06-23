@@ -2,6 +2,7 @@
 using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
 using DAL.Exceptions;
+using DAL.Exceptions.OrderModule;
 using DAL.Models.OrderModule;
 using DAL.Models.Users;
 using DAL.Repository;
@@ -27,20 +28,19 @@ namespace BLL.Services.ImplementationService.MedicationModule
                 return Enumerable.Empty<OrderDto>();
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
+
         public async Task<OrderDto> CancelOrderAsync(int orderId, int patientId)
         {
-            var order = (await _unitOfWork.GetRepository<Order>().GetAllAsync(new OrderByOrderIdAndPatientIdSpecs(orderId, patientId))).FirstOrDefault();
-            if (order == null)
-                throw new Exception("Order not found");
+            var order = (await _unitOfWork.GetRepository<Order>()
+                                .GetAllAsync(new OrderByOrderIdAndPatientIdSpecs(orderId, patientId))).FirstOrDefault()
+                                    ?? throw new OrderNotFoundException(orderId);
 
             if (order.Status != OrderStatus.Pending)
-                throw new Exception("Order cannot be canceled");
-           
-            var patient = await _userRepository.GetPatientWithBasketAsync(patientId);
-            if (patient == null)
-                throw new Exception("Patient not found");
-            if (order.OrderItem == null || !order.OrderItem.Any())
-                throw new Exception("Order has no items to cancel");
+                throw new OrderNotCancelableException(orderId);
+
+            var patient = await _userRepository.GetPatientWithBasketAsync(patientId)
+                ?? throw new PatientNotFoundException(patientId);
+
 
             #region Restore stock
             //var medicationRepo = _unitOfWork.GetRepository<Medication>();
@@ -56,6 +56,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
             #endregion
 
             var Basket = patient.Basket;
+
             if(Basket != null)
             {
                 Basket.IsCheckedOut = false;
@@ -73,36 +74,35 @@ namespace BLL.Services.ImplementationService.MedicationModule
             var Address = _mapper.Map<OrderAddress>(dto.Address);
          
             var Basket = (await _unitOfWork.GetRepository<CustomerBasket>()
-                                            .GetAllAsync(new BasketById(dto.BasketId))).FirstOrDefault();
-            if (Basket == null)
-                throw new Exception("Basket not found");
+                                            .GetAllAsync(new BasketById(dto.BasketId))).FirstOrDefault()
+                                            ?? throw new BasketNotFoundException(dto.BasketId.ToString());
 
             if (Basket.IsCheckedOut)
-                throw new Exception("Order already created");
+                throw new BasketAlreadyCheckedOutException(dto.BasketId);
 
             List<OrderItem> orderItems = new List<OrderItem>();
 
             var medicationRepo = _unitOfWork.GetRepository<Medication>();
 
-            foreach (var basketitem in Basket.BasketItems)
+            foreach (var basketItem in Basket.BasketItems)
             {
-                var OriginalProduct = await medicationRepo.GetByIdAsync(basketitem.MedicationId)
-                    ?? throw new Exception($"Product with ID {basketitem.MedicationId} not found");
-                if(OriginalProduct.Stock < basketitem.Quantity)
-                     throw new Exception($"{OriginalProduct.Name}: available quantity is {OriginalProduct.Stock}");
+                var OriginalProduct = await medicationRepo.GetByIdAsync(basketItem.MedicationId)
+                                 ?? throw new MedicationNotFoundException(basketItem.MedicationId);
+                if (OriginalProduct.Stock < basketItem.Quantity)
+                                    throw new InsufficientStockException(OriginalProduct.Name, OriginalProduct.Stock);
 
                 var OrderItem = new OrderItem()
                 {
 
-                    MedicationId = basketitem.MedicationId,
+                    MedicationId = basketItem.MedicationId,
                     Name = OriginalProduct.Name,
                     PictureUrl = OriginalProduct.PictureUrl,
                     UnitPrice = OriginalProduct.Price,
-                    Quantity = basketitem.Quantity,
+                    Quantity = basketItem.Quantity,
                 };
 
                 orderItems.Add(OrderItem);
-                OriginalProduct.Stock -= basketitem.Quantity;
+                OriginalProduct.Stock -= basketItem.Quantity;
 
             }
 
@@ -136,28 +136,25 @@ namespace BLL.Services.ImplementationService.MedicationModule
 
         public async Task<OrderDto> GetOrderAsync(int orderId, int patientId)
         {
-            var order = (await _unitOfWork.GetRepository<Order>().GetAllAsync(new OrderByOrderIdAndPatientIdSpecs(orderId, patientId))).FirstOrDefault();
-            if (order == null)
-                throw new Exception("Order not found");
+            var order = (await _unitOfWork.GetRepository<Order>()
+                        .GetAllAsync(new OrderByOrderIdAndPatientIdSpecs(orderId, patientId))).FirstOrDefault() 
+                        ?? throw new OrderNotFoundException(orderId);
+
             return _mapper.Map<OrderDto>(order);
         }
         public async Task<OrderDto> GetOrderForMerchantAsync(int orderId)
         {
-            var order = (await _unitOfWork
-                .GetRepository<Order>()
+            var order = (await _unitOfWork.GetRepository<Order>()
                 .GetAllAsync(new OrderByIdSpec(orderId)))
-                .FirstOrDefault();
-
-            if (order == null)
-                throw new Exception("Order not found");
+                .FirstOrDefault()
+                ?? throw new OrderNotFoundException(orderId);
 
             return _mapper.Map<OrderDto>(order);
         }
         public async Task<OrderDto> UpdateOrderStatusAsync(int orderId, UpdateOrderStatus dto)
         {
-            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(orderId);
-            if (order == null)
-                throw new Exception("Order not found");
+            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(orderId)
+                ?? throw new OrderNotFoundException(orderId);
 
             if (order.Status == OrderStatus.Pending && dto.Status == OrderStatus.Rejected)
             {

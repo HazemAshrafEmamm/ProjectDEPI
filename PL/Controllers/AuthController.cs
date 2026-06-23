@@ -16,14 +16,14 @@ namespace PL.Controllers
     public class AuthController(IAuthService _authenticationService ) : ApiControllerBase
     {
         
-        [HttpPost]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             var user = await _authenticationService.LoginAsync(loginDto);
             return Ok(user);
         }
 
-        [HttpPost]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterDto model)
         {
             var user = await _authenticationService.RegisterAsync(model);

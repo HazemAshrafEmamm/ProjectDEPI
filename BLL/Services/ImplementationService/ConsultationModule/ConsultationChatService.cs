@@ -2,6 +2,8 @@
 using BLL.Dtos.Consultion;
 using BLL.Hubs;
 using BLL.Services.AbstractServices.ConsultationModule;
+using DAL.Exceptions;
+using DAL.Exceptions.ConsultationModule;
 using DAL.Models.Consultation;
 using DAL.Repository;
 using DAL.Shared.Enums;
@@ -22,8 +24,8 @@ namespace BLL.Services.ImplementationService.ConsultationModule
         {
             var consultation = await ValidateConsultationAccessAsync(consultationId, requesterId);
 
-            if(consultation.Status != ConsultationStatus.Accepted) 
-                    throw new Exception("Consultation is not active");
+            if(consultation.Status != ConsultationStatus.Accepted)
+                throw new ConsultationNotActiveException(consultationId);
 
             var messages = await _unitOfWork.GetRepository<ConsultationMessage>().GetAllAsync(new ConsultationMessagesSpecByConsultationId(consultationId));
 
@@ -57,8 +59,8 @@ namespace BLL.Services.ImplementationService.ConsultationModule
         {
             var consultation = await ValidateConsultationAccessAsync(consultationId, senderUserId);
             if (consultation.Status != ConsultationStatus.Accepted)
-                    throw new Exception("Consultation is not active");
-            
+                throw new ConsultationNotActiveException(consultationId);
+
             var message = new ConsultationMessage
             {
                 ConsultationId = consultationId,
@@ -85,15 +87,11 @@ namespace BLL.Services.ImplementationService.ConsultationModule
         private async Task<Consultation> ValidateConsultationAccessAsync(int consultationId,int userId)
         {
             var consultation = await _unitOfWork
-                .GetRepository<Consultation>()
-                .GetByIdAsync(consultationId);
+                .GetRepository<Consultation>().GetByIdAsync(consultationId)
+                ?? throw new ConsultationNotFoundException(consultationId);
 
-            if (consultation == null)
-                throw new Exception("Consultation not found");
-
-            if (consultation.PatientId != userId &&
-                consultation.DoctorId != userId)
-                throw new Exception("Unauthorized");
+            if (consultation.PatientId != userId && consultation.DoctorId != userId)
+                throw new UnauthorizedException("You do not have access to this consultation.");
 
             return consultation;
         }
