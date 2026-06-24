@@ -9,12 +9,11 @@ namespace BLL.Dtos.Order
 {
     public class BasketItemDto
     {
-        public int Id { get; set; }
-        public string ProductName { get; set; } = null!;
-        public string PictureUrl { get; set; } = null!;
-        [Range(1, 10000)]
+        public int MedicationId { get; set; }
+        public string ProductName { get; set; }
+        public string PictureUrl { get; set; }
         public decimal Price { get; set; }
-        [Range(1, 100)]
         public int Quantity { get; set; }
+        public decimal SubTotal => Price * Quantity;
     }
 }

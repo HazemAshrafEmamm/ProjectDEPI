@@ -16,7 +16,7 @@ using DAL.Exceptions;
 namespace BLL.Services.ImplementationService
 {
     public class AuthService(UserManager<ApplicationUser> _userManager,
-                            IMapper _mapper, IConfiguration _configuration) : IAuthService
+                            IConfiguration _configuration) : IAuthService
     {
         public async Task<bool> CheckEmailAsync(string email)
         {
@@ -63,14 +63,24 @@ namespace BLL.Services.ImplementationService
                 PhoneNumber = RegisterDto.PhoneNumber,
                 UserType = "Patient",
             };
+            
             var result = await _userManager.CreateAsync(user, RegisterDto.Password);
+
             if (result.Succeeded)
+            {
+                var roleResult = await _userManager.AddToRoleAsync(user, "Patient");
+                if (!roleResult.Succeeded)
+                {
+                    var errors = roleResult.Errors.Select(e => e.Description).ToList();
+                    throw new BadRequestException(errors);
+                }
                 return new UserDto
                 {
                     Email = user.Email!,
                     FullName = user.Fullname,
                     Token = await GenerateJwtToken(user)
                 };  
+            }
             else
             {
                 var errors = result.Errors.Select(e => e.Description).ToList();

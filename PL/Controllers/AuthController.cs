@@ -1,12 +1,6 @@
 
 using BLL.Dtos.IdentityDtos;
-using BLL.Services.ImplementationService;
-using DAL.Models;
-using DAL.Models.Users;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PL.Models;
-using PL.Utilites;
 using PresentationLayer.Controller;
 using ServiceAbstractionLayer;
 using Shared.DTOs.IdentityDtos;

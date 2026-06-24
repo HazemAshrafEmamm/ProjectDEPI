@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
-    [Authorize]
     public class ConsultationController(IConsultationService _consultationService) : ApiControllerBase
     {
         [HttpGet("GetAllDoctors")]
@@ -19,43 +18,40 @@ namespace PL.Controllers
             var doctors = await _consultationService.SearchDoctorsAsync(searchDto);
             return Ok(doctors);
         }
-
+        [Authorize(Roles = "Patient")]
         [HttpPost("RequestConsultation")]
         public async Task<IActionResult> RequestConsultation([FromBody] CreateConsultationDto createConsultationDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userId = ClaimsPrincipalExtensions.GetUserId(User);
-            var cons = await _consultationService.RequestConsultationAsync(userId, createConsultationDto);
+            var cons = await _consultationService.RequestConsultationAsync(User.GetUserId(), createConsultationDto);
 
             return Ok(cons);
         }
-        [HttpGet]
+        [Authorize(Roles = "Patient,Doctor")]
         [HttpGet("MyConsultations")]
         public async Task<IActionResult> MyConsultations()
         {
-            var userId = ClaimsPrincipalExtensions.GetUserId(User);
-            var consultations = await _consultationService.GetMyConsultationsAsync(userId);
+            var consultations = await _consultationService.GetMyConsultationsAsync(User.GetUserId());
 
             return Ok(consultations);
         }
 
-
+        [Authorize(Roles = "Patient,Doctor")]
         [HttpGet("GetMyConsultationById/{id}")]
         public async Task<IActionResult> GetMyConsultationById(int id)
         {
-            var userId = ClaimsPrincipalExtensions.GetUserId(User);
-            var consultation = await _consultationService.GetConsultationByIdAsync(userId, id);
+            var consultation = await _consultationService.GetConsultationByIdAsync(User.GetUserId(), id);
 
             return Ok(consultation);
         }
+        [Authorize(Roles = "Doctor")]
         [HttpDelete("DeleteConsultation/{id}")]
         public async Task<IActionResult> DeleteConsultation(int id)
         {
-                var requesterIdFromToken = ClaimsPrincipalExtensions.GetUserId(User);
-            await _consultationService.DeleteConsultationAsync(id, requesterIdFromToken);
-                return NoContent();
+            await _consultationService.DeleteConsultationAsync(id, User.GetUserId());
+            return NoContent();
             
         }
 

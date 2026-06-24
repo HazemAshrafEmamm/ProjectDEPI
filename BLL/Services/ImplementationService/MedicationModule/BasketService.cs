@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
+using DAL.Exceptions;
 using DAL.Exceptions.OrderModule;
+using DAL.Models.OrderModule;
 using DAL.Repository;
 using DAL.Specifications.OrderSpecs;
 using DomainLayer.Models.BasketModule;
@@ -13,47 +15,100 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.ImplementationService.MedicationModule
 {
-    public class BasketService(IUnitOfWork _unitOfWork , IMapper _mapper) : IBasketService
+    // BLL/Services/BasketModule/BasketService.cs
+    public class BasketService(IUnitOfWork _unitOfWork, IMapper _mapper) : IBasketService
     {
-        public async Task<BasketDto> GetBasketAsync(int basketId)
+        public async Task<BasketDto> GetBasketAsync(int patientId)
         {
-            var basket =await _unitOfWork.GetRepository<CustomerBasket>().GetByIdAsync(basketId)
-                ?? throw new BasketNotFoundException(basketId.ToString());
+            var spec = new BasketByUserIdSpecs(patientId);
+            var basket = await _unitOfWork.GetRepository<CustomerBasket>().GetAllAsync(spec);
 
-            var basketDto = _mapper.Map<BasketDto>(basket);
-            return basketDto;
+            if (basket is null)
+                throw new BasketNotFoundException(patientId);
+
+            return _mapper.Map<BasketDto>(basket);
         }
 
-        public async Task<BasketDto> CreateBasketAsync(BasketDto basket)
+        public async Task<BasketDto> AddItemAsync(int patientId, BasketItemInputDto dto)
         {
-            var basketEntity = _mapper.Map<CustomerBasket>(basket);
-            await _unitOfWork.GetRepository<CustomerBasket>().AddAsync(basketEntity);
+            var medication = await _unitOfWork.GetRepository<Medication>().GetByIdAsync(dto.MedicationId);
+
+            if (medication is null)
+                throw new MedicationNotFoundException(dto.MedicationId);
+
+            if (!medication.IsAvailable || medication.Stock < dto.Quantity)
+                throw new InsufficientStockException(medication.Name, medication.Stock);
+
+            var spec = new BasketByUserIdSpecs(patientId);
+            var basket = (await _unitOfWork.GetRepository<CustomerBasket>().GetAllAsync(spec)).FirstOrDefault();
+
+            if (basket is null)
+            {
+                basket = new CustomerBasket { PatientId = patientId };
+                await _unitOfWork.GetRepository<CustomerBasket>().AddAsync(basket);
+            }
+
+            var existingItem = basket.BasketItems
+                .FirstOrDefault(i => i.MedicationId == dto.MedicationId);
+
+            if (existingItem is not null)
+                existingItem.Quantity += dto.Quantity;
+            else
+                basket.BasketItems.ToList().Add(new BasketItem
+                {
+                    MedicationId = dto.MedicationId,
+                    Price = medication.Price,
+                    PictureUrl = medication.PictureUrl,
+                    Quantity = dto.Quantity
+                });
+
             await _unitOfWork.SaveChangesAsync();
-
-            return _mapper.Map<BasketDto>(basketEntity); ;
+            return _mapper.Map<BasketDto>(basket);
         }
 
-        public async Task<BasketDto> UpdateBasketAsync(BasketDto basket)
+        public async Task<BasketDto> UpdateItemQuantityAsync(int patientId, int medicationId, int quantity)
         {
-            var existingBasket = await _unitOfWork.GetRepository<CustomerBasket>()
-                .GetByIdAsync(basket.Id) ?? throw new BasketNotFoundException(basket.Id.ToString());
+            var spec = new BasketByUserIdSpecs(patientId);
+            var basket = (await _unitOfWork.GetRepository<CustomerBasket>().GetAllAsync(spec)).FirstOrDefault();
 
+            if (basket is null)
+                throw new BasketNotFoundException(patientId);
 
-            _mapper.Map(basket, existingBasket);
+            var item = basket.BasketItems
+                .FirstOrDefault(i => i.MedicationId == medicationId)
+                ?? throw new MedicationNotFoundException(medicationId);
 
+            item.Quantity = quantity;
             await _unitOfWork.SaveChangesAsync();
-
-            return _mapper.Map<BasketDto>(existingBasket);
+            return _mapper.Map<BasketDto>(basket);
         }
 
-        public async Task<bool> DeleteBasketAsync(int basketId)
+        public async Task RemoveItemAsync(int patientId, int medicationId)
         {
-            var existingBasket = await _unitOfWork.GetRepository<CustomerBasket>().GetByIdAsync(basketId)
-                                ?? throw new BasketNotFoundException(basketId.ToString());
+            var spec = new BasketByUserIdSpecs(patientId);
+            var basket = (await _unitOfWork.GetRepository<CustomerBasket>().GetAllAsync(spec)).FirstOrDefault();
 
-            _unitOfWork.GetRepository<CustomerBasket>().Delete(existingBasket);
-            var res = await _unitOfWork.SaveChangesAsync();
-            return res > 0;
+            if (basket is null)
+                throw new BasketNotFoundException(patientId);
+
+            var item = basket.BasketItems
+                .FirstOrDefault(i => i.MedicationId == medicationId)
+                ?? throw new MedicationNotFoundException(medicationId);
+
+            basket.BasketItems.ToList().Remove(item);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public async Task ClearBasketAsync(int patientId)
+        {
+            var spec = new BasketByUserIdSpecs(patientId);
+            var basket = (await _unitOfWork.GetRepository<CustomerBasket>().GetAllAsync(spec)).FirstOrDefault();
+
+            if (basket is null)
+                throw new BasketNotFoundException(patientId);
+
+            basket.BasketItems.ToList().Clear();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

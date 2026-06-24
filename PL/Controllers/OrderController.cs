@@ -12,6 +12,8 @@ namespace PL.Controllers
     [Authorize]
     public class OrderController(IOrderService _orderService) : ApiControllerBase
     {
+        #region Patient - Functionality
+        [Authorize(Roles = "Patient")]
         [HttpGet("MyOrders")]
         public async Task<IActionResult> GetMyOrders()
         {
@@ -19,15 +21,15 @@ namespace PL.Controllers
 
             return Ok(orders);
         }
-
-        [HttpGet("Details/{orderId}")]
-        public async Task<IActionResult> GetOrder(int orderId)
+        [Authorize(Roles = "Patient")]
+        [HttpGet("GetMyOrder/{orderId}")]
+        public async Task<IActionResult> GetMyOrder(int orderId)
         {
             var order = await _orderService.GetOrderAsync(orderId, User.GetUserId());
 
             return Ok(order);
         }
-
+        [Authorize(Roles = "Patient")]
         [HttpPost("Cancel/{orderId}")]
         public async Task<IActionResult> CancelOrder(int orderId)
         {
@@ -35,7 +37,7 @@ namespace PL.Controllers
 
             return Ok(order);
         }
-
+        [Authorize(Roles = "Patient")]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
         {
@@ -43,11 +45,42 @@ namespace PL.Controllers
                 return BadRequest(ModelState);
 
             var order = await _orderService.CreateOrderAsync(User.GetUserId(), dto);
+            return Ok(order);
+        }
+        #endregion
 
+
+        #region Pharmcist - Functionality 
+
+
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpGet("Orders")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            var orders = await _orderService.GetAllOrdersAsync();
+            return Ok(orders);
+        }
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpGet("GetOrder/{id}")]
+        public async Task<IActionResult> GetOrder(int id)
+        {
+            var order = await _orderService.GetOrderForMerchantAsync(id);
 
             return Ok(order);
         }
-   
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpPut("Orders/{orderId}/Status")]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] UpdateOrderStatus dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var order = await _orderService.UpdateOrderStatusAsync(orderId, dto);
+
+            return Ok(order);
+        } 
+        #endregion
+
     }
 }
     

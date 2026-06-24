@@ -88,7 +88,7 @@ namespace PL
                     ValidateAudience = true,
                     //ClockSkew = TimeSpan.FromHours(24),
                     ValidAudience = builder.Configuration["JwtOptions:Audience"],
-                    ValidateLifetime = false,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:SecretKey"]!)),
                 };

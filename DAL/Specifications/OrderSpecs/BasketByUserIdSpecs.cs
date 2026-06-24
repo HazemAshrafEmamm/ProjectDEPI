@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace DAL.Specifications.OrderSpecs
 {
-    public class BasketById : BaseSpecification<CustomerBasket>
+    public class BasketByUserIdSpecs : BaseSpecification<CustomerBasket>
     {
-        public BasketById(int basketId) : base(b => b.Id == basketId)
+        public BasketByUserIdSpecs(int userId) : base(b => b.PatientId == userId && !b.IsCheckedOut)
         {
             AddInclude(b => b.BasketItems);
+
         }
     }
 }

@@ -74,7 +74,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
             var Address = _mapper.Map<OrderAddress>(dto.Address);
          
             var Basket = (await _unitOfWork.GetRepository<CustomerBasket>()
-                                            .GetAllAsync(new BasketById(dto.BasketId))).FirstOrDefault()
+                                            .GetAllAsync(new BasketByIdSpecs(dto.BasketId))).FirstOrDefault()
                                             ?? throw new BasketNotFoundException(dto.BasketId.ToString());
 
             if (Basket.IsCheckedOut)

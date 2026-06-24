@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace DAL.Exceptions.OrderModule
 {
-    public class BasketNotFoundException(string id) 
-        : NotFoundException($"Basket with id : {id} Not Found")
+    public class BasketNotFoundException(int patientId) 
+        : NotFoundException($"Basket with Patient id : {patientId} Not Found")
     {
     }
 }
