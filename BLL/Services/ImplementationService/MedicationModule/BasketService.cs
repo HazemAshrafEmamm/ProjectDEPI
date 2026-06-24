@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
 using DAL.Exceptions;
@@ -15,13 +15,12 @@ using System.Threading.Tasks;
 
 namespace BLL.Services.ImplementationService.MedicationModule
 {
-    // BLL/Services/BasketModule/BasketService.cs
     public class BasketService(IUnitOfWork _unitOfWork, IMapper _mapper) : IBasketService
     {
         public async Task<BasketDto> GetBasketAsync(int patientId)
         {
             var spec = new BasketByUserIdSpecs(patientId);
-            var basket = await _unitOfWork.GetRepository<CustomerBasket>().GetAllAsync(spec);
+            var basket = (await _unitOfWork.GetRepository<CustomerBasket>().GetAllAsync(spec)).FirstOrDefault();
 
             if (basket is null)
                 throw new BasketNotFoundException(patientId);
@@ -54,7 +53,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
             if (existingItem is not null)
                 existingItem.Quantity += dto.Quantity;
             else
-                basket.BasketItems.ToList().Add(new BasketItem
+                basket.BasketItems.Add(new BasketItem
                 {
                     MedicationId = dto.MedicationId,
                     Price = medication.Price,
@@ -95,7 +94,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
                 .FirstOrDefault(i => i.MedicationId == medicationId)
                 ?? throw new MedicationNotFoundException(medicationId);
 
-            basket.BasketItems.ToList().Remove(item);
+            _unitOfWork.GetRepository<BasketItem>().Delete(item);
             await _unitOfWork.SaveChangesAsync();
         }
 
@@ -107,7 +106,12 @@ namespace BLL.Services.ImplementationService.MedicationModule
             if (basket is null)
                 throw new BasketNotFoundException(patientId);
 
-            basket.BasketItems.ToList().Clear();
+            var itemRepo = _unitOfWork.GetRepository<BasketItem>();
+            foreach(var item in basket.BasketItems.ToList())
+            {
+                itemRepo.Delete(item);
+            }
+            
             await _unitOfWork.SaveChangesAsync();
         }
     }

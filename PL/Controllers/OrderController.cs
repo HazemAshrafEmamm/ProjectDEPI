@@ -22,6 +22,15 @@ namespace PL.Controllers
             return Ok(orders);
         }
         [Authorize(Roles = "Patient")]
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteOrder(int OrderId)
+        {
+            await  _orderService.DeleteOrderAsync(OrderId,User.GetUserId());
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Patient")]
         [HttpGet("GetMyOrder/{orderId}")]
         public async Task<IActionResult> GetMyOrder(int orderId)
         {
@@ -47,6 +56,7 @@ namespace PL.Controllers
             var order = await _orderService.CreateOrderAsync(User.GetUserId(), dto);
             return Ok(order);
         }
+
         #endregion
 
 

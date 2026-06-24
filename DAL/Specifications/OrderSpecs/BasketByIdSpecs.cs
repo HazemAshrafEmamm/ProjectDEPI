@@ -1,4 +1,4 @@
-﻿using DomainLayer.Models.BasketModule;
+using DomainLayer.Models.BasketModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace DAL.Specifications.OrderSpecs
 {
     public class BasketByIdSpecs : BaseSpecification<CustomerBasket>
     {
-        public BasketByIdSpecs(int basketId) : base(b => b.Id == basketId && !b.IsCheckedOut)
+        public BasketByIdSpecs(int basketId) : base(b => b.Id == basketId)
         {
             AddInclude(b => b.BasketItems);
         }

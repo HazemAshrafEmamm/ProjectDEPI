@@ -1,4 +1,4 @@
-﻿using DAL.Models.OrderModule;
+using DAL.Models.OrderModule;
 using DAL.Models.Users;
 using DAL.Shared;
 using System;
@@ -12,7 +12,7 @@ namespace DomainLayer.Models.BasketModule
     public class CustomerBasket : BaseEntity
     {
 
-        public IEnumerable<BasketItem> BasketItems { get; set; }
+        public ICollection<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
         public int PatientId { get; set; }
 
         public Patient Patient { get; set; }

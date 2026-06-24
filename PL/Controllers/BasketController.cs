@@ -1,4 +1,4 @@
-﻿using BLL.Dtos.Order;
+using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
 using BLL.Services.ImplementationService.MedicationModule;
 using Microsoft.AspNetCore.Authorization;
@@ -51,5 +51,4 @@ namespace PL.Controllers
         }
     }
 
-}
 }

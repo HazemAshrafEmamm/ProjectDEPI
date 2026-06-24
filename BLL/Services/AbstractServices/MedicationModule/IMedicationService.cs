@@ -10,7 +10,7 @@ namespace BLL.Services.AbstractServices.MedicationModule
     public interface IMedicationService
     {
        Task<MedicationDto> GetMedicationByIdAsync(int id);
-       Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync();
+       Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync(string? SearchName);
        Task UpdateMedicationAsync(int PharmacistId,MedicationDto medicationDto);
        Task<MedicationDto> CreateMedicationAsync(int PharmacistId,CreateMedicationDto medicationDto);
        Task DeleteMedicationAsync(int PharmacistId,int id);

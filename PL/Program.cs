@@ -36,10 +36,15 @@ namespace PL
             builder.Services.AddScoped<DataSeeder, DataSeeder>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IBasketService, BasketService>();
             builder.Services.AddScoped<IMedicationService, MedicationService>();
+            builder.Services.AddScoped<INursingService, NursingService>();
             builder.Services.AddScoped<IConsultationService, ConsultationService>();
+            builder.Services.AddScoped<IConsultationChatService, ConsultationChatService>();
+            builder.Services.AddScoped<IConsultationReviewService, ConsultationReviewService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+
             
             builder.Services.AddAutoMapper((x) => { }, typeof(DomainProfile).Assembly);
             builder.Services.AddSignalR();

@@ -7,6 +7,7 @@ using DAL.Exceptions.OrderModule;
 using DAL.Models.OrderModule;
 using DAL.Models.Users;
 using DAL.Repository;
+using DAL.Specifications.OrderSpecs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,9 +65,9 @@ namespace BLL.Services.ImplementationService.MedicationModule
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync()
+        public async Task<IEnumerable<AllMedicationDto>> GetAllMedicationsAsync(string? SearchName)
         {
-            var medications = await _repo.GetAllAsync();
+            var medications = await _repo.GetAllAsync(new AllMedicationOrderedSpecs(SearchName));
             return _mapper.Map<IEnumerable<AllMedicationDto>>(medications);
         }
 

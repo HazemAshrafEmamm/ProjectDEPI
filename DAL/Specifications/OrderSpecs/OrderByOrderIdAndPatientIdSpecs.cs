@@ -1,4 +1,4 @@
-﻿using DAL.Models.OrderModule;
+using DAL.Models.OrderModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +12,8 @@ namespace DAL.Specifications.OrderSpecs
         public OrderByOrderIdAndPatientIdSpecs(int orderId, int patientId)
             : base(o => o.Id == orderId && o.PatientId == patientId)
         {
+            AddInclude(o => o.OrderItem);
+            AddInclude(o => o.Address);
         }
     }
 }

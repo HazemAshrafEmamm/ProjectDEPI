@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
 using DAL.Exceptions;
@@ -68,17 +68,31 @@ namespace BLL.Services.ImplementationService.MedicationModule
             await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<OrderDto>(order);
         }
+        public async Task DeleteOrderAsync(int OrderId , int PatientId)
+        {
+            var Order = (await _unitOfWork.GetRepository<Order>()
+                                   .GetAllAsync(new OrderByOrderIdAndPatientIdSpecs(OrderId, PatientId))).FirstOrDefault()
+                                   ?? throw new OrderNotFoundException(OrderId);
+            if(Order.Status != OrderStatus.Cancelled 
+                    || Order.Status != OrderStatus.Rejected || Order.Status != OrderStatus.Delivered)
+                throw new OrderCantBeDeletedException(OrderId);
+             _unitOfWork.GetRepository<Order>().Delete(Order);
+             await _unitOfWork.SaveChangesAsync();
 
+        }
         public async Task<OrderDto> CreateOrderAsync(int patientId, CreateOrderDto dto)
         {
             var Address = _mapper.Map<OrderAddress>(dto.Address);
          
+            var patient = await _userRepository.GetPatientWithBasketAsync(patientId)
+                ?? throw new PatientNotFoundException(patientId);
+
             var Basket = (await _unitOfWork.GetRepository<CustomerBasket>()
-                                            .GetAllAsync(new BasketByIdSpecs(dto.BasketId))).FirstOrDefault()
-                                            ?? throw new BasketNotFoundException(dto.BasketId.ToString());
+                                            .GetAllAsync(new BasketByIdSpecs(patient!.Basket!.Id))).FirstOrDefault()
+                                            ?? throw new BasketNotFoundException(patient!.Basket!.Id);
 
             if (Basket.IsCheckedOut)
-                throw new BasketAlreadyCheckedOutException(dto.BasketId);
+                throw new BasketAlreadyCheckedOutException(patient!.Basket!.Id);
 
             List<OrderItem> orderItems = new List<OrderItem>();
 
@@ -114,11 +128,17 @@ namespace BLL.Services.ImplementationService.MedicationModule
                 Address = Address,
                 OrderItem = orderItems,
                 Status = OrderStatus.Pending,
+                OrderDate = DateTime.UtcNow,
             };
 
             await _unitOfWork.GetRepository<Order>().AddAsync(Order);
             
-            Basket.IsCheckedOut = true;
+            var itemRepo = _unitOfWork.GetRepository<BasketItem>();
+            foreach (var item in Basket.BasketItems.ToList())
+            {
+                itemRepo.Delete(item);
+            }
+            Basket.IsCheckedOut = false; // reset in case it was stuck true
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -153,7 +173,9 @@ namespace BLL.Services.ImplementationService.MedicationModule
         }
         public async Task<OrderDto> UpdateOrderStatusAsync(int orderId, UpdateOrderStatus dto)
         {
-            var order = await _unitOfWork.GetRepository<Order>().GetByIdAsync(orderId)
+            var order = (await _unitOfWork.GetRepository<Order>()
+                .GetAllAsync(new OrderByIdSpec(orderId)))
+                .FirstOrDefault()   //has changed 
                 ?? throw new OrderNotFoundException(orderId);
 
             if (order.Status == OrderStatus.Pending && dto.Status == OrderStatus.Rejected)

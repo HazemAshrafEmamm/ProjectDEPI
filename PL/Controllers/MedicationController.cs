@@ -11,9 +11,9 @@ namespace PL.Controllers
     public class MedicationController(IMedicationService _medicationService) : ApiControllerBase
     {
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAllMedications()
+        public async Task<IActionResult> GetAllMedications(string? SearchName)
         {
-            var medications = await _medicationService.GetAllMedicationsAsync();
+            var medications = await _medicationService.GetAllMedicationsAsync(SearchName);
 
             return Ok(medications);
         }
