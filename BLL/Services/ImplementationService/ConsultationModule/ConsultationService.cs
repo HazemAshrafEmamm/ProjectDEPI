@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using BLL.Dtos.Consultion;
+using BLL.Dtos.Doctor;
 using BLL.Services.AbstractServices;
 using BLL.Services.AbstractServices.ConsultationModule;
+using DAL.Exceptions;
+using DAL.Exceptions.ConsultationModule;
 using DAL.Models.Consultation;
 using DAL.Models.Users;
 using DAL.Repository;
@@ -18,12 +21,21 @@ namespace BLL.Services.ImplementationService.ConsultationModule
     public class ConsultationService
         (IUnitOfWork _unitOfWork , IMapper _mapper , INotificationService _notificationService) : IConsultationService
     {
+        public Task<DoctorInfoDto> GetDoctorInfoAsync(int doctorId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<DoctorInfoDto>> SearchDoctorsAsync(SearchDoctorDto searchDto)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<ConsultationDto> RequestConsultationAsync(int PatientId, CreateConsultationDto createDto)
         {
             var existingConsultation = (await _unitOfWork.GetRepository<Consultation>()
                                             .GetAllAsync(new AllowedConsultationSpecs(PatientId, createDto.DoctorId))).FirstOrDefault();
             if (existingConsultation is not null )
-                 throw new InvalidOperationException("You already have a pending consultation request.");
+                throw new ConsultationAlreadyExistsException(PatientId, createDto.DoctorId);
 
             var consultation = new Consultation
             {
@@ -43,19 +55,18 @@ namespace BLL.Services.ImplementationService.ConsultationModule
         public async Task DeleteConsultationAsync(int ConsultationId, int RequesterId)
         {
             var Consultation = (await _unitOfWork.GetRepository<Consultation>()
-                                .GetAllAsync(new ConsultationByIdSpecs(ConsultationId, RequesterId))).FirstOrDefault();
-            if (Consultation is null)
-                throw new KeyNotFoundException("Consultation not found.");
-             _unitOfWork.GetRepository<Consultation>().Delete(Consultation);
+                                .GetAllAsync(new ConsultationByIdSpecs(ConsultationId, RequesterId))).FirstOrDefault()
+                                ?? throw new ConsultationNotFoundException(ConsultationId);
+
+            _unitOfWork.GetRepository<Consultation>().Delete(Consultation);
             await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<ConsultationDto> GetConsultationByIdAsync(int ConsultationId, int RequesterId)
         {
             var consultation = (await _unitOfWork.GetRepository<Consultation>()
-                                          .GetAllAsync(new ConsultationByIdSpecs(ConsultationId, RequesterId))).FirstOrDefault();
-            if (consultation is null)
-                throw new KeyNotFoundException("Consultation not found or you don't have access to it.");
+                                          .GetAllAsync(new ConsultationByIdSpecs(ConsultationId, RequesterId))).FirstOrDefault()
+                                          ??throw new ConsultationNotFoundException(ConsultationId);
             return _mapper.Map<ConsultationDto>(consultation);
         }
 
@@ -73,13 +84,13 @@ namespace BLL.Services.ImplementationService.ConsultationModule
         public async Task<ConsultationDto> UpdateConsultationStatusAsync(int consultationId, int DoctorId, UpdateConsultionStatusDto updateStatusDto)
         {
             var consultation = await _unitOfWork.GetRepository<Consultation>().GetByIdAsync(consultationId)
-                ?? throw new KeyNotFoundException("Consultation not found.");
+                ?? throw new ConsultationNotFoundException(consultationId);
 
             if (consultation.DoctorId != DoctorId)
                 throw new UnauthorizedAccessException("Only the assigned doctor can update status.");
 
             if (!Enum.TryParse(updateStatusDto.status, out ConsultationStatus status))
-                throw new ArgumentException("Invalid status");
+                throw new BadRequestException([$"'{updateStatusDto.status}' is not a valid consultation status."]);
 
             consultation.Status = status;
 

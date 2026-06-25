@@ -11,6 +11,9 @@ namespace DAL.Repository
     public interface IUserRepository
     {
         Task<Patient?> GetPatientWithBasketAsync(int patientId);
-        
+        Task<Pharmacist?> GetPharmacistWithMedicationsAsync(int pharmacistId);
+
+
+
     }
 }

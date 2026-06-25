@@ -1,167 +1,62 @@
-﻿
-using DAL.Models;
-using DAL.Models.Users;
-using Microsoft.AspNetCore.Identity;
+
+using BLL.Dtos.IdentityDtos;
 using Microsoft.AspNetCore.Mvc;
-using PL.Models;
-using PL.Models.IdentityViewModels;
-using PL.Utilites;
-using System.Threading.Tasks;
+using PresentationLayer.Controller;
+using ServiceAbstractionLayer;
+using Shared.DTOs.IdentityDtos;
 
 namespace PL.Controllers
 {
-    public class AuthController( SignInManager<ApplicationUser> signInManager,
-                                 UserManager<ApplicationUser> userManager) : Controller
+    public class AuthController(IAuthService _authenticationService ) : ApiControllerBase
     {
-        #region Login
-        [HttpGet]
-        public IActionResult Login()
+        
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginDto loginDto)
         {
-            return View();
+            var user = await _authenticationService.LoginAsync(loginDto);
+            return Ok(user);
         }
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-            var user = await userManager.FindByEmailAsync(model.Email);
-            if (user is not null)
-            {
-                var isCorrectPass = await userManager.CheckPasswordAsync(user, model.Password);
-                if (isCorrectPass)
-                {
-                    var res = await signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
-                    if (res.IsNotAllowed) ModelState.AddModelError(string.Empty, "You are not allowed to login.");
-                    if (res.IsLockedOut) ModelState.AddModelError(string.Empty, "Your Account is Locked.");
-                    if (res.Succeeded) return RedirectToAction(nameof(HomeController.Index), "Home");
-                }
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login.");
-            }
 
-            return View();
-        }
-        [HttpGet]
-        public async Task<IActionResult> LogOut()
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register(RegisterDto model)
         {
-            await signInManager.SignOutAsync();
-            return RedirectToAction(nameof(Login));
+            var user = await _authenticationService.RegisterAsync(model);
+            return Ok(user);
         }
-        #endregion
-
-        #region Register
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (!ModelState.IsValid) return View(model);
-            var existingUser = await userManager.FindByEmailAsync(model.Email);
-            if (existingUser != null)
-            {
-                ModelState.AddModelError(string.Empty, "the email already exist");
-                return View(model);
-            }
-            var user = new ApplicationUser
-            {
-                 Fullname = model.Fullname,
-                UserName = model.UserName,
-                Email = model.Email
-            };
-            var res = await userManager.CreateAsync(user, model.Password);
-            if (res.Succeeded) return RedirectToAction("Login");
-            else
-            {
-                foreach (var error in res.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-                return View(model);
-            }
-        }
-        #endregion
 
         #region ForgetPassword
-        [HttpGet]
-        public IActionResult ForgetPassword()
+
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordDto dto)
         {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> SendResetPasswordLink(ForgetPasswordViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = await userManager.FindByEmailAsync(model.Email);
-                if (user is not null)
-                {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                    //create reset password link
-                    // base url/Auth/ResetPasswordLink?email=...&token=...
-                    // action name,  controller name, route values (object=>Email,token), protocol(http/https) or Request.scheme(baseURL) 
-                    var Token = await userManager.GeneratePasswordResetTokenAsync(user);
-                    var ResetPasswordLink = Url.Action("ResetPasswordLink", "Auth", new { email = model.Email, token = Token }, Request.Scheme);
+            var token = await _authenticationService.GenerateResetTokenAsync(dto.Email);
+            if (token is null)
+                return BadRequest(new { message = "Invalid Email Address" });
 
-                    //create email 
-                    var mail = new Email()
-                    {
-                        To = model.Email,
-                        Subject = "Reset Password",
-                        Body = ResetPasswordLink
-                    };
+            var resetLink = Url.Action("ResetPassword", "Auth",
+                new { email = dto.Email,token }, Request.Scheme);
 
-                    //send email 
-                    var res = EmailSettings.SendEmail(mail);
-                    if (res)
-                    {
-                        return RedirectToAction("CheckYourInbox");
-                    }
+            var sent = await _authenticationService.SendResetEmailAsync(dto.Email, resetLink!);
+            if (!sent)
+                return StatusCode(500, new { message = "Failed to send email" });
 
-                }
-            }
-
-            ModelState.AddModelError(string.Empty, "Invalid Email Address");
-            return View(nameof(ForgetPassword), model);
-        }
-        [HttpGet]
-        public IActionResult CheckYourInbox()
-        {
-            return View();
+            return Ok(new { message = "Reset link sent, please check your inbox." });
         }
 
-        [HttpGet]
-        public IActionResult ResetPasswordLink(string email, string token)
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
-            TempData["email"] = email;
-            TempData["token"] = token;
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> ResetPasswordLink(ResetPasswordViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var email = TempData["email"] as string;
-                var token = TempData["token"] as string;
-                var user = await userManager.FindByEmailAsync(email);
-                if (user != null)
-                {
-                    var res = await userManager.ResetPasswordAsync(user, token, model.Password);
-                    if (res.Succeeded) { return RedirectToAction(nameof(Login)); }
-                    else
-                    {
-                        foreach (var error in res.Errors)
-                            ModelState.AddModelError(string.Empty ,error.Description);
-                    }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                }
-            }
-            ModelState.AddModelError(string.Empty, "Invalid Request");
-            return View();
+            var result = await _authenticationService.ResetPasswordAsync(dto.Email, dto.Token, dto.NewPassword);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors.Select(e => e.Description));
+
+            return Ok(new { message = "Password reset successfully." });
         }
         #endregion
 

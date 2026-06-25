@@ -1,25 +1,65 @@
-﻿using BLL.Services.AbstractServices.MedicationModule;
+using BLL.Dtos.Medication;
+using BLL.Services.AbstractServices.MedicationModule;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PL.Extention;
+using PL.Models.MedicationModels;
+using PresentationLayer.Controller;
 
 namespace PL.Controllers
 {
-    public class MedicationController(IMedicationService _medicationService) : Controller
+    public class MedicationController(IMedicationService _medicationService) : ApiControllerBase
     {
-        public IActionResult Index()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAllMedications(string? SearchName)
         {
-            return View();
+            var medications = await _medicationService.GetAllMedicationsAsync(SearchName);
+
+            return Ok(medications);
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAllMedications()
+
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetMedicationById(int id)
         {
-            var medications = await _medicationService.GetAllMedicationsAsync();
-            return View(medications);
+            var medication = await _medicationService.GetMedicationByIdAsync(id);
+            return Ok(medication);
         }
-        [HttpGet("Id")]
-        public async Task<IActionResult> GetMedicationById(int Id)
+
+        #region Pharmcist - Functionality 
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpPost("UpdateMedication/{Id}")]
+        public async Task<IActionResult> UpdateMedication(int Id, UpdateMedicationModel model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             var medication = await _medicationService.GetMedicationByIdAsync(Id);
-            return View(medication);
+            medication.Id = Id;
+            medication.Name = model.Name;
+            medication.Price = model.Price;
+            medication.Stock = model.Stock;
+            medication.IsAvailable = model.IsAvailable;
+            await _medicationService.UpdateMedicationAsync(User.GetUserId(), medication);
+
+            return Ok(medication);
         }
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpPost("CreateMedication")]
+        public async Task<IActionResult> CreateMedication([FromForm] CreateMedicationDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var medication = await _medicationService.CreateMedicationAsync(User.GetUserId(), dto);
+
+            return Ok(medication);
+        }
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpDelete("DeleteMedication/{id}")]
+        public async Task<IActionResult> DeleteMedication(int id)
+        {
+            await _medicationService.DeleteMedicationAsync(User.GetUserId(), id);
+            return NoContent();
+        } 
+        #endregion
     }
 }

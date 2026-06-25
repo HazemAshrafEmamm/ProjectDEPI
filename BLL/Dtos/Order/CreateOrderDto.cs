@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +8,6 @@ namespace BLL.Dtos.Order
 {
     public class CreateOrderDto
     {
-        public int BasketId { get; set; }
-        
         public OrderAddressDto Address { get; set; }
     }
 }

@@ -1,52 +1,97 @@
-﻿using BLL.Dtos.Order;
+using BLL.Dtos.Order;
 using BLL.Services.AbstractServices.MedicationModule;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PL.Extention;
+using PresentationLayer.Controller;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
     [Authorize]
-    [ValidateAntiForgeryToken]
-    public class OrderController(IOrderService _orderService) : Controller
+    public class OrderController(IOrderService _orderService) : ApiControllerBase
     {
-
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        #region Patient - Functionality
+        [Authorize(Roles = "Patient")]
+        [HttpGet("MyOrders")]
+        public async Task<IActionResult> GetMyOrders()
         {
+            var orders = await _orderService.GetMyOrdersAsync(User.GetUserId());
 
-            var Orders = await _orderService.GetMyOrdersAsync(User.GetUserId());
-            return View(Orders);
+            return Ok(orders);
         }
-        [HttpGet]
-        public async Task<IActionResult> Details(int orderId)
+        [Authorize(Roles = "Patient")]
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteOrder(int OrderId)
+        {
+            await  _orderService.DeleteOrderAsync(OrderId,User.GetUserId());
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Patient")]
+        [HttpGet("GetMyOrder/{orderId}")]
+        public async Task<IActionResult> GetMyOrder(int orderId)
         {
             var order = await _orderService.GetOrderAsync(orderId, User.GetUserId());
-            return View(order);
+
+            return Ok(order);
         }
-        [HttpPost]
-        public async Task<IActionResult> Cancel(int orderId)
+        [Authorize(Roles = "Patient")]
+        [HttpPost("Cancel/{orderId}")]
+        public async Task<IActionResult> CancelOrder(int orderId)
         {
             var order = await _orderService.CancelOrderAsync(orderId, User.GetUserId());
-            return RedirectToAction("Index");
+
+            return Ok(order);
         }
-        [HttpGet]
-        public async Task<IActionResult> Create()
+        [Authorize(Roles = "Patient")]
+        [HttpPost("Create")]
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
         {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateOrderDto dto)
-        {
-            if(!ModelState.IsValid)
-                return View(dto);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var order = await _orderService.CreateOrderAsync(User.GetUserId(), dto);
-            return RedirectToAction("Index");
+            return Ok(order);
         }
-        
+
+        #endregion
+
+
+        #region Pharmcist - Functionality 
+
+
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpGet("Orders")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            var orders = await _orderService.GetAllOrdersAsync();
+            return Ok(orders);
+        }
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpGet("GetOrder/{id}")]
+        public async Task<IActionResult> GetOrder(int id)
+        {
+            var order = await _orderService.GetOrderForMerchantAsync(id);
+
+            return Ok(order);
+        }
+        [Authorize(Roles = "Pharmacist,Admin")]
+        [HttpPut("Orders/{orderId}/Status")]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] UpdateOrderStatus dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var order = await _orderService.UpdateOrderStatusAsync(orderId, dto);
+
+            return Ok(order);
+        } 
+        #endregion
 
     }
-    
 }
+    
+

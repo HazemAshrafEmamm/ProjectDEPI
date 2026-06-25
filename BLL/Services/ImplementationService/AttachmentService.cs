@@ -27,9 +27,9 @@ namespace BLL.Services.ImplementationService
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                file.CopyTo(stream);
+                await file.CopyToAsync(stream);
             }
-            return fileName;
+            return $"/files/{folderName}/{fileName}";
 
         }
 

@@ -1,14 +1,26 @@
 using BLL.Hubs;
 using BLL.Mapper;
 using BLL.Services.AbstractServices;
+using BLL.Services.AbstractServices.ConsultationModule;
+using BLL.Services.AbstractServices.MedicationModule;
+using BLL.Services.AbstractServices.Users;
 using BLL.Services.ImplementationService;
+using BLL.Services.ImplementationService.ConsultationModule;
+using BLL.Services.ImplementationService.MedicationModule;
 using DAL.Data;
 using DAL.Models.Users;
 using DAL.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using PL.Utilites;
+using ServiceAbstractionLayer;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Text;
+using TalabatDemo.CustomMiddleWares;
+
 namespace PL
 {
     public class Program
@@ -19,58 +31,140 @@ namespace PL
 
             // Add services to the container.
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
             builder.Services.AddScoped<DataSeeder, DataSeeder>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+            builder.Services.AddScoped<IBasketService, BasketService>();
+            builder.Services.AddScoped<IMedicationService, MedicationService>();
+            builder.Services.AddScoped<INursingService, NursingService>();
+            builder.Services.AddScoped<IConsultationService, ConsultationService>();
+            builder.Services.AddScoped<IConsultationChatService, ConsultationChatService>();
+            builder.Services.AddScoped<IConsultationReviewService, ConsultationReviewService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+
+            
             builder.Services.AddAutoMapper((x) => { }, typeof(DomainProfile).Assembly);
             builder.Services.AddSignalR();
 
-            
+            builder.Services.AddControllers();
 
-            builder.Services.AddControllersWithViews();
+            // ===================== Swagger + JWT =====================
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(options => {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    Description = "Enter 'Bearer' Followed by space And your token"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme()
+                        {
+                            Reference = new OpenApiReference()
+                            {
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },
+                        new string []{}
+                    }
+                });
+            });
+            // =========================================================
 
 
+            builder.Services.AddAuthentication(Config =>
+            {
+                Config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                Config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(Config =>
+            {
+                Config.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JwtOptions:Issuer"],
+                    ValidateAudience = true,
+                    //ClockSkew = TimeSpan.FromHours(24),
+                    ValidAudience = builder.Configuration["JwtOptions:Audience"],
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtOptions:SecretKey"]!)),
+                };
+            });
             //DbContext
             builder.Services.AddDbContext<TabibyDbContext>(
                 options => {
                     options.UseSqlServer(builder.Configuration.GetConnectionString("TabibyDbContext"));
                 }
             );
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(
+            builder.Services.AddIdentityCore<ApplicationUser>(
                 options =>
                 {
                     //options.Password.RequireUppercase = true;//by default is true
                     //options.Password.RequireLowercase = true;//by default is true
                     //options.User.RequireUniqueEmail = true;//by default is true
                 })
+                .AddRoles<IdentityRole<int>>()
                 .AddRoleManager<RoleManager<IdentityRole<int>>>()
                 .AddEntityFrameworkStores<TabibyDbContext>()
                 .AddDefaultTokenProviders();
 
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost", builder =>
+                {
+                    builder
+                        .WithOrigins("http://localhost:3000", "http://localhost:3001")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
+                app.UseSwagger();
+                app.UseSwaggerUI(options =>
+                {
+                    options.ConfigObject = new ConfigObject()
+                    {
+                        DisplayRequestDuration = true
+                    };
+                    options.DocumentTitle = "Tabiby APP";
+                    options.DocExpansion(DocExpansion.None);
+                    options.EnableFilter();
+                    options.EnablePersistAuthorization();
+                });
             }
+            
             using var scope = app.Services.CreateScope();
             var seed = scope.ServiceProvider.GetRequiredService<DataSeeder>();
             await seed.SeedDatabaseAsync();
 
+            EmailSettings.Initialize(app.Configuration);
+
             app.UseHttpsRedirection();
+            app.UseMiddleware<CustomExceptionHandlerMiddleWare>();
+            app.UseCors("AllowLocalhost");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
 
+
+            app.UseStaticFiles();
             app.MapHub<NotificationHub>("/notificationHub");
-            app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
+            app.MapControllers();
 
             app.Run();
         }

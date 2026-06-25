@@ -1,6 +1,7 @@
 ﻿using BLL.Dtos;
 using BLL.Hubs;
 using BLL.Services.AbstractServices;
+using DAL.Exceptions;
 using DAL.Models;
 using DAL.Repository;
 using DAL.Shared.Enums;
@@ -18,9 +19,9 @@ namespace BLL.Services.ImplementationService
     {
         public async Task DeleteNotificationAsync(int notificationId)
         {
-            var notification = await _unitOfWork.GetRepository<Notification>().GetByIdAsync(notificationId);
-            if (notification == null)
-                throw new Exception("Notification not found");
+            var notification = await _unitOfWork.GetRepository<Notification>().GetByIdAsync(notificationId)
+                ?? throw new NotificationNotFoundException(notificationId);
+
             _unitOfWork.GetRepository<Notification>().Delete(notification);
             await _unitOfWork.SaveChangesAsync();
         }
@@ -41,9 +42,8 @@ namespace BLL.Services.ImplementationService
 
         public async Task MarkAsReadAsync(int notificationId)
         {
-            var notification = await _unitOfWork.GetRepository<Notification>().GetByIdAsync(notificationId);
-            if (notification == null)
-                throw new Exception("Notification not found");
+            var notification = await _unitOfWork.GetRepository<Notification>().GetByIdAsync(notificationId)
+                ?? throw new NotificationNotFoundException(notificationId);
             notification.IsRead = true;
             _unitOfWork.GetRepository<Notification>().Update(notification);
             await _unitOfWork.SaveChangesAsync();

@@ -10,9 +10,10 @@ namespace BLL.Services.AbstractServices.MedicationModule
 {
     public interface IBasketService
     {
-        Task<BasketDto> GetBasketAsync(int basketId);
-        Task<BasketDto> CreateBasketAsync(BasketDto basket);
-        Task<BasketDto> UpdateBasketAsync(BasketDto basket);
-        Task<bool> DeleteBasketAsync(int basketId);
+        Task<BasketDto> GetBasketAsync(int patientId);
+        Task<BasketDto> AddItemAsync(int patientId, BasketItemInputDto dto);
+        Task<BasketDto> UpdateItemQuantityAsync(int patientId, int medicationId, int quantity);
+        Task RemoveItemAsync(int patientId, int medicationId);
+        Task ClearBasketAsync(int patientId);
     }
 }
