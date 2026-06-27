@@ -4,6 +4,7 @@ using BLL.Services.AbstractServices;
 using BLL.Services.AbstractServices.MedicationModule;
 using DAL.Exceptions;
 using DAL.Exceptions.OrderModule;
+using DAL.Models.AppointmentModule;
 using DAL.Models.OrderModule;
 using DAL.Models.Users;
 using DAL.Repository;
@@ -41,8 +42,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
             var medicationEntity = _mapper.Map<Medication>(medicationDto);
 
             medicationEntity.PharmacistId = PharmacistId;
-
-            if(medicationDto.Image != null)
+            if (medicationDto.Image != null)
             {
                 var imageUrl = await _attach.Upload(medicationDto.Image, "medications");
                 medicationEntity.PictureUrl = imageUrl;

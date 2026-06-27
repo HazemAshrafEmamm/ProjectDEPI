@@ -11,6 +11,14 @@ namespace DAL.Repository
 {
     public class UserRepository(TabibyDbContext _context) : IUserRepository
     {
+        public async Task<Patient?> GetPatientWithAppointmentAsync(int patientId)
+        {
+    return await _context
+                            .Set<Patient>()
+                            .Include(p => p.Appointment)
+                            .FirstOrDefaultAsync(p => p.Id == patientId);
+        }        
+
         public async Task<Patient?> GetPatientWithBasketAsync(int patientId)
         {
             return await _context
