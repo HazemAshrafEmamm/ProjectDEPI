@@ -18,9 +18,24 @@ namespace BLL.Mapper
         public DomainProfile()
         {
             // Appointment Mappings
-            CreateMap<Appointment, AppointmentDto>().ReverseMap();
-            CreateMap<Appointment, CreateAppointmentDto>().ReverseMap();
-            CreateMap<Appointment, UpdateAppointmentDto>().ReverseMap();
+            CreateMap<Appointment, AppointmentDto>()
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor != null ? src.Doctor.Fullname : string.Empty))
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient != null ? src.Patient.Fullname : string.Empty))
+                .ForMember(dest => dest.StatusText, opt => opt.MapFrom(src => src.Status.ToString()));
+            CreateMap<CreateAppointmentDto, Appointment>()
+                .ForMember(dest => dest.AppointmentTime, opt => opt.Ignore());
+            CreateMap<UpdateAppointmentDto, Appointment>()
+                .ForMember(dest => dest.ScheduleId, opt =>
+                {
+                    opt.PreCondition(src => src.ScheduleId.HasValue);
+                    opt.MapFrom(src => src.ScheduleId!.Value);
+                })
+                .ForMember(dest => dest.AppointmentDate, opt =>
+                {
+                    opt.PreCondition(src => src.AppointmentDate.HasValue);
+                    opt.MapFrom(src => src.AppointmentDate!.Value);
+                })
+                .ForMember(dest => dest.Notes, opt => opt.Condition(src => src.Notes != null));
 
             // Schedule Mappings
             CreateMap<DoctorSchedule, DoctorScheduleDto>().ReverseMap();

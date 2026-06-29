@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +12,9 @@ namespace DAL.Specifications.Appointment
         public AppointmentsPatientSpec(int userId)
        : base(a => a.PatientId == userId)
         {
+            AddInclude(a => a.Patient!);
+            AddInclude(a => a.Doctor!);
+            AddInclude(a => a.Schedule);
         }
     }
 }

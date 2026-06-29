@@ -16,7 +16,7 @@ public class GenaricRepository<TEntity> : IGenaricRepository<TEntity> where TEnt
 
     public async Task<TEntity?> GetByIdAsync(int id)
     {
-        return await _context.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(a=>a.Id==id);
+        return await _context.Set<TEntity>().FirstOrDefaultAsync(a=>a.Id==id);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync()
@@ -41,6 +41,6 @@ public class GenaricRepository<TEntity> : IGenaricRepository<TEntity> where TEnt
 
     public async Task<IEnumerable<TEntity>> GetAllAsync(ISpecification<TEntity> Specs)
     {
-        return await _context.Set<TEntity>().GetQuery(Specs).AsNoTracking().ToListAsync();
+        return await _context.Set<TEntity>().GetQuery(Specs).ToListAsync();
     }
 }

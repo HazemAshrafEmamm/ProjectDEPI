@@ -1,4 +1,4 @@
-﻿using BLL.Dtos.Schedule;
+using BLL.Dtos.Schedule;
 using BLL.Services.AbstractServices.AppointmentModule;
 using System;
 using System.Collections.Generic;

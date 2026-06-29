@@ -1,4 +1,3 @@
-﻿using DAL.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +8,8 @@ namespace BLL.Dtos.Appointment
 {
     public class UpdateAppointmentDto
     {
-        public int Id { get; set; }
-        public DateTime AppointmentDate { get; set; }
-        public TimeSpan AppointmentTime { get; set; }
-        public AppointmentStatus Status { get; set; }
+        public int? ScheduleId { get; set; }
+        public DateTime? AppointmentDate { get; set; }
         public string? Notes { get; set; }
     }
 }
