@@ -59,6 +59,10 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             {
                 throw new UnauthorizedAccessException("You do not have permission to cancel this appointment.");
             }
+            if (appointment.Status == AppointmentStatus.Cancelled|| appointment.Status == AppointmentStatus.Completed)
+            {
+                throw new KeyNotFoundException($"Appointment with ID {appointmentId} already cancelled");
+            }
             appointment.Status = AppointmentStatus.Cancelled;
             _repo.Update(appointment);
             await _unitOfWork.SaveChangesAsync();
@@ -81,9 +85,21 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             return _mapper.Map<AppointmentDto>(appointment);
         }
 
-        public Task<IEnumerable<AvailableDoctorSlotDto>> GetAvailableSlotsAsync(int doctorId, DateTime date)
+        public async Task<IEnumerable<AvailableDoctorSlotDto>> GetAvailableSlotsAsync(int doctorId, DateTime date)
         {
-            throw new NotImplementedException();
+            var spec=new GetAvailableSlotsSpecs(doctorId, date);
+            var doctorSchedules = await _unitOfWork.GetRepository<DoctorSchedule>().GetAllAsync(spec);
+            var appointmentSpec = new AppointmentNotCancelledSpec(doctorId, date);
+            var bookedAppointments = await _repo.GetAllAsync(appointmentSpec);
+            var bookedScheduleIds = bookedAppointments.Select(a => a.ScheduleId).ToList();
+
+            var freeSchedules = doctorSchedules.Where(s => !bookedScheduleIds.Contains(s.Id));
+            var dtos = _mapper.Map<IEnumerable<AvailableDoctorSlotDto>>(freeSchedules);
+            foreach (var dto in dtos)
+            {
+                dto.AvailableDates = new List<DateTime> { date.Date };
+            }
+           return dtos;
         }
 
         public async Task<IEnumerable<AppointmentDto>> GetDoctorAppointmentsAsync(int doctorId)
@@ -96,9 +112,14 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             return _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
         }
 
-        public Task<IEnumerable<AppointmentDto>> GetMyAppointmentsAsync(int userId)
+        public async Task<IEnumerable<AppointmentDto>> GetMyAppointmentsAsync(int userId)
         {
-            throw new NotImplementedException();
+            var spec = new AppointmentsPatientSpec(userId);
+
+
+            var appointments = await _repo.GetAllAsync(spec);
+
+            return _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
         }
 
         public async Task<AppointmentDto> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto dto, int userId)

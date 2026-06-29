@@ -26,6 +26,9 @@ namespace BLL.Mapper
             CreateMap<DoctorSchedule, DoctorScheduleDto>().ReverseMap();
             CreateMap<DoctorSchedule, CreateDoctorScheduleDto>().ReverseMap();
             CreateMap<DoctorSchedule, UpdateDoctorScheduleDto>().ReverseMap();
+            CreateMap<DoctorSchedule, AvailableDoctorSlotDto>()
+    .ForMember(dest => dest.ScheduleId, opt => opt.MapFrom(src => src.Id))
+    .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(src => true));
 
             // Medication Mappings
             CreateMap<Medication, MedicationDto>().ReverseMap();
