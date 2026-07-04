@@ -1,12 +1,14 @@
 using AutoMapper;
 using BLL.Dtos.Appointment;
 using BLL.Dtos.Consultion;
+using BLL.Dtos.Doctor;
 using BLL.Dtos.Medication;
 using BLL.Dtos.Order;
 using BLL.Dtos.Schedule;
 using DAL.Models.AppointmentModule;
 using DAL.Models.Consultation;
 using DAL.Models.OrderModule;
+using DAL.Models.Users;
 using DomainLayer.Models.BasketModule;
 using Shared.DTOs;
 
@@ -64,6 +66,11 @@ namespace BLL.Mapper
 
             CreateMap<ConsultationReview, ConsultationReviewDto>().ReverseMap();
             CreateMap<ConsultationReview, CreateConsultationReviewDto>().ReverseMap();
+
+            // Doctor Mappings
+            CreateMap<Doctor, DoctorInfoDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Fullname))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
 
             // Order Mappings
             CreateMap<Order, OrderDto>()
