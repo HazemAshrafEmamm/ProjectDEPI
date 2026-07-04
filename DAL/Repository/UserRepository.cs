@@ -13,7 +13,7 @@ namespace DAL.Repository
     {
         public async Task<Patient?> GetPatientWithAppointmentAsync(int patientId)
         {
-    return await _context
+            return await _context
                             .Set<Patient>()
                             .Include(p => p.Appointment)
                             .FirstOrDefaultAsync(p => p.Id == patientId);

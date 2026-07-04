@@ -168,6 +168,7 @@ namespace PL
 
             app.UseStaticFiles();
             app.MapHub<NotificationHub>("/notificationHub");
+            app.MapHub<ChatHub>("/chatHub");
             app.MapControllers();
 
             app.Run();

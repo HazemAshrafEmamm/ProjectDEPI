@@ -12,8 +12,6 @@ namespace BLL.Hubs
         public async Task JoinConsultation(int consultationId)
         {
 
-
-
             await Groups.AddToGroupAsync(
                 Context.ConnectionId,
                 $"consultation_{consultationId}");

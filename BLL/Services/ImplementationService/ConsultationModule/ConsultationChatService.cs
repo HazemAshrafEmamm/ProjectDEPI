@@ -67,7 +67,8 @@ namespace BLL.Services.ImplementationService.ConsultationModule
                 SenderUserId = senderUserId,
                 Content = dto.Content,
                 IsRead = false,
-                SentAt = DateTime.UtcNow
+                SentAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow
             };
             await _unitOfWork.GetRepository<ConsultationMessage>().AddAsync(message);
             await _unitOfWork.SaveChangesAsync();
