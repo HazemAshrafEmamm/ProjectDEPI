@@ -4,6 +4,7 @@ using BLL.Services.AbstractServices.AppointmentModule;
 using DAL.Models.AppointmentModule;
 using DAL.Repository;
 using DAL.Specifications;
+using DAL.Specifications.Appointment;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +28,8 @@ namespace BLL.Services.ImplementationService.AppointmentModule
         public async Task<DoctorScheduleDto> CreateScheduleAsync(int doctorId, CreateDoctorScheduleDto dto)
         {
             // Check for duplicate schedule
-            var spec = new BaseSpecification<DoctorSchedule>(s => 
-                s.DoctorId == doctorId && 
-                s.DayOfWeek == dto.DayOfWeek && 
-                s.StartTime == dto.StartTime && 
-                s.EndTime == dto.EndTime);
+            var spec = new GetExistingScheduleSpecs(doctorId, dto.DayOfWeek, dto.StartTime, dto.EndTime);
+              
             
             var existing = await _scheduleRepo.GetAllAsync(spec);
             if (existing.Any())
