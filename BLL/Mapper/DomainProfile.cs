@@ -11,7 +11,8 @@ using DAL.Models.OrderModule;
 using DAL.Models.Users;
 using DomainLayer.Models.BasketModule;
 using Shared.DTOs;
-
+using BLL.Dtos.Nursing;
+using DAL.Models.NursingModule;
 
 namespace BLL.Mapper
 {
@@ -103,6 +104,10 @@ namespace BLL.Mapper
                 .ForMember(dest => dest.Total, opt => opt.MapFrom(src =>
                     src.BasketItems.Sum(i => i.Price * i.Quantity) + src.ShippingPrice));
 
+            // Nursing Mappings
+            CreateMap<NursingRequest, NursingRequestDto>().ReverseMap();
+            CreateMap<NursingReview, NursingReviewDto>().ReverseMap();
+            CreateMap<NursingReview, CreateNursingReviewDto>().ReverseMap();
 
         }
     }
