@@ -15,7 +15,6 @@ namespace DAL.Models.Users
 
         public DateTime DateOfBirth { get; set; }
         public CustomerBasket? Basket { get; set; }
-        public Appointment? Appointment { get; set; }
-
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 }

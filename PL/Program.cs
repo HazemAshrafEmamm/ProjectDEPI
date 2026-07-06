@@ -9,6 +9,7 @@ using BLL.Services.ImplementationService;
 using BLL.Services.ImplementationService.AppointmentModule;
 using BLL.Services.ImplementationService.ConsultationModule;
 using BLL.Services.ImplementationService.MedicationModule;
+using BLL.Services.ImplementationService.NursingModule;
 using DAL.Data;
 using DAL.Models.Users;
 using DAL.Repository;

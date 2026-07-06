@@ -1,6 +1,7 @@
 using AutoMapper;
 using BLL.Dtos.Schedule;
 using BLL.Services.AbstractServices.AppointmentModule;
+using DAL.Exceptions.AppointmentModule;
 using DAL.Models.AppointmentModule;
 using DAL.Repository;
 using DAL.Specifications;
@@ -33,7 +34,7 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             
             var existing = await _scheduleRepo.GetAllAsync(spec);
             if (existing.Any())
-                throw new InvalidOperationException("This schedule already exists.");
+                throw new DoctorScheduleConflictException(dto.DayOfWeek, dto.StartTime, dto.EndTime);
 
             var schedule = _mapper.Map<DoctorSchedule>(dto);
             schedule.DoctorId = doctorId;
@@ -46,12 +47,11 @@ namespace BLL.Services.ImplementationService.AppointmentModule
 
         public async Task<bool> DeleteScheduleAsync(int scheduleId, int doctorId)
         {
-            var schedule = await _scheduleRepo.GetByIdAsync(scheduleId);
-            if (schedule == null)
-                throw new KeyNotFoundException($"Schedule with ID {scheduleId} not found.");
+            var schedule = await _scheduleRepo.GetByIdAsync(scheduleId)
+                ?? throw new DoctorScheduleNotFoundException(scheduleId);
 
             if (schedule.DoctorId != doctorId)
-                throw new UnauthorizedAccessException("You are not authorized to delete this schedule.");
+                throw new UnauthorizedAppointmentAccessException(doctorId, scheduleId);
 
             _scheduleRepo.Delete(schedule);
             await _unitOfWork.SaveChangesAsync();
@@ -68,12 +68,11 @@ namespace BLL.Services.ImplementationService.AppointmentModule
 
         public async Task<DoctorScheduleDto> UpdateScheduleAsync(int scheduleId, UpdateDoctorScheduleDto dto, int doctorId)
         {
-            var schedule = await _scheduleRepo.GetByIdAsync(scheduleId);
-            if (schedule == null)
-                throw new KeyNotFoundException($"Schedule with ID {scheduleId} not found.");
+            var schedule = await _scheduleRepo.GetByIdAsync(scheduleId)
+                ?? throw new DoctorScheduleNotFoundException(scheduleId);
 
             if (schedule.DoctorId != doctorId)
-                throw new UnauthorizedAccessException("You are not authorized to update this schedule.");
+                throw new UnauthorizedAppointmentAccessException(doctorId, scheduleId);
 
             _mapper.Map(dto, schedule);
 

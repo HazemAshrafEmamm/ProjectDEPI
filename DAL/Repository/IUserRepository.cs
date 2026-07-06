@@ -15,6 +15,6 @@ namespace DAL.Repository
         Task<Pharmacist?> GetPharmacistWithMedicationsAsync(int pharmacistId);
         Task<Doctor?> GetDoctorByIdAsync(int doctorId);
         Task<IEnumerable<Doctor>> SearchDoctorsAsync(string? name, string? specialization, string? location, int pageNumber, int pageSize);
-
+        Task<IEnumerable<Nurse>> SearchNursesAsync(string? name, string? specialization, int pageNumber, int pageSize);
     }
 }

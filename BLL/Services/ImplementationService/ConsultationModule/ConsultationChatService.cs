@@ -92,7 +92,7 @@ namespace BLL.Services.ImplementationService.ConsultationModule
                 ?? throw new ConsultationNotFoundException(consultationId);
 
             if (consultation.PatientId != userId && consultation.DoctorId != userId)
-                throw new UnauthorizedException("You do not have access to this consultation.");
+                throw new UnauthorizedAccessException("You do not have access to this consultation.");
 
             return consultation;
         }

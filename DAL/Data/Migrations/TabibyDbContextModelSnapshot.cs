@@ -59,7 +59,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("SenderUserId");
 
-                    b.ToTable("ConsultationMessages");
+                    b.ToTable("ConsultationMessages", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.AppointmentModule.Appointment", b =>
@@ -109,7 +109,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.AppointmentModule.DoctorSchedule", b =>
@@ -147,7 +147,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("DoctorSchedules");
+                    b.ToTable("DoctorSchedules", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Consultation.Consultation", b =>
@@ -186,7 +186,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Consultations");
+                    b.ToTable("Consultations", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Consultation.ConsultationReview", b =>
@@ -218,7 +218,7 @@ namespace DAL.Data.Migrations
                     b.HasIndex("ConsultationId")
                         .IsUnique();
 
-                    b.ToTable("ConsultationReviews");
+                    b.ToTable("ConsultationReviews", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Notification", b =>
@@ -256,7 +256,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.NursingModule.NursingRequest", b =>
@@ -302,7 +302,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("NursingRequests");
+                    b.ToTable("NursingRequests", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.NursingModule.NursingReview", b =>
@@ -334,7 +334,7 @@ namespace DAL.Data.Migrations
                     b.HasIndex("NursingRequestId")
                         .IsUnique();
 
-                    b.ToTable("NursingReviews");
+                    b.ToTable("NursingReviews", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.OrderModule.Medication", b =>
@@ -377,7 +377,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("PharmacistId");
 
-                    b.ToTable("Medications");
+                    b.ToTable("Medications", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.OrderModule.Order", b =>
@@ -416,7 +416,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.OrderModule.OrderItem", b =>
@@ -459,7 +459,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderItem", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Users.ApplicationUser", b =>
@@ -589,7 +589,7 @@ namespace DAL.Data.Migrations
 
                     b.HasIndex("MedicationId");
 
-                    b.ToTable("BasketItems");
+                    b.ToTable("BasketItems", (string)null);
                 });
 
             modelBuilder.Entity("DomainLayer.Models.BasketModule.CustomerBasket", b =>
@@ -620,7 +620,7 @@ namespace DAL.Data.Migrations
                     b.HasIndex("PatientId")
                         .IsUnique();
 
-                    b.ToTable("CustomerBaskets");
+                    b.ToTable("CustomerBaskets", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
@@ -984,7 +984,7 @@ namespace DAL.Data.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders");
+                            b1.ToTable("Orders", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");

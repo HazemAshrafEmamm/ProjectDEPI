@@ -10,6 +10,7 @@ using DAL.Models.Users;
 using DAL.Repository;
 using DAL.Shared.Enums;
 using DAL.Specifications.ConsultationSpecs;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,8 @@ using System.Threading.Tasks;
 namespace BLL.Services.ImplementationService.ConsultationModule
 {
     public class ConsultationService
-        (IUnitOfWork _unitOfWork , IMapper _mapper , INotificationService _notificationService , IUserRepository _userRepository) : IConsultationService
+        (IUnitOfWork _unitOfWork , IMapper _mapper , INotificationService _notificationService 
+        , IUserRepository _userRepository , UserManager<ApplicationUser> _userManager) : IConsultationService
     {
         public async Task<DoctorInfoDto> GetDoctorInfoAsync(int doctorId)
         {
@@ -47,6 +49,9 @@ namespace BLL.Services.ImplementationService.ConsultationModule
             if (existingConsultation is not null )
                 throw new ConsultationAlreadyExistsException(PatientId, createDto.DoctorId);
 
+            var doctor = await _userRepository.GetDoctorByIdAsync(createDto.DoctorId)
+                         ?? throw new DoctorNotFoundException(createDto.DoctorId);
+
             var consultation = new Consultation
             {
                 PatientId = PatientId,
@@ -57,8 +62,9 @@ namespace BLL.Services.ImplementationService.ConsultationModule
 
             await _unitOfWork.GetRepository<Consultation>().AddAsync(consultation);
             await _unitOfWork.SaveChangesAsync();
-            
-            await _notificationService.SendNotificationAsync( $"You have a new consultation request from patient {PatientId}." ,NotificationType.ConsultationRequest, createDto.DoctorId);
+            var patient = await _userManager.FindByIdAsync(PatientId.ToString())
+                             as Patient ?? throw new UserNotFoundException(PatientId.ToString());
+            await _notificationService.SendNotificationAsync( $"You have a new consultation request from patient {patient.UserName}." ,NotificationType.ConsultationRequest, createDto.DoctorId);
     
             return _mapper.Map<ConsultationDto>(consultation);
         }

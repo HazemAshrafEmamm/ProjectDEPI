@@ -12,8 +12,8 @@ namespace PL.Controllers
 {
     [Authorize]
     public class AppointmentController(
-        IAppointmentService _appointmentService,
-        IDoctorScheduleService _scheduleService) : ApiControllerBase
+        IAppointmentService _appointmentService
+                        ) : ApiControllerBase
     {
         #region Patient - Functionality
 

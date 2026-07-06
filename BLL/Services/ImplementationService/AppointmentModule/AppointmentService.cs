@@ -2,6 +2,7 @@ using AutoMapper;
 using BLL.Dtos.Appointment;
 using BLL.Services.AbstractServices.AppointmentModule;
 using DAL.Exceptions;
+using DAL.Exceptions.AppointmentModule;
 using DAL.Models.AppointmentModule;
 using DAL.Repository;
 using DAL.Shared.Enums;
@@ -49,8 +50,8 @@ namespace BLL.Services.ImplementationService.AppointmentModule
 
             await _repo.AddAsync(appointmentEntity);
             await _unitOfWork.SaveChangesAsync();
-
-            return _mapper.Map<AppointmentDto>(appointmentEntity);
+            var appointment = await GetAppointmentOrThrowAsync(appointmentEntity.Id);
+            return _mapper.Map<AppointmentDto>(appointment);
         }
 
         public async Task<AppointmentDto> CancelAppointmentAsync(int appointmentId, int userId)
@@ -58,11 +59,9 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             var appointment = await GetAppointmentOrThrowAsync(appointmentId);
             ValidateOwnership(appointment, userId);
 
-            if (appointment.Status == AppointmentStatus.Cancelled)
-                throw new InvalidOperationException($"Appointment with ID {appointmentId} is already cancelled.");
-
-            if (appointment.Status == AppointmentStatus.Completed)
-                throw new InvalidOperationException("Cannot cancel a completed appointment.");
+            if (appointment.Status == AppointmentStatus.Cancelled ||
+                appointment.Status == AppointmentStatus.Completed)
+                throw new AppointmentNotCancelableException(appointmentId);
 
             appointment.Status = AppointmentStatus.Cancelled;
             appointment.UpdatedAt = DateTime.UtcNow;
@@ -77,10 +76,10 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             var appointment = await GetAppointmentOrThrowAsync(appointmentId);
 
             if (appointment.DoctorId != doctorId)
-                throw new UnauthorizedAccessException("You are not authorized to confirm this appointment.");
+                throw new UnauthorizedAppointmentAccessException(doctorId, appointmentId);
 
             if (appointment.Status != AppointmentStatus.Pending)
-                throw new InvalidOperationException($"Only pending appointments can be confirmed. Current status: {appointment.Status}.");
+                throw new AppointmentNotConfirmableException(appointmentId);
 
             appointment.Status = AppointmentStatus.Confirmed;
             appointment.UpdatedAt = DateTime.UtcNow;
@@ -95,10 +94,10 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             var appointment = await GetAppointmentOrThrowAsync(appointmentId);
 
             if (appointment.DoctorId != doctorId)
-                throw new UnauthorizedAccessException("You are not authorized to complete this appointment.");
+                throw new UnauthorizedAppointmentAccessException(doctorId, appointmentId);
 
             if (appointment.Status != AppointmentStatus.Confirmed)
-                throw new InvalidOperationException($"Only confirmed appointments can be completed. Current status: {appointment.Status}.");
+                throw new AppointmentNotCompletableException(appointmentId);
 
             appointment.Status = AppointmentStatus.Completed;
             appointment.UpdatedAt = DateTime.UtcNow;
@@ -153,10 +152,10 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             ValidateOwnership(appointment, userId);
 
             if (appointment.Status == AppointmentStatus.Cancelled)
-                throw new InvalidOperationException("Cannot update a cancelled appointment.");
+                throw new AppointmentNotCancelableException(appointmentId);
 
             if (appointment.AppointmentDate < DateTime.Now)
-                throw new InvalidOperationException("Cannot update a past appointment.");
+                throw new AppointmentNotCancelableException(appointmentId);
 
             // If schedule is being changed, validate it
             if (dto.ScheduleId.HasValue)
@@ -198,16 +197,16 @@ namespace BLL.Services.ImplementationService.AppointmentModule
 
         private async Task<Appointment> GetAppointmentOrThrowAsync(int appointmentId)
         {
-            var appointment = await _repo.GetByIdAsync(appointmentId);
+            var appointment = (await _repo.GetAllAsync(new AppointmentWithIncludesSpecs(appointmentId))).FirstOrDefault();
             if (appointment == null)
-                throw new KeyNotFoundException($"Appointment with ID {appointmentId} not found.");
+                throw new AppointmentNotFoundException(appointmentId);
             return appointment;
         }
 
         private static void ValidateOwnership(Appointment appointment, int userId)
         {
             if (appointment.PatientId != userId && appointment.DoctorId != userId)
-                throw new UnauthorizedAccessException("You are not authorized to access this appointment.");
+                throw new UnauthorizedAppointmentAccessException(userId, appointment.Id);
         }
 
         private async Task ValidatePatientAsync(int patientId)
@@ -220,15 +219,14 @@ namespace BLL.Services.ImplementationService.AppointmentModule
 
         private async Task<DoctorSchedule> ValidateScheduleAsync(int scheduleId, int doctorId)
         {
-            var schedule = await _scheduleRepo.GetByIdAsync(scheduleId);
-            if (schedule == null)
-                throw new KeyNotFoundException($"Schedule with ID {scheduleId} not found.");
+            var schedule = await _scheduleRepo.GetByIdAsync(scheduleId)
+                ?? throw new DoctorScheduleNotFoundException(scheduleId);
 
             if (schedule.DoctorId != doctorId)
-                throw new InvalidOperationException("The selected schedule does not belong to the specified doctor.");
+                throw new UnauthorizedAppointmentAccessException(doctorId, scheduleId);
 
             if (!schedule.IsAvailable)
-                throw new InvalidOperationException("The selected schedule is not available.");
+                throw new AppointmentSlotUnavailableException(doctorId, DateTime.Today, schedule.StartTime);
 
             return schedule;
         }
@@ -239,19 +237,22 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             var bookedAppointments = await _repo.GetAllAsync(appointmentSpec);
             var isSlotTaken = bookedAppointments.Any(a => a.ScheduleId == scheduleId && a.Id != excludeAppointmentId);
             if (isSlotTaken)
-                throw new InvalidOperationException("This time slot is already booked.");
+            {
+                var schedule = await _scheduleRepo.GetByIdAsync(scheduleId);
+                throw new AppointmentSlotUnavailableException(doctorId, date, schedule?.StartTime ?? TimeSpan.Zero);
+            }
         }
 
         private static void ValidateFutureDate(DateTime date)
         {
             if (date.Date < DateTime.Today)
-                throw new InvalidOperationException("Cannot book an appointment in the past.");
+                throw new BadRequestException(["Cannot book an appointment in the past."]);
         }
 
         private static void ValidateDayOfWeek(DateTime date, DayOfWeek expectedDay)
         {
             if (date.DayOfWeek != expectedDay)
-                throw new InvalidOperationException($"The appointment date must be on {expectedDay}.");
+                throw new BadRequestException([$"The appointment date must be on {expectedDay}."]);
         }
 
         #endregion

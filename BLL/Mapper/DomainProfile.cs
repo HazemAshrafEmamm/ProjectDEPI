@@ -42,10 +42,11 @@ namespace BLL.Mapper
             // Schedule Mappings
             CreateMap<DoctorSchedule, DoctorScheduleDto>().ReverseMap();
             CreateMap<DoctorSchedule, CreateDoctorScheduleDto>().ReverseMap();
-            CreateMap<DoctorSchedule, UpdateDoctorScheduleDto>().ReverseMap();
+            CreateMap<DoctorSchedule, UpdateDoctorScheduleDto>().ReverseMap().ForMember(dest=>dest.Id,opt=>opt.Ignore());
+
             CreateMap<DoctorSchedule, AvailableDoctorSlotDto>()
-    .ForMember(dest => dest.ScheduleId, opt => opt.MapFrom(src => src.Id))
-    .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(src => true));
+                    .ForMember(dest => dest.ScheduleId, opt => opt.MapFrom(src => src.Id))
+                    .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(src => true));
 
             // Medication Mappings
             CreateMap<Medication, MedicationDto>().ReverseMap();
@@ -69,6 +70,11 @@ namespace BLL.Mapper
 
             // Doctor Mappings
             CreateMap<Doctor, DoctorInfoDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Fullname))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
+
+            // Nurse Mappings
+            CreateMap<Nurse, BLL.Dtos.Nursing.NurseInfoDto>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Fullname))
                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
 

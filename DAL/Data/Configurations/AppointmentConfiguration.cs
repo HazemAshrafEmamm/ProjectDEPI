@@ -23,25 +23,16 @@ namespace DAL.Data.Configurations
             builder.Property(a => a.Notes)
                    .HasMaxLength(500);
 
-            // ⚠️ Multiple Cascade Paths Problem:
-            // Appointment له علاقة مع Patient و Doctor و DoctorSchedule
-            // لو الثلاثة Cascade → SQL Server هيرفض (multiple cascade paths)
-            // الحل:
-            //   Schedule → Cascade (الـ owner الأساسي)
-            //   Patient  → NoAction (Restrict في EF)
-            //   Doctor   → NoAction (Restrict في EF)
-
             builder.HasOne(a => a.Patient)
-                   .WithMany()
+                   .WithMany(p => p.Appointments)
                    .HasForeignKey(a => a.PatientId)
-                   .OnDelete(DeleteBehavior.NoAction);  // ⛔ مش Cascade
+                   .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(a => a.Doctor)
                    .WithMany()
                    .HasForeignKey(a => a.DoctorId)
-                   .OnDelete(DeleteBehavior.NoAction);  // ⛔ مش Cascade
+                   .OnDelete(DeleteBehavior.NoAction);  
 
-            // Schedule → Appointments: Cascade (متعرفة في DoctorScheduleConfiguration)
         }
     }
 }

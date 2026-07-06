@@ -15,7 +15,7 @@ namespace DAL.Repository
         {
             return await _context
                             .Set<Patient>()
-                            .Include(p => p.Appointment)
+                            .Include(p => p.Appointments)
                             .FirstOrDefaultAsync(p => p.Id == patientId);
         }        
 
@@ -53,6 +53,23 @@ namespace DAL.Repository
 
             if (!string.IsNullOrWhiteSpace(location))
                 query = query.Where(d => d.Location.ToLower().Contains(location.ToLower()));
+
+            return await query
+                            .Skip((pageNumber - 1) * pageSize)
+                            .Take(pageSize)
+                            .AsNoTracking()
+                            .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Nurse>> SearchNursesAsync(string? name, string? specialization, int pageNumber, int pageSize)
+        {
+            var query = _context.Set<Nurse>().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+                query = query.Where(n => n.Fullname.ToLower().Contains(name.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(specialization))
+                query = query.Where(n => n.Specialization.ToLower().Contains(specialization.ToLower()));
 
             return await query
                             .Skip((pageNumber - 1) * pageSize)

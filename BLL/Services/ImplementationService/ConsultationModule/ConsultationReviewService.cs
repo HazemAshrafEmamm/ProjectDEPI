@@ -26,7 +26,7 @@ namespace BLL.Services.ImplementationService.ConsultationModule
 
 
             if (consultation.PatientId != patientId)
-                throw new UnauthorizedException("You do not have access to this consultation.");
+                throw new UnauthorizedAccessException("You do not have access to this consultation.");
 
             if (consultation.Status != ConsultationStatus.Completed)
                 throw new ConsultationNotCompletedException(consultationId);
