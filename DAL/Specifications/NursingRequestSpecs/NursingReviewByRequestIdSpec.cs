@@ -1,6 +1,6 @@
 using DAL.Models.NursingModule;
 
-namespace DAL.Specifications.NursingSpecs
+namespace DAL.Specifications.NursingRequestSpecs
 {
     public class NursingReviewByRequestIdSpec : BaseSpecification<NursingReview>
     {
