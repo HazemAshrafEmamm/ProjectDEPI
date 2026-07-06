@@ -16,12 +16,12 @@ public class GenaricRepository<TEntity> : IGenaricRepository<TEntity> where TEnt
 
     public async Task<TEntity?> GetByIdAsync(int id)
     {
-        return await _context.Set<TEntity>().FindAsync(id);
+        return await _context.Set<TEntity>().FirstOrDefaultAsync(a=>a.Id==id);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync()
     {
-        return await _context.Set<TEntity>().ToListAsync();
+        return await _context.Set<TEntity>().AsNoTracking().ToListAsync();
     }
 
     public async Task AddAsync(TEntity entity)

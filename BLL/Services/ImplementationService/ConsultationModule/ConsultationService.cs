@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Dtos.Consultion;
 using BLL.Dtos.Doctor;
 using BLL.Services.AbstractServices;
@@ -19,16 +19,26 @@ using System.Threading.Tasks;
 namespace BLL.Services.ImplementationService.ConsultationModule
 {
     public class ConsultationService
-        (IUnitOfWork _unitOfWork , IMapper _mapper , INotificationService _notificationService) : IConsultationService
+        (IUnitOfWork _unitOfWork , IMapper _mapper , INotificationService _notificationService , IUserRepository _userRepository) : IConsultationService
     {
-        public Task<DoctorInfoDto> GetDoctorInfoAsync(int doctorId)
+        public async Task<DoctorInfoDto> GetDoctorInfoAsync(int doctorId)
         {
-            throw new NotImplementedException();
+            var doctor = await _userRepository.GetDoctorByIdAsync(doctorId)
+                         ?? throw new DoctorNotFoundException(doctorId);
+
+            return _mapper.Map<DoctorInfoDto>(doctor);
         }
 
-        public Task<IEnumerable<DoctorInfoDto>> SearchDoctorsAsync(SearchDoctorDto searchDto)
+        public async Task<IEnumerable<DoctorInfoDto>> SearchDoctorsAsync(SearchDoctorDto searchDto)
         {
-            throw new NotImplementedException();
+            var doctors = await _userRepository.SearchDoctorsAsync(
+                searchDto.Name,
+                searchDto.Specialization,
+                searchDto.Location,
+                searchDto.PageNumber,
+                searchDto.PageSize);
+
+            return _mapper.Map<IEnumerable<DoctorInfoDto>>(doctors);
         }
         public async Task<ConsultationDto> RequestConsultationAsync(int PatientId, CreateConsultationDto createDto)
         {
@@ -42,6 +52,7 @@ namespace BLL.Services.ImplementationService.ConsultationModule
                 PatientId = PatientId,
                 DoctorId = createDto.DoctorId,
                 Status = ConsultationStatus.Pending,
+                CreatedAt = DateTime.UtcNow,
             };
 
             await _unitOfWork.GetRepository<Consultation>().AddAsync(consultation);

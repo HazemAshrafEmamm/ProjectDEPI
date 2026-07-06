@@ -13,9 +13,7 @@ namespace BLL.Services.ImplementationService.NursingModule
     public class NursingService
         (IUnitOfWork _unitOfWork, IMapper _mapper, INotificationService _notificationService) : INursingService
     {
-        // ----------------------------------------------------------------
-        // Patient بيعمل طلب تمريض جديد
-        // ----------------------------------------------------------------
+       
         public async Task<NursingRequestDto> RequestNursingAsync(int patientId, CreateNursingRequestDto dto)
         {
             var request = new NursingRequest
@@ -38,9 +36,6 @@ namespace BLL.Services.ImplementationService.NursingModule
             return _mapper.Map<NursingRequestDto>(request);
         }
 
-        // ----------------------------------------------------------------
-        // Patient يشوف طلباته
-        // ----------------------------------------------------------------
         public async Task<IEnumerable<NursingRequestDto>> GetMyNursingRequestsAsync(int patientId)
         {
             var requests = await _unitOfWork.GetRepository<NursingRequest>()
@@ -52,9 +47,6 @@ namespace BLL.Services.ImplementationService.NursingModule
             return _mapper.Map<IEnumerable<NursingRequestDto>>(requests);
         }
 
-        // ----------------------------------------------------------------
-        // Nurse تشوف الطلبات المسندة ليها
-        // ----------------------------------------------------------------
         public async Task<IEnumerable<NursingRequestDto>> GetNurseRequestsAsync(int nurseId)
         {
             var requests = await _unitOfWork.GetRepository<NursingRequest>()
@@ -66,9 +58,6 @@ namespace BLL.Services.ImplementationService.NursingModule
             return _mapper.Map<IEnumerable<NursingRequestDto>>(requests);
         }
 
-        // ----------------------------------------------------------------
-        // Nurse بتغير status الطلب (Confirmed / In Progress / Completed)
-        // ----------------------------------------------------------------
         public async Task<NursingRequestDto> UpdateNursingStatusAsync(int requestId, UpdateNursingStatusDto dto, int userId)
         {
             var request = (await _unitOfWork.GetRepository<NursingRequest>()
@@ -96,9 +85,6 @@ namespace BLL.Services.ImplementationService.NursingModule
             return _mapper.Map<NursingRequestDto>(request);
         }
 
-        // ----------------------------------------------------------------
-        // Patient يكنسل طلبه (بس لو Pending)
-        // ----------------------------------------------------------------
         public async Task<NursingRequestDto> CancelNursingAsync(int requestId, int userId)
         {
             var request = (await _unitOfWork.GetRepository<NursingRequest>()
@@ -126,9 +112,6 @@ namespace BLL.Services.ImplementationService.NursingModule
             return _mapper.Map<NursingRequestDto>(request);
         }
 
-        // ----------------------------------------------------------------
-        // Patient يعمل review بعد اكتمال الخدمة
-        // ----------------------------------------------------------------
         public async Task<NursingReviewDto> AddNursingReviewAsync(int requestId, int patientId, CreateNursingReviewDto dto)
         {
             var request = (await _unitOfWork.GetRepository<NursingRequest>()
@@ -164,9 +147,6 @@ namespace BLL.Services.ImplementationService.NursingModule
             return _mapper.Map<NursingReviewDto>(review);
         }
 
-        // ----------------------------------------------------------------
-        // جيب الـ review بتاعة طلب معين
-        // ----------------------------------------------------------------
         public async Task<NursingReviewDto?> GetNursingReviewAsync(int requestId)
         {
             var request = await _unitOfWork.GetRepository<NursingRequest>().GetByIdAsync(requestId)

@@ -1,4 +1,4 @@
-﻿using DAL.Models.Users;
+using DAL.Models.Users;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,8 +13,8 @@ namespace DAL.Repository
         Task<Patient?> GetPatientWithBasketAsync(int patientId);
         Task<Patient?> GetPatientWithAppointmentAsync(int patientId);
         Task<Pharmacist?> GetPharmacistWithMedicationsAsync(int pharmacistId);
-
-
+        Task<Doctor?> GetDoctorByIdAsync(int doctorId);
+        Task<IEnumerable<Doctor>> SearchDoctorsAsync(string? name, string? specialization, string? location, int pageNumber, int pageSize);
 
     }
 }

@@ -42,7 +42,7 @@ namespace PL.Controllers
         [HttpGet("GetMyConsultationById/{id}")]
         public async Task<IActionResult> GetMyConsultationById(int id)
         {
-            var consultation = await _consultationService.GetConsultationByIdAsync(User.GetUserId(), id);
+            var consultation = await _consultationService.GetConsultationByIdAsync(id, User.GetUserId());
 
             return Ok(consultation);
         }
@@ -54,6 +54,12 @@ namespace PL.Controllers
             return NoContent();
             
         }
-
+        [Authorize(Roles = "Patient,Doctor")]
+        [HttpPut("UpdateConsultationStatus/{id}")]
+        public async Task<IActionResult> UpdateConsultationStatus(int id, [FromBody] UpdateConsultionStatusDto updateStatusDto)
+        {
+            var consultation = await _consultationService.UpdateConsultationStatusAsync(id, User.GetUserId(), updateStatusDto);
+            return Ok(consultation);
+        }
     }
 }

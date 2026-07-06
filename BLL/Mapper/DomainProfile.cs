@@ -1,12 +1,14 @@
 using AutoMapper;
 using BLL.Dtos.Appointment;
 using BLL.Dtos.Consultion;
+using BLL.Dtos.Doctor;
 using BLL.Dtos.Medication;
 using BLL.Dtos.Order;
 using BLL.Dtos.Schedule;
 using DAL.Models.AppointmentModule;
 using DAL.Models.Consultation;
 using DAL.Models.OrderModule;
+using DAL.Models.Users;
 using DomainLayer.Models.BasketModule;
 using Shared.DTOs;
 using BLL.Dtos.Nursing;
@@ -19,14 +21,32 @@ namespace BLL.Mapper
         public DomainProfile()
         {
             // Appointment Mappings
-            CreateMap<Appointment, AppointmentDto>().ReverseMap();
-            CreateMap<Appointment, CreateAppointmentDto>().ReverseMap();
-            CreateMap<Appointment, UpdateAppointmentDto>().ReverseMap();
+            CreateMap<Appointment, AppointmentDto>()
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor != null ? src.Doctor.Fullname : string.Empty))
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient != null ? src.Patient.Fullname : string.Empty))
+                .ForMember(dest => dest.StatusText, opt => opt.MapFrom(src => src.Status.ToString()));
+            CreateMap<CreateAppointmentDto, Appointment>()
+                .ForMember(dest => dest.AppointmentTime, opt => opt.Ignore());
+            CreateMap<UpdateAppointmentDto, Appointment>()
+                .ForMember(dest => dest.ScheduleId, opt =>
+                {
+                    opt.PreCondition(src => src.ScheduleId.HasValue);
+                    opt.MapFrom(src => src.ScheduleId!.Value);
+                })
+                .ForMember(dest => dest.AppointmentDate, opt =>
+                {
+                    opt.PreCondition(src => src.AppointmentDate.HasValue);
+                    opt.MapFrom(src => src.AppointmentDate!.Value);
+                })
+                .ForMember(dest => dest.Notes, opt => opt.Condition(src => src.Notes != null));
 
             // Schedule Mappings
             CreateMap<DoctorSchedule, DoctorScheduleDto>().ReverseMap();
             CreateMap<DoctorSchedule, CreateDoctorScheduleDto>().ReverseMap();
             CreateMap<DoctorSchedule, UpdateDoctorScheduleDto>().ReverseMap();
+            CreateMap<DoctorSchedule, AvailableDoctorSlotDto>()
+    .ForMember(dest => dest.ScheduleId, opt => opt.MapFrom(src => src.Id))
+    .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(src => true));
 
             // Medication Mappings
             CreateMap<Medication, MedicationDto>().ReverseMap();
@@ -47,6 +67,11 @@ namespace BLL.Mapper
 
             CreateMap<ConsultationReview, ConsultationReviewDto>().ReverseMap();
             CreateMap<ConsultationReview, CreateConsultationReviewDto>().ReverseMap();
+
+            // Doctor Mappings
+            CreateMap<Doctor, DoctorInfoDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Fullname))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
 
             // Order Mappings
             CreateMap<Order, OrderDto>()
