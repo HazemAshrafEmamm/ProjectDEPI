@@ -1,4 +1,4 @@
-﻿using DAL.Exceptions;
+using DAL.Exceptions;
 using Shared.ErrorModels;
 using System.Text.Json;
 
@@ -41,6 +41,8 @@ namespace TalabatDemo.CustomMiddleWares
             {
                 NotFoundException => StatusCodes.Status404NotFound,
                 UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+                ConflictException => StatusCodes.Status409Conflict,
+                BusinessRuleException => StatusCodes.Status422UnprocessableEntity,
                 BadRequestException bad => GetBadRequestErrors(bad , response),
                 _ => StatusCodes.Status500InternalServerError
             };

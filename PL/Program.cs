@@ -49,6 +49,7 @@ namespace PL
             builder.Services.AddScoped<IAttachmentService, AttachmentService>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
+            builder.Services.AddScoped<BLL.Services.AbstractServices.Admin.IAdminService, BLL.Services.ImplementationService.Admin.AdminService>();
 
             
             builder.Services.AddAutoMapper((x) => { }, typeof(DomainProfile).Assembly);

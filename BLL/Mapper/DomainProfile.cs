@@ -103,6 +103,14 @@ namespace BLL.Mapper
             CreateMap<NursingReview, NursingReviewDto>().ReverseMap();
             CreateMap<NursingReview, CreateNursingReviewDto>().ReverseMap();
 
+            // Admin Mappings
+            CreateMap<ApplicationUser, BLL.Dtos.Admin.AdminUserDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Fullname))
+                .ForMember(dest => dest.Roles, opt => opt.Ignore())
+                .ForMember(dest => dest.Specialty, opt => opt.Ignore())
+                .ForMember(dest => dest.Location, opt => opt.Ignore())
+                .ForMember(dest => dest.Specialization, opt => opt.Ignore())
+                .ForMember(dest => dest.PharmacyName, opt => opt.Ignore());
         }
     }
 }
