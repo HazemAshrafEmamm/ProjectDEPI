@@ -77,5 +77,91 @@ namespace DAL.Repository
                             .AsNoTracking()
                             .ToListAsync();
         }
+
+        public async Task<(IEnumerable<ApplicationUser> Users, int TotalCount)> SearchUsersAsync(string? name, string? email, string? userType, string? role, bool? isActive, int pageNumber, int pageSize)
+        {
+            var query = _context.Set<ApplicationUser>().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+                query = query.Where(u => u.Fullname.ToLower().Contains(name.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(email))
+                query = query.Where(u => u.Email.ToLower().Contains(email.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(userType))
+                query = query.Where(u => u.UserType.ToLower() == userType.ToLower());
+
+            if (isActive.HasValue)
+                query = query.Where(u => u.IsActive == isActive.Value);
+
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                var roleId = await _context.Roles
+                    .Where(r => r.Name.ToLower() == role.ToLower())
+                    .Select(r => r.Id)
+                    .FirstOrDefaultAsync();
+
+                if (roleId != 0)
+                {
+                    var userIds = _context.UserRoles.Where(ur => ur.RoleId == roleId).Select(ur => ur.UserId);
+                    query = query.Where(u => userIds.Contains(u.Id));
+                }
+                else
+                {
+                    query = query.Where(u => false);
+                }
+            }
+
+            int totalCount = await query.CountAsync();
+
+            var users = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return (users, totalCount);
+        }
+
+        public async Task<bool> HasActiveAppointmentsAsync(int doctorId)
+        {
+            return await _context.Appointments.AnyAsync(a => a.DoctorId == doctorId && (a.Status == DAL.Shared.Enums.AppointmentStatus.Pending || a.Status == DAL.Shared.Enums.AppointmentStatus.Confirmed));
+        }
+
+        public async Task<bool> HasActiveConsultationsAsync(int doctorId)
+        {
+            return await _context.Consultations.AnyAsync(c => c.DoctorId == doctorId && c.Status == DAL.Shared.Enums.ConsultationStatus.Pending);
+        }
+
+        public async Task<bool> HasActiveNursingRequestsAsync(int nurseId)
+        {
+            return await _context.NursingRequests.AnyAsync(n => n.NurseId == nurseId && n.Status == "Pending");
+        }
+
+        public async Task<bool> HasMedicationsAsync(int pharmacistId)
+        {
+            return await _context.Medications.AnyAsync(m => m.PharmacistId == pharmacistId);
+        }
+
+        public async Task ConvertUserTypeAsync(int userId, string targetType, string? specialty, string? location, string? specialization, string? pharmacyName)
+        {
+            var sql = @"
+                UPDATE AspNetUsers
+                SET Discriminator = {0},
+                    UserType = {0},
+                    Specialty = {1},
+                    Location = {2},
+                    Specialization = {3},
+                    PharmacyName = {4}
+                WHERE Id = {5}";
+            
+            await _context.Database.ExecuteSqlRawAsync(sql, 
+                targetType,
+                targetType == "Doctor" ? (object?)specialty ?? DBNull.Value : DBNull.Value,
+                targetType == "Doctor" ? (object?)location ?? DBNull.Value : DBNull.Value,
+                targetType == "Nurse" ? (object?)specialization ?? DBNull.Value : DBNull.Value,
+                targetType == "Pharmacist" ? (object?)pharmacyName ?? DBNull.Value : DBNull.Value,
+                userId);
+        }
     }
 }

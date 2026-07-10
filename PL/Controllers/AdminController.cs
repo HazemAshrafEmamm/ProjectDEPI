@@ -62,12 +62,16 @@ namespace PL.Controllers
             return Ok(user);
         }
 
-        [HttpPut("Users/{userId}/Convert")]
-        public async Task<IActionResult> ConvertUserType(int userId, [FromBody] ConvertUserTypeDto dto)
+
+        [HttpGet("Users")]
+        public async Task<IActionResult> GetAllUsers([FromQuery] SearchUserDto searchDto)
         {
-            var requestingAdminId = User.GetUserId();
-            var user = await _adminService.ConvertUserTypeAsync(userId, dto, requestingAdminId);
-            return Ok(user);
+            var result = await _adminService.GetAllUsersAsync(searchDto);
+            return Ok(new
+            {
+                TotalCount = result.TotalCount,
+                Users = result.Users
+            });
         }
     }
 }

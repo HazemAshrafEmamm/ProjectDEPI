@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using DAL.Data;
+using DAL.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services.ImplementationService.Admin
@@ -15,13 +16,33 @@ namespace BLL.Services.ImplementationService.Admin
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
-        private readonly TabibyDbContext _dbContext;
+        private readonly IUserRepository _userRepository;
 
-        public AdminService(UserManager<ApplicationUser> userManager, IMapper mapper, TabibyDbContext dbContext)
+        public AdminService(UserManager<ApplicationUser> userManager, IMapper mapper, IUserRepository userRepository)
         {
             _userManager = userManager;
             _mapper = mapper;
-            _dbContext = dbContext;
+            _userRepository = userRepository;
+        }
+
+        public async Task<(IEnumerable<AdminUserDto> Users, int TotalCount)> GetAllUsersAsync(SearchUserDto searchDto)
+        {
+            var (users, totalCount) = await _userRepository.SearchUsersAsync(
+                searchDto.Name,
+                searchDto.Email,
+                searchDto.UserType,
+                searchDto.Role,
+                searchDto.IsActive,
+                searchDto.PageNumber,
+                searchDto.PageSize);
+
+            var mappedUsers = new System.Collections.Generic.List<AdminUserDto>();
+            foreach (var user in users)
+            {
+                mappedUsers.Add(await MapToAdminUserDto(user));
+            }
+
+            return (mappedUsers, totalCount);
         }
 
         public async Task<AdminUserDto> CreateDoctorAsync(CreateDoctorAdminDto dto)
@@ -85,41 +106,20 @@ namespace BLL.Services.ImplementationService.Admin
             if (user == null)
                 throw new UserByIdNotFoundException(userId);
 
-            if (!user.IsActive)
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "User is already deactivated." });
-
             if (userId == requestingAdminId)
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "Admins cannot deactivate themselves." });
+                throw new BadRequestException(new System.Collections.Generic.List<string> { "Admins cannot delete themselves." });
 
             var isTargetAdmin = await _userManager.IsInRoleAsync(user, "Admin");
             if (isTargetAdmin)
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "Cannot deactivate another Admin account." });
+                throw new BadRequestException(new System.Collections.Generic.List<string> { "Cannot delete another Admin account." });
 
-            user.IsActive = false;
+            var mappedUser = await MapToAdminUserDto(user);
             
-            var result = await _userManager.UpdateAsync(user);
+            var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description).ToList();
                 throw new BadRequestException(errors);
-            }
-
-            var mappedUser = _mapper.Map<AdminUserDto>(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            mappedUser.Roles = roles.ToList();
-
-            if (user is Doctor doc)
-            {
-                mappedUser.Specialty = doc.Specialty;
-                mappedUser.Location = doc.Location;
-            }
-            else if (user is Nurse nurse)
-            {
-                mappedUser.Specialization = nurse.Specialization;
-            }
-            else if (user is Pharmacist pharm)
-            {
-                mappedUser.PharmacyName = pharm.PharmacyName;
             }
 
             return mappedUser;
@@ -135,11 +135,50 @@ namespace BLL.Services.ImplementationService.Admin
 
             var validRoles = new[] { "Admin", "Doctor", "Patient", "Nurse", "Pharmacist" };
             if (!validRoles.Contains(dto.Role))
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "Invalid role." });
+                throw new BadRequestException(new List<string> { "Invalid role." });
 
             var hasRole = await _userManager.IsInRoleAsync(user, dto.Role);
             if (hasRole)
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "User already has this role." });
+                throw new BadRequestException(new List<string> { "User already has this role." });
+
+            bool requiresTypeConversion = (dto.Role == "Doctor" || dto.Role == "Nurse" || dto.Role == "Pharmacist") && user.UserType != dto.Role;
+
+            if (requiresTypeConversion)
+            {
+                if (user.UserType == "Patient" || user.UserType == "Admin")
+                    throw new BadRequestException(new List<string> { "Cannot convert Patient or Admin accounts to another type." });
+
+                if (dto.Role == "Doctor" && string.IsNullOrEmpty(dto.Specialty))
+                    throw new BadRequestException(new List<string> { "Specialty is required for Doctor." });
+                if (dto.Role == "Pharmacist" && string.IsNullOrEmpty(dto.PharmacyName))
+                    throw new BadRequestException(new List<string> { "PharmacyName is required for Pharmacist." });
+
+                if (user.UserType == "Doctor")
+                {
+                    var hasActiveAppointments = await _userRepository.HasActiveAppointmentsAsync(userId);
+                    if (hasActiveAppointments) throw new ConversionBlockedException("Doctor has active appointments.");
+                    
+                    var hasActiveConsultations = await _userRepository.HasActiveConsultationsAsync(userId);
+                    if (hasActiveConsultations) throw new ConversionBlockedException("Doctor has active consultations.");
+                }
+                else if (user.UserType == "Nurse")
+                {
+                    var hasActiveNursingRequests = await _userRepository.HasActiveNursingRequestsAsync(userId);
+                    if (hasActiveNursingRequests) throw new ConversionBlockedException("Nurse has active nursing requests.");
+                }
+                else if (user.UserType == "Pharmacist")
+                {
+                    var hasMedications = await _userRepository.HasMedicationsAsync(userId);
+                    if (hasMedications) throw new ConversionBlockedException("Pharmacist owns medications. Reassign or delete them first.");
+                }
+
+                if (validRoles.Contains(user.UserType))
+                {
+                     await _userManager.RemoveFromRoleAsync(user, user.UserType);
+                }
+
+                await _userRepository.ConvertUserTypeAsync(userId, dto.Role, dto.Specialty, dto.Location, dto.Specialization, dto.PharmacyName);
+            }
 
             var result = await _userManager.AddToRoleAsync(user, dto.Role);
             if (!result.Succeeded)
@@ -148,7 +187,11 @@ namespace BLL.Services.ImplementationService.Admin
                 throw new BadRequestException(errors);
             }
 
-            return await MapToAdminUserDto(user);
+            var updatedUser = await _userManager.FindByIdAsync(userId.ToString());
+            if (updatedUser == null)
+                throw new UserByIdNotFoundException(userId);
+
+            return await MapToAdminUserDto(updatedUser);
         }
 
         public async Task<AdminUserDto> RemoveRoleAsync(int userId, UpdateUserRoleDto dto, int requestingAdminId)
@@ -172,88 +215,6 @@ namespace BLL.Services.ImplementationService.Admin
             }
 
             return await MapToAdminUserDto(user);
-        }
-
-        public async Task<AdminUserDto> ConvertUserTypeAsync(int userId, ConvertUserTypeDto dto, int requestingAdminId)
-        {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-                throw new UserByIdNotFoundException(userId);
-
-            if (dto.TargetType != "Doctor" && dto.TargetType != "Nurse" && dto.TargetType != "Pharmacist")
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "Target type must be Doctor, Nurse, or Pharmacist." });
-
-            if (user.UserType == dto.TargetType)
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "User is already of this type." });
-
-            if (user.UserType == "Patient" || user.UserType == "Admin")
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "Cannot convert Patient or Admin accounts." });
-
-            if (dto.TargetType == "Doctor" && string.IsNullOrEmpty(dto.Specialty))
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "Specialty is required for Doctor." });
-            if (dto.TargetType == "Pharmacist" && string.IsNullOrEmpty(dto.PharmacyName))
-                throw new BadRequestException(new System.Collections.Generic.List<string> { "PharmacyName is required for Pharmacist." });
-
-            if (user.UserType == "Doctor")
-            {
-                var hasActiveAppointments = await _dbContext.Appointments.AnyAsync(a => a.DoctorId == userId && (a.Status == DAL.Shared.Enums.AppointmentStatus.Pending || a.Status == DAL.Shared.Enums.AppointmentStatus.Confirmed));
-                if (hasActiveAppointments) throw new ConversionBlockedException("Doctor has active appointments.");
-                
-                var hasActiveConsultations = await _dbContext.Consultations.AnyAsync(c => c.DoctorId == userId && c.Status == DAL.Shared.Enums.ConsultationStatus.Pending);
-                if (hasActiveConsultations) throw new ConversionBlockedException("Doctor has active consultations.");
-            }
-            else if (user.UserType == "Nurse")
-            {
-                var hasActiveNursingRequests = await _dbContext.NursingRequests.AnyAsync(n => n.NurseId == userId && n.Status == "Pending");
-                if (hasActiveNursingRequests) throw new ConversionBlockedException("Nurse has active nursing requests.");
-            }
-            else if (user.UserType == "Pharmacist")
-            {
-                var hasMedications = await _dbContext.Medications.AnyAsync(m => m.PharmacistId == userId);
-                if (hasMedications) throw new ConversionBlockedException("Pharmacist owns medications. Reassign or delete them first.");
-            }
-
-            using var transaction = await _dbContext.Database.BeginTransactionAsync();
-            try
-            {
-                var sql = @"
-                    UPDATE AspNetUsers
-                    SET Discriminator = {0},
-                        UserType = {0},
-                        Specialty = {1},
-                        Location = {2},
-                        Specialization = {3},
-                        PharmacyName = {4}
-                    WHERE Id = {5}";
-                
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, 
-                    dto.TargetType,
-                    dto.TargetType == "Doctor" ? (object?)dto.Specialty ?? DBNull.Value : DBNull.Value,
-                    dto.TargetType == "Doctor" ? (object?)dto.Location ?? DBNull.Value : DBNull.Value,
-                    dto.TargetType == "Nurse" ? (object?)dto.Specialization ?? DBNull.Value : DBNull.Value,
-                    dto.TargetType == "Pharmacist" ? (object?)dto.PharmacyName ?? DBNull.Value : DBNull.Value,
-                    userId);
-
-                var currentRoles = await _userManager.GetRolesAsync(user);
-                await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                await _userManager.AddToRoleAsync(user, dto.TargetType);
-
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
-
-            // We must detach the tracked entity to reload it freshly with the new Discriminator type
-            _dbContext.Entry(user).State = EntityState.Detached;
-
-            var updatedUser = await _userManager.FindByIdAsync(userId.ToString());
-            if (updatedUser == null)
-                throw new UserByIdNotFoundException(userId);
-
-            return await MapToAdminUserDto(updatedUser);
         }
 
         private async Task EnsureEmailUniqueAsync(string email)
