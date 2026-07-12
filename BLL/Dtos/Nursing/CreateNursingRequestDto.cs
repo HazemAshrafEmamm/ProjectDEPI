@@ -8,7 +8,6 @@ namespace BLL.Dtos.Nursing
 {
     public class CreateNursingRequestDto
     {
-        public int PatientId { get; set; }
 
         public int NurseId { get; set; }
 

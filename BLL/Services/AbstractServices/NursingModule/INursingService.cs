@@ -15,7 +15,6 @@ namespace BLL.Services.AbstractServices.Users
         Task<NursingRequestDto> CancelNursingAsync(int requestId, int userId); 
         Task<NursingReviewDto> AddNursingReviewAsync(int requestId, int patientId, CreateNursingReviewDto dto); // For patients to review completed nursing services
         Task<IEnumerable<NursingReviewDto>?> GetNursingReviewAsync(int requestId); //for nurses to view reviews of their reviewed services
-        Task<IEnumerable<NursingReviewDto>?> GetNursingReviewByNurseIdAsync(int nurseId); //for patients to view reviews of a specific nurse
         Task<IEnumerable<NurseInfoDto>> SearchNursesAsync(SearchNurseDto searchDto);
 
     }

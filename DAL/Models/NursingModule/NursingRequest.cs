@@ -24,8 +24,6 @@ namespace DAL.Models.NursingModule
 
         public string Status { get; set; } = "Pending";
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime CreatedAt { get; set; }
 
         // Navigation Properties
         public virtual Patient Patient { get; set; }

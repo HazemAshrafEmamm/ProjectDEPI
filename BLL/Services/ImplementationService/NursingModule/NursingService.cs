@@ -36,12 +36,22 @@ namespace BLL.Services.ImplementationService.NursingModule
                         as Nurse
                         ?? throw new NurseNotFoundException(dto.NurseId);
 
+            var request1 = (await _unitOfWork
+                        .GetRepository<NursingRequest>()
+                        .GetAllAsync(new RequestByUserIdAndNurseId(patientId, dto.NurseId)))
+                        .FirstOrDefault();
+
+            if (request1 != null)
+                throw new NursingReviewAlreadyExistsException(request1!.Id);
+
             var request = new NursingRequest
             {
                 PatientId = patientId,
                 NurseId = dto.NurseId,
                 CareType = dto.CareType,
-                Status = "Pending"
+                Status = "Pending",
+                RequestedDate = DateTime.UtcNow,
+
             };
 
             await _unitOfWork.GetRepository<NursingRequest>().AddAsync(request);
@@ -76,7 +86,7 @@ namespace BLL.Services.ImplementationService.NursingModule
             if (request.NurseId != userId)
                 throw new UnauthorizedNursingAccessException(userId, requestId);
 
-            if (request.Status == "Cancelled" || request.Status == "Completed")
+            if (request!.Status == "Cancelled" || request!.Status == "Completed")
                 throw new BadRequestException([$"Cannot update a request with status '{request.Status}'."]);
 
             request.Status = dto.Status;
@@ -164,18 +174,5 @@ namespace BLL.Services.ImplementationService.NursingModule
             return _mapper.Map<IEnumerable<NursingReviewDto>>(review);
         }
 
-        public async Task<IEnumerable<NursingReviewDto>?> GetNursingReviewByNurseIdAsync(int nurseId)
-        {
-            //validate
-            var nurse = await _userManager.FindByIdAsync(nurseId.ToString())
-                        as Nurse
-                        ?? throw new NurseNotFoundException(nurseId);
-            var nurseReviews = await _unitOfWork.GetRepository<NursingReview>().GetAllAsync(new ReviewByNurseIdSpecs(nurseId));
-
-            if (nurseReviews is null || !nurseReviews.Any())
-                return Enumerable.Empty<NursingReviewDto>();
-
-            return _mapper.Map<IEnumerable<NursingReviewDto>>(nurseReviews);
-        }
     }
 }

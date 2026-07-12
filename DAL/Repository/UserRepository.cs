@@ -11,6 +11,7 @@ namespace DAL.Repository
 {
     public class UserRepository(TabibyDbContext _context) : IUserRepository
     {
+
         public async Task<Patient?> GetPatientWithAppointmentAsync(int patientId)
         {
             return await _context

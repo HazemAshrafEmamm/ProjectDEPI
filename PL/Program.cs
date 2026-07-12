@@ -1,11 +1,13 @@
 using BLL.Hubs;
 using BLL.Mapper;
 using BLL.Services.AbstractServices;
+using BLL.Services.AbstractServices.Admin;
 using BLL.Services.AbstractServices.AppointmentModule;
 using BLL.Services.AbstractServices.ConsultationModule;
 using BLL.Services.AbstractServices.MedicationModule;
 using BLL.Services.AbstractServices.Users;
 using BLL.Services.ImplementationService;
+using BLL.Services.ImplementationService.Admin;
 using BLL.Services.ImplementationService.AppointmentModule;
 using BLL.Services.ImplementationService.ConsultationModule;
 using BLL.Services.ImplementationService.MedicationModule;
@@ -49,7 +51,8 @@ namespace PL
             builder.Services.AddScoped<IAttachmentService, AttachmentService>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IDoctorScheduleService, DoctorScheduleService>();
-            builder.Services.AddScoped<BLL.Services.AbstractServices.Admin.IAdminService, BLL.Services.ImplementationService.Admin.AdminService>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
+            builder.Services.AddScoped<IProfileUserService, ProfileUserService>();
 
             
             builder.Services.AddAutoMapper((x) => { }, typeof(DomainProfile).Assembly);

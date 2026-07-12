@@ -38,7 +38,7 @@ namespace PL.Controllers
             return Ok(requests);
         }
 
-        [Authorize(Roles = "Patient,Nurse,Admin")]
+        [Authorize(Roles = "Nurse,Admin")]
         [HttpPut("UpdateStatus/{requestId}")]
         public async Task<IActionResult> UpdateStatus(int requestId, [FromBody] UpdateNursingStatusDto dto)
         {

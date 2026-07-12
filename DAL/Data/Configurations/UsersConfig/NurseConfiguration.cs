@@ -9,7 +9,7 @@ namespace DAL.Data.Configurations.UsersConfig
         public void Configure(EntityTypeBuilder<Nurse> builder)
         {
 
- 
+
             builder.Property(n => n.Specialization)
                    .HasMaxLength(100);
 
@@ -17,6 +17,7 @@ namespace DAL.Data.Configurations.UsersConfig
                    .WithOne(nr => nr.Nurse)
                    .HasForeignKey(nr => nr.NurseId)
                    .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

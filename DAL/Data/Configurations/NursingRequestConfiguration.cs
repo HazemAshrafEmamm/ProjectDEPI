@@ -1,13 +1,15 @@
 using DAL.Models.NursingModule;
+using DAL.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DAL.Data.Configurations
 {
-    public class NursingRequestConfiguration : IEntityTypeConfiguration<NursingRequest>
+    public class NursingRequestConfiguration : BaseEntityConfiguration<NursingRequest>, IEntityTypeConfiguration<NursingRequest>
     {
-        public void Configure(EntityTypeBuilder<NursingRequest> builder)
+        public override void Configure(EntityTypeBuilder<NursingRequest> builder)
         {
+            base.Configure(builder);
 
             builder.Property(nr => nr.CareType)
                    .IsRequired()
@@ -16,13 +18,9 @@ namespace DAL.Data.Configurations
             builder.Property(nr => nr.Status)
                    .HasMaxLength(50)
                    .HasDefaultValue("Pending");
-
-            builder.Property(nr => nr.RequestedDate)
-                   .ValueGeneratedOnAdd();
-
-            builder.Property(nr => nr.CreatedAt)
-                   .ValueGeneratedOnAdd();
-
+            builder.Property(x => x.RequestedDate)
+                   .HasDefaultValueSql("GETDATE()")
+                   .ValueGeneratedOnAdd();  
 
             builder.HasOne(nr => nr.Patient)
                    .WithMany()

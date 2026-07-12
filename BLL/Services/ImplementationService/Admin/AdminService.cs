@@ -36,7 +36,7 @@ namespace BLL.Services.ImplementationService.Admin
                 searchDto.PageNumber,
                 searchDto.PageSize);
 
-            var mappedUsers = new System.Collections.Generic.List<AdminUserDto>();
+            var mappedUsers = new List<AdminUserDto>();
             foreach (var user in users)
             {
                 mappedUsers.Add(await MapToAdminUserDto(user));
