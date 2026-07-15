@@ -36,4 +36,5 @@ export const ordersApi = {
       method: 'PUT',
       body: { status: ORDER_STATUS[statusName] },
     }),
+  removeByPharmacist: (orderId) => apiRequest('/Order/Pharmacist/Delete', { method: 'DELETE', params: { OrderId: orderId } }),
 }

@@ -88,7 +88,15 @@ namespace PL.Controllers
             var order = await _orderService.UpdateOrderStatusAsync(orderId, dto);
 
             return Ok(order);
-        } 
+        }
+        [Authorize(Roles = "PHARMACIST")]
+        [HttpDelete("Pharmacist/Delete")]
+        public async Task<IActionResult> DeleteByPharmacistOrder(int OrderId)
+        {
+            await _orderService.DeleteOrderByPharmacistAsync(OrderId);
+
+            return NoContent();
+        }
         #endregion
 
     }

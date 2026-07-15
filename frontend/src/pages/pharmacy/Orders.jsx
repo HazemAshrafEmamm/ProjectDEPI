@@ -30,6 +30,17 @@ export default function Orders() {
     }
   }
 
+  const removeOrder = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this order?')) return;
+    try {
+      await ordersApi.remove(id)
+      toast.success('Order deleted')
+      load()
+    } catch (err) {
+      toast.error(err.message || 'Could not delete this order')
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -53,6 +64,12 @@ export default function Orders() {
               </div>
               <div className="flex items-center gap-4">
                 <StatusBadge status={o.status} />
+                <button
+                  onClick={() => removeOrder(o.id)}
+                  className="rounded-lg bg-pulse-50 px-3 py-1 text-xs font-semibold text-pulse-600 transition-colors hover:bg-pulse-100"
+                >
+                  Delete
+                </button>
                 <span className="font-display text-base font-bold text-ink-900">{formatEGP(o.total)}</span>
                 {o.status === 'Pending' && (
                   <button onClick={() => cancel(o.id)} className="btn-ghost text-sm text-pulse-600">

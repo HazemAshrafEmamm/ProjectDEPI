@@ -14,6 +14,7 @@ namespace BLL.Services.AbstractServices.MedicationModule
         Task<IEnumerable<OrderDto>> GetMyOrdersAsync(int patientId);
         Task<OrderDto> GetOrderForMerchantAsync(int orderId);
         Task DeleteOrderAsync(int OrderId, int PatientId);
+        Task DeleteOrderByPharmacistAsync(int OrderId);
 
         Task<OrderDto> CreateOrderAsync(int patientId, CreateOrderDto dto);
         Task<OrderDto> CancelOrderAsync(int orderId, int patientId);

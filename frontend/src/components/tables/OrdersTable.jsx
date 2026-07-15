@@ -18,6 +18,16 @@ export default function OrdersTable({ orders, onChanged }) {
     }
   }
 
+  const removeOrder = async (id) => {
+    try {
+      await ordersApi.removeByPharmacist(id)
+      toast.success('Order deleted')
+      onChanged?.()
+    } catch (err) {
+      toast.error(err.message || 'Could not delete order')
+    }
+  }
+
   return (
     <div className="card overflow-x-auto">
       <table className="w-full min-w-[640px] text-left text-sm">
@@ -49,6 +59,12 @@ export default function OrdersTable({ orders, onChanged }) {
                       <option key={s}>{s}</option>
                     ))}
                   </select>
+                  <button
+                    onClick={() => removeOrder(o.id)}
+                    className="rounded-lg bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
+                  >
+                    Delete
+                  </button>
                 </div>
               </td>
             </tr>

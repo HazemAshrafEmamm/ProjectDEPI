@@ -23,7 +23,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
     {
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
-            var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync(new DAL.Specifications.OrderSpecs.AllOrdersSpecs());
+            var orders = await _unitOfWork.GetRepository<Order>().GetAllAsync(new AllOrdersSpecs());
             if (orders == null)
                 return Enumerable.Empty<OrderDto>();
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
@@ -73,10 +73,38 @@ namespace BLL.Services.ImplementationService.MedicationModule
             var Order = (await _unitOfWork.GetRepository<Order>()
                                    .GetAllAsync(new OrderByOrderIdAndPatientIdSpecs(OrderId, PatientId))).FirstOrDefault()
                                    ?? throw new OrderNotFoundException(OrderId);
-            if(Order.Status != OrderStatus.Cancelled 
-                    || Order.Status != OrderStatus.Rejected || Order.Status != OrderStatus.Delivered)
+            var allowedStatuses = new[]
+            {
+                OrderStatus.Cancelled,
+                OrderStatus.Rejected,
+                OrderStatus.Delivered
+            };
+
+            if (!allowedStatuses.Contains(Order.Status))
+            {
                 throw new OrderCantBeDeletedException(OrderId);
-             _unitOfWork.GetRepository<Order>().Delete(Order);
+            }
+            _unitOfWork.GetRepository<Order>().Delete(Order);
+             await _unitOfWork.SaveChangesAsync();
+
+        }
+        public async Task DeleteOrderByPharmacistAsync(int OrderId)
+        {
+            var Order = (await _unitOfWork.GetRepository<Order>()
+                                   .GetAllAsync(new OrderByOrderIdSpecs(OrderId))).FirstOrDefault()
+                                   ?? throw new OrderNotFoundException(OrderId);
+            var allowedStatuses = new[]
+            {
+                OrderStatus.Cancelled,
+                OrderStatus.Rejected,
+                OrderStatus.Delivered
+            };
+
+            if (!allowedStatuses.Contains(Order.Status))
+            {
+                throw new OrderCantBeDeletedException(OrderId);
+            }
+            _unitOfWork.GetRepository<Order>().Delete(Order);
              await _unitOfWork.SaveChangesAsync();
 
         }
@@ -139,6 +167,7 @@ namespace BLL.Services.ImplementationService.MedicationModule
                 itemRepo.Delete(item);
             }
             Basket.IsCheckedOut = false; 
+
 
             await _unitOfWork.SaveChangesAsync();
 
