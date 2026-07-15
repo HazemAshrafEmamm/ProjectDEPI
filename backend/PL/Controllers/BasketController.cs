@@ -9,7 +9,7 @@ using PresentationLayer.Controller;
 
 namespace PL.Controllers
 {
-    [Authorize(Roles = "Patient")]
+    [Authorize(Roles = "PATIENT")]
     public class BasketController(IBasketService _basketService) : ApiControllerBase
     {
         [HttpGet]

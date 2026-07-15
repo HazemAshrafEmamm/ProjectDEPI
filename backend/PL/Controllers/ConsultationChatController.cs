@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
-    [Authorize(Roles = "Patient,Doctor")]
+    [Authorize(Roles = "PATIENT,DOCTOR")]
     public class ConsultationChatController(IConsultationChatService _chatService) : ApiControllerBase
     {
         [HttpGet("{consultationId}/messages")]

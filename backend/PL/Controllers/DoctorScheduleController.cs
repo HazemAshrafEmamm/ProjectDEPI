@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = "DOCTOR")]
     public class DoctorScheduleController(IDoctorScheduleService _scheduleService) : ApiControllerBase
     {
         [HttpPost]

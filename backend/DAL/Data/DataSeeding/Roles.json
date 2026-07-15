@@ -1,26 +1,26 @@
 [
   {
-    "Name": "Admin",
+    "Name": "ADMIN",
     "NormalizedName": "ADMIN",
     "ConcurrencyStamp": "a1b2c3d4-0001-0000-0000-000000000001"
   },
   {
-    "Name": "Doctor",
+    "Name": "DOCTOR",
     "NormalizedName": "DOCTOR",
     "ConcurrencyStamp": "a1b2c3d4-0002-0000-0000-000000000002"
   },
   {
-    "Name": "Patient",
+    "Name": "PATIENT",
     "NormalizedName": "PATIENT",
     "ConcurrencyStamp": "a1b2c3d4-0003-0000-0000-000000000003"
   },
   {
-    "Name": "Nurse",
+    "Name": "NURSE",
     "NormalizedName": "NURSE",
     "ConcurrencyStamp": "a1b2c3d4-0004-0000-0000-000000000004"
   },
   {
-    "Name": "Pharmacist",
+    "Name": "PHARMACIST",
     "NormalizedName": "PHARMACIST",
     "ConcurrencyStamp": "a1b2c3d4-0005-0000-0000-000000000005"
   }

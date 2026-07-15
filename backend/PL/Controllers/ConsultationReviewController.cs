@@ -11,7 +11,7 @@ namespace PL.Controllers
     [Authorize]
     public class ConsultationReviewController(IConsultationReviewService _reviewService) : ApiControllerBase
     {
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpPost("{consultationId}")]
         public async Task<IActionResult> AddReview(int consultationId, [FromBody] CreateConsultationReviewDto dto)
         {

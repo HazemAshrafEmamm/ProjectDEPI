@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PL.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "ADMIN")]
     public class AdminController : ApiControllerBase
     {
         private readonly IAdminService _adminService;

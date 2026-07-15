@@ -68,7 +68,7 @@ namespace BLL.Services.ImplementationService
 
             if (result.Succeeded)
             {
-                var roleResult = await _userManager.AddToRoleAsync(user, "Patient");
+                var roleResult = await _userManager.AddToRoleAsync(user,"PATIENT");
                 if (!roleResult.Succeeded)
                 {
                     var errors = roleResult.Errors.Select(e => e.Description).ToList();

@@ -19,7 +19,7 @@ namespace PL.Controllers
             return Ok(nurses);
         }
 
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpPost("Request")]
         public async Task<IActionResult> RequestNursing([FromBody] CreateNursingRequestDto dto)
         {
@@ -30,7 +30,7 @@ namespace PL.Controllers
             return Ok(request);
         }
 
-        [Authorize(Roles = "Patient,Nurse")]
+        [Authorize(Roles = "PATIENT,NURSE")]
         [HttpGet("MyRequests")]
         public async Task<IActionResult> GetMyRequests()
         {
@@ -38,7 +38,7 @@ namespace PL.Controllers
             return Ok(requests);
         }
 
-        [Authorize(Roles = "Nurse,Admin")]
+        [Authorize(Roles = "NURSE,ADMIN")]
         [HttpPut("UpdateStatus/{requestId}")]
         public async Task<IActionResult> UpdateStatus(int requestId, [FromBody] UpdateNursingStatusDto dto)
         {
@@ -49,7 +49,7 @@ namespace PL.Controllers
             return Ok(request);
         }
 
-        [Authorize(Roles = "Patient,Nurse")]
+        [Authorize(Roles = "PATIENT,NURSE")]
         [HttpPost("Cancel/{requestId}")]
         public async Task<IActionResult> CancelNursing(int requestId)
         {
@@ -57,7 +57,7 @@ namespace PL.Controllers
             return Ok(request);
         }
 
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpPost("Review/{requestId}")]
         public async Task<IActionResult> AddReview(int requestId, [FromBody] CreateNursingReviewDto dto)
         {

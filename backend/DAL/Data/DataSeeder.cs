@@ -25,7 +25,7 @@ namespace DAL.Data
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
-            _seedPath = @"C:\Users\FreeComp\OneDrive\Desktop\Tabiby-Full-Project (3)\Tabiby-Full-Project (1)\backend\DAL\Data\";
+            _seedPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "DAL", "Data");
         }
         public async Task SeedDatabaseAsync()
         {
@@ -126,7 +126,7 @@ namespace DAL.Data
             
             
             
-            string[] defaultRoles = { "Patient", "Doctor", "Admin", "Nurse", "Pharmacist" };
+            string[] defaultRoles = { "PATIENT", "DOCTOR", "ADMIN", "NURSE", "PHARMACIST" };
             foreach (var roleName in defaultRoles)
             {
                 if (!await _roleManager.RoleExistsAsync(roleName))

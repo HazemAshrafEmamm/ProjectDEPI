@@ -26,7 +26,7 @@ namespace PL.Controllers
         }
 
         #region Pharmcist - Functionality 
-        [Authorize(Roles = "Pharmacist,Admin")]
+        [Authorize(Roles = "PHARMACIST,ADMIN")]
         [HttpPost("UpdateMedication/{Id}")]
         public async Task<IActionResult> UpdateMedication(int Id, UpdateMedicationModel model)
         {
@@ -42,7 +42,7 @@ namespace PL.Controllers
 
             return Ok(medication);
         }
-        [Authorize(Roles = "Pharmacist,Admin")]
+        [Authorize(Roles = "PHARMACIST,ADMIN")]
         [HttpPost("CreateMedication")]
         public async Task<IActionResult> CreateMedication([FromForm] CreateMedicationDto dto)
         {
@@ -53,7 +53,7 @@ namespace PL.Controllers
 
             return Ok(medication);
         }
-        [Authorize(Roles = "Pharmacist,Admin")]
+        [Authorize(Roles = "PHARMACIST,ADMIN")]
         [HttpDelete("DeleteMedication/{id}")]
         public async Task<IActionResult> DeleteMedication(int id)
         {

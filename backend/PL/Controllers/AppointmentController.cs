@@ -17,7 +17,7 @@ namespace PL.Controllers
     {
         #region Patient - Functionality
 
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpPost("Book")]
         public async Task<IActionResult> BookAppointment([FromBody] CreateAppointmentDto dto)
         {
@@ -28,7 +28,7 @@ namespace PL.Controllers
             return Ok(appointment);
         }
 
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpGet("MyAppointments")]
         public async Task<IActionResult> GetMyAppointments()
         {
@@ -36,7 +36,7 @@ namespace PL.Controllers
             return Ok(appointments);
         }
 
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpPut("Update/{appointmentId}")]
         public async Task<IActionResult> UpdateAppointment(int appointmentId, [FromBody] UpdateAppointmentDto dto)
         {
@@ -69,7 +69,7 @@ namespace PL.Controllers
 
         #region Doctor - Functionality
 
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "DOCTOR")]
         [HttpGet("DoctorAppointments")]
         public async Task<IActionResult> GetDoctorAppointments()
         {
@@ -77,7 +77,7 @@ namespace PL.Controllers
             return Ok(appointments);
         }
 
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "DOCTOR")]
         [HttpPost("Confirm/{appointmentId}")]
         public async Task<IActionResult> ConfirmAppointment(int appointmentId)
         {
@@ -85,7 +85,7 @@ namespace PL.Controllers
             return Ok(appointment);
         }
 
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "DOCTOR")]
         [HttpPost("Complete/{appointmentId}")]
         public async Task<IActionResult> CompleteAppointment(int appointmentId)
         {

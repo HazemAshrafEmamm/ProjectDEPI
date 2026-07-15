@@ -13,7 +13,7 @@ namespace PL.Controllers
     public class OrderController(IOrderService _orderService) : ApiControllerBase
     {
         #region Patient - Functionality
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpGet("MyOrders")]
         public async Task<IActionResult> GetMyOrders()
         {
@@ -21,7 +21,7 @@ namespace PL.Controllers
 
             return Ok(orders);
         }
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpDelete("Delete")]
         public async Task<IActionResult> DeleteOrder(int OrderId)
         {
@@ -30,7 +30,7 @@ namespace PL.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpGet("GetMyOrder/{orderId}")]
         public async Task<IActionResult> GetMyOrder(int orderId)
         {
@@ -38,7 +38,7 @@ namespace PL.Controllers
 
             return Ok(order);
         }
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpPost("Cancel/{orderId}")]
         public async Task<IActionResult> CancelOrder(int orderId)
         {
@@ -46,7 +46,7 @@ namespace PL.Controllers
 
             return Ok(order);
         }
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto dto)
         {
@@ -63,14 +63,14 @@ namespace PL.Controllers
         #region Pharmcist - Functionality 
 
 
-        [Authorize(Roles = "Pharmacist,Admin")]
+        [Authorize(Roles = "PHARMACIST")]
         [HttpGet("Orders")]
         public async Task<IActionResult> GetAllOrders()
         {
             var orders = await _orderService.GetAllOrdersAsync();
             return Ok(orders);
         }
-        [Authorize(Roles = "Pharmacist,Admin")]
+        [Authorize(Roles = "PHARMACIST")]
         [HttpGet("GetOrder/{id}")]
         public async Task<IActionResult> GetOrder(int id)
         {
@@ -78,7 +78,7 @@ namespace PL.Controllers
 
             return Ok(order);
         }
-        [Authorize(Roles = "Pharmacist,Admin")]
+        [Authorize(Roles = "PHARMACIST")]
         [HttpPut("Orders/{orderId}/Status")]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] UpdateOrderStatus dto)
         {

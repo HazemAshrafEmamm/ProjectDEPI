@@ -18,7 +18,7 @@ namespace PL.Controllers
             var doctors = await _consultationService.SearchDoctorsAsync(searchDto);
             return Ok(doctors);
         }
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "PATIENT")]
         [HttpPost("RequestConsultation")]
         public async Task<IActionResult> RequestConsultation([FromBody] CreateConsultationDto createConsultationDto)
         {
@@ -29,7 +29,7 @@ namespace PL.Controllers
 
             return Ok(cons);
         }
-        [Authorize(Roles = "Patient,Doctor")]
+        [Authorize(Roles = "PATIENT,DOCTOR")]
         [HttpGet("MyConsultations")]
         public async Task<IActionResult> MyConsultations()
         {
@@ -38,7 +38,7 @@ namespace PL.Controllers
             return Ok(consultations);
         }
 
-        [Authorize(Roles = "Patient,Doctor")]
+        [Authorize(Roles = "PATIENT,DOCTOR")]
         [HttpGet("GetMyConsultationById/{id}")]
         public async Task<IActionResult> GetMyConsultationById(int id)
         {
@@ -46,7 +46,7 @@ namespace PL.Controllers
 
             return Ok(consultation);
         }
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "DOCTOR")]
         [HttpDelete("DeleteConsultation/{id}")]
         public async Task<IActionResult> DeleteConsultation(int id)
         {
@@ -54,7 +54,7 @@ namespace PL.Controllers
             return NoContent();
             
         }
-        [Authorize(Roles = "Patient,Doctor")]
+        [Authorize(Roles = "PATIENT,DOCTOR")]
         [HttpPut("UpdateConsultationStatus/{id}")]
         public async Task<IActionResult> UpdateConsultationStatus(int id, [FromBody] UpdateConsultionStatusDto updateStatusDto)
         {
