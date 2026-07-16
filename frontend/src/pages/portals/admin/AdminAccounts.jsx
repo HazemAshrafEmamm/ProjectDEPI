@@ -155,7 +155,6 @@ export default function AdminAccounts() {
               <th className="px-5 py-3.5 font-semibold">Name</th>
               <th className="px-5 py-3.5 font-semibold">Email</th>
               <th className="px-5 py-3.5 font-semibold">Role</th>
-              <th className="px-5 py-3.5 font-semibold">License ID</th>
               <th className="px-5 py-3.5 font-semibold">Status</th>
               <th className="px-5 py-3.5 font-semibold text-right">Action</th>
             </tr>
@@ -174,26 +173,28 @@ export default function AdminAccounts() {
                 <td className="px-5 py-4">
                   <span className="badge bg-vital-500/10 text-vital-700">{a.userType}</span>
                 </td>
-                <td className="px-5 py-4 text-slate-500">
-                  {a.userType === 'Doctor' ? `MD-2024-${a.id.toString().padStart(3, '0')}` : a.userType === 'Nurse' ? `RN-2024-${a.id.toString().padStart(3, '0')}` : `PH-2024-${a.id.toString().padStart(3, '0')}`}
-                </td>
-                <td className="px-5 py-4"><StatusBadge status={a.isActive ? 'Active' : 'Pending'} /></td>
+                <td className="px-5 py-4"><StatusBadge status={a.isActive ? 'Active' : 'Inactive'} /></td>
                 <td className="px-5 py-4 text-right">
-                  {a.isActive ? (
+                  <div className="flex justify-end gap-2">
                     <button
                       onClick={() => onToggleActive(a.id)}
-                      className="rounded-full bg-pulse-500/10 px-3 py-1 text-xs font-semibold text-pulse-600 hover:bg-pulse-500/20"
+                      className={`rounded-full p-2 transition-colors ${
+                        a.isActive 
+                          ? 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20' 
+                          : 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20'
+                      }`}
+                      title={a.isActive ? "Deactivate Account" : "Activate Account"}
                     >
-                      Suspend
+                      <Power size={16} />
                     </button>
-                  ) : (
                     <button
-                      onClick={() => onToggleActive(a.id)}
-                      className="rounded-full bg-vital-500/10 px-3 py-1 text-xs font-semibold text-vital-600 hover:bg-vital-500/20"
+                      onClick={() => onDelete(a.id)}
+                      className="rounded-full bg-pulse-500/10 p-2 text-pulse-600 hover:bg-pulse-500/20 transition-colors"
+                      title="Delete Account"
                     >
-                      Activate
+                      <Trash2 size={16} />
                     </button>
-                  )}
+                  </div>
                 </td>
               </tr>
             ))}

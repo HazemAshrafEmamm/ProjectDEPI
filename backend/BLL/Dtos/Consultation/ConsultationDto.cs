@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +10,9 @@ namespace BLL.Dtos.Consultion
     {
         public int Id { get; set; }
         public int PatientId { get; set; } 
+        public string PatientName { get; set; } = null!;
         public int DoctorId { get; set; }
+        public string DoctorName { get; set; } = null!;
         public string Status { get; set; } = null!;
         public DateTime RequestedAt { get; set; }
         public DateTime CreatedAt { get; set; }

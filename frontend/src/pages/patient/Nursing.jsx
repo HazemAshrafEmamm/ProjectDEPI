@@ -3,6 +3,7 @@ import { HeartPulse, X } from 'lucide-react'
 import StatusBadge from '../../components/common/StatusBadge'
 import { useToast } from '../../context/ToastContext'
 import { nursingApi } from '../../api/endpoints/nursing'
+import ReviewModal from '../../components/common/ReviewModal'
 
 
 
@@ -17,6 +18,8 @@ export default function Nursing() {
   const [requests, setRequests] = useState([])
   const [nursesById, setNursesById] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
+  const [activeRequest, setActiveRequest] = useState(null)
 
   const loadRequests = () => {
     nursingApi
@@ -66,6 +69,17 @@ export default function Nursing() {
       toast.error(err.message || 'Could not send this request')
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleReviewSubmit = async (data) => {
+    try {
+      await nursingApi.addReview(activeRequest.id, data)
+      toast.success('Review submitted successfully!')
+      loadRequests()
+    } catch (err) {
+      toast.error(err.message || 'Could not submit review')
+      throw err 
     }
   }
 
@@ -160,11 +174,39 @@ export default function Nursing() {
                   Assigned to {nursesById[r.nurseId]?.name || `Nurse #${r.nurseId}`}
                 </p>
               </div>
-              <StatusBadge status={r.status} />
+              <div className="flex items-center gap-4">
+                <StatusBadge status={r.status} />
+                {r.status === 'Completed' && !r.review && (
+                  <button
+                    onClick={() => {
+                      setActiveRequest(r)
+                      setReviewModalOpen(true)
+                    }}
+                    className="text-xs font-semibold text-vital-500 hover:text-vital-600"
+                  >
+                    Leave Review
+                  </button>
+                )}
+                {r.review && (
+                  <span className="text-xs font-medium text-slate-500">
+                    Reviewed ★{r.review.rating}
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>
       </div>
+
+      <ReviewModal 
+        isOpen={reviewModalOpen} 
+        onClose={() => {
+          setReviewModalOpen(false)
+          setActiveRequest(null)
+        }} 
+        onSubmit={handleReviewSubmit}
+        title={`Review Nurse ${activeRequest ? nursesById[activeRequest.nurseId]?.name?.replace('Nurse ', '') || '' : ''}`}
+      />
     </div>
   )
 }

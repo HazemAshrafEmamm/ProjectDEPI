@@ -74,7 +74,12 @@ export default function InventoryTable({ items, onChanged, readOnly = false }) {
       toast.success('Medication removed!')
       onChanged?.()
     } catch (err) {
-      toast.error(err.message || 'Could not remove this medication')
+      const msg = err.message || ''
+      if (msg.includes('entity changes') || msg.includes('constraint')) {
+        toast.error('Cannot delete this medication because it is linked to a patient order. Try setting it to Out of Stock instead.')
+      } else {
+        toast.error(msg || 'Could not remove this medication')
+      }
     }
   }
 

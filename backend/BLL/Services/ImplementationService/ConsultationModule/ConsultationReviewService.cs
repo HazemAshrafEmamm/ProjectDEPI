@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BLL.Dtos.Consultion;
 using BLL.Services.AbstractServices;
 using BLL.Services.AbstractServices.ConsultationModule;
@@ -11,13 +11,15 @@ using DAL.Specifications.ConsultationSpecs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using DAL.Models.Users;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BLL.Services.ImplementationService.ConsultationModule
 {
     public class ConsultationReviewService(IUnitOfWork _unitOfWork ,
-        IMapper _mapper , INotificationService _notificationService) : IConsultationReviewService
+        IMapper _mapper , INotificationService _notificationService, UserManager<ApplicationUser> _userManager) : IConsultationReviewService
     {
         public async Task<ConsultationReviewDto> AddReviewAsync(int consultationId,int patientId, CreateConsultationReviewDto dto)
         {
@@ -45,7 +47,10 @@ namespace BLL.Services.ImplementationService.ConsultationModule
             await repo.AddAsync(review);
             await _unitOfWork.SaveChangesAsync(); 
 
-            await _notificationService.SendNotificationAsync( $"New review added for consultation {consultationId}.", NotificationType.ConsultationReview, consultation.DoctorId);
+            var patient = await _userManager.FindByIdAsync(patientId.ToString());
+            var patientName = patient?.Fullname ?? $"patient {patientId}";
+
+            await _notificationService.SendNotificationAsync( $"You received a new review with rating {dto.Rating}/5 from {patientName}.", NotificationType.ConsultationReview, consultation.DoctorId);
             return _mapper.Map<ConsultationReviewDto>(review) ;
         }
 

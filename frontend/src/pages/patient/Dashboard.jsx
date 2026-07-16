@@ -113,7 +113,7 @@ export default function Dashboard() {
             )}
             {activeConsultations.map((c) => {
               const doc = doctorsById[c.doctorId]
-              const name = doc?.name || `Doctor #${c.doctorId}`
+              const name = doc?.name || c.doctorName || `Doctor #${c.doctorId}`
               return (
                 <Link key={c.id} to="/app/consultations" className="flex items-center gap-3.5 p-4 transition-colors hover:bg-mist-50">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink-900 font-display text-sm font-bold text-vital-400">

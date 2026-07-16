@@ -14,8 +14,10 @@ namespace BLL.Dtos.Nursing
         public int Id { get; set; }
 
         public int PatientId { get; set; }
+        public string PatientName { get; set; }
 
         public int NurseId { get; set; }
+        public string NurseName { get; set; }
 
         public string CareType { get; set; }
 

@@ -52,6 +52,9 @@ namespace BLL.Services.ImplementationService.ConsultationModule
             var doctor = await _userRepository.GetDoctorByIdAsync(createDto.DoctorId)
                          ?? throw new DoctorNotFoundException(createDto.DoctorId);
 
+            if (!doctor.IsActive)
+                throw new BadRequestException(new List<string> { "This doctor is currently inactive." });
+
             var consultation = new Consultation
             {
                 PatientId = PatientId,
@@ -64,7 +67,7 @@ namespace BLL.Services.ImplementationService.ConsultationModule
             await _unitOfWork.SaveChangesAsync();
             var patient = await _userManager.FindByIdAsync(PatientId.ToString())
                              as Patient ?? throw new UserNotFoundException(PatientId.ToString());
-            await _notificationService.SendNotificationAsync( $"You have a new consultation request from patient {patient.UserName}." ,NotificationType.ConsultationRequest, createDto.DoctorId);
+            await _notificationService.SendNotificationAsync( $"You have a new consultation request from {patient.Fullname}.", NotificationType.ConsultationRequest, createDto.DoctorId);
     
             return _mapper.Map<ConsultationDto>(consultation);
         }
@@ -115,7 +118,10 @@ namespace BLL.Services.ImplementationService.ConsultationModule
 
             await _unitOfWork.SaveChangesAsync();
 
-            await _notificationService.SendNotificationAsync( $"Your consultation request has been {status.ToString().ToLower()} by doctor {DoctorId}." ,NotificationType.ConsultationUpdate, consultation.PatientId);
+            var doctor = await _userRepository.GetDoctorByIdAsync(DoctorId);
+            var doctorName = doctor?.Fullname ?? $"Doctor {DoctorId}";
+
+            await _notificationService.SendNotificationAsync( $"Your consultation request has been {status.ToString().ToLower()} by {doctorName}.", NotificationType.ConsultationUpdate, consultation.PatientId);
 
             return _mapper.Map<ConsultationDto>(consultation);
         }

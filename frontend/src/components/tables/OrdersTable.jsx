@@ -33,7 +33,7 @@ export default function OrdersTable({ orders, onChanged }) {
       <table className="w-full min-w-[640px] text-left text-sm">
         <thead>
           <tr className="border-b border-mist-200 text-xs uppercase tracking-wide text-slate-400">
-            <th className="px-5 py-3.5 font-semibold">Order</th>
+            <th className="px-5 py-3.5 font-semibold">Patient Name</th>
             <th className="px-5 py-3.5 font-semibold">Items</th>
             <th className="px-5 py-3.5 font-semibold">Total</th>
             <th className="px-5 py-3.5 font-semibold">Date</th>
@@ -43,7 +43,7 @@ export default function OrdersTable({ orders, onChanged }) {
         <tbody className="divide-y divide-mist-200">
           {orders.map((o) => (
             <tr key={o.id}>
-              <td className="px-5 py-4 font-display font-semibold text-ink-900">#{o.id}</td>
+              <td className="px-5 py-4 font-display font-semibold text-ink-900">{o.patientName || `Patient #${o.patientId}`} (Order #{o.id})</td>
               <td className="px-5 py-4 text-slate-500">{o.items.length} items</td>
               <td className="px-5 py-4 font-semibold text-ink-900">{formatEGP(o.total)}</td>
               <td className="px-5 py-4 text-slate-500">{formatDate(o.orderDate)}</td>

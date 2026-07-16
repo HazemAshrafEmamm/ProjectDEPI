@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Menu, Search, Bell } from 'lucide-react'
+import { Menu, Bell } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { notificationsApi } from '../../api/endpoints/notifications'
@@ -51,14 +51,7 @@ export default function Topbar({ onMenuClick, title }) {
       <h1 className="font-display text-lg font-bold text-ink-900 sm:text-xl">{title}</h1>
 
       <div className="ml-auto flex items-center gap-3 sm:gap-4">
-        <div className="relative hidden sm:block">
-          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="search"
-            placeholder="Search…"
-            className="w-56 rounded-full border border-mist-200 bg-white py-2 pl-9 pr-4 text-sm placeholder:text-slate-400 focus:border-vital-500 focus:outline-none focus:ring-2 focus:ring-vital-500/20 md:w-72"
-          />
-        </div>
+
 
         {user?.role !== 'Admin' && (
           <Link

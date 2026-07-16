@@ -16,6 +16,12 @@ export default function Appointments() {
   const [doctorsById, setDoctorsById] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [cancelTarget, setCancelTarget] = useState(null)
+  
+  const [rescheduleTarget, setRescheduleTarget] = useState(null)
+  const [rescheduleDate, setRescheduleDate] = useState(new Date().toISOString().slice(0, 10))
+  const [rescheduleSlots, setRescheduleSlots] = useState([])
+  const [selectedRescheduleSlot, setSelectedRescheduleSlot] = useState(null)
+  const [isRescheduling, setIsRescheduling] = useState(false)
 
   const load = () => {
     setIsLoading(true)
@@ -30,11 +36,21 @@ export default function Appointments() {
 
   useEffect(load, [])
 
+  useEffect(() => {
+    if (!rescheduleTarget || !rescheduleDate) return
+    setSelectedRescheduleSlot(null)
+    appointmentsApi
+      .availableSlots(rescheduleTarget.doctorId, rescheduleDate)
+      .then((data) => setRescheduleSlots(data || []))
+      .catch((err) => toast.error(err.message || 'Could not load available slots'))
+  }, [rescheduleTarget, rescheduleDate])
+
   const isPast = (a) => a.statusText === 'Completed' || a.statusText === 'Cancelled'
   const list = appointments
     .filter((a) => (tab === 'Upcoming' ? !isPast(a) : isPast(a)))
     .map((a) => ({
       id: a.id,
+      doctorId: a.doctorId,
       doctorName: a.doctorName,
       specialty: doctorsById[a.doctorId]?.specialty || '',
       appointmentDate: a.appointmentDate,
@@ -51,6 +67,28 @@ export default function Appointments() {
       load()
     } catch (err) {
       toast.error(err.message || 'Could not cancel this appointment')
+    }
+  }
+
+  const confirmReschedule = async () => {
+    if (!selectedRescheduleSlot) {
+      toast.error('Please select a time slot')
+      return
+    }
+    setIsRescheduling(true)
+    try {
+      await appointmentsApi.update(rescheduleTarget.id, {
+        scheduleId: selectedRescheduleSlot.scheduleId,
+        appointmentDate: rescheduleDate,
+        notes: rescheduleTarget.notes
+      })
+      toast.success('Appointment rescheduled successfully!')
+      setRescheduleTarget(null)
+      load()
+    } catch (err) {
+      toast.error(err.message || 'Could not reschedule this appointment')
+    } finally {
+      setIsRescheduling(false)
     }
   }
 
@@ -85,7 +123,13 @@ export default function Appointments() {
             <AppointmentCard
               key={a.id}
               appointment={a}
-              onCancel={tab === 'Upcoming' ? () => setCancelTarget(a.id) : undefined}
+              onCancel={tab === 'Upcoming' && a.status === 'Pending' ? () => setCancelTarget(a.id) : undefined}
+              onReschedule={tab === 'Upcoming' && a.status === 'Confirmed' ? () => {
+                setRescheduleTarget(a)
+                setRescheduleDate(new Date().toISOString().slice(0, 10))
+                setRescheduleSlots([])
+                setSelectedRescheduleSlot(null)
+              } : undefined}
             />
           ))}
         </div>
@@ -97,6 +141,57 @@ export default function Appointments() {
           <div className="mt-5 flex justify-end gap-3">
             <button className="btn-secondary" onClick={() => setCancelTarget(null)}>Keep it</button>
             <button className="btn-danger" onClick={confirmCancel}>Cancel Appointment</button>
+          </div>
+        </Modal>
+      )}
+
+      {rescheduleTarget && (
+        <Modal onClose={() => setRescheduleTarget(null)} title="Reschedule Appointment">
+          <div className="space-y-4">
+            <div>
+              <label className="field-label-light">Select New Date</label>
+              <input
+                type="date"
+                min={new Date().toISOString().slice(0, 10)}
+                className="field-input-light w-full"
+                value={rescheduleDate}
+                onChange={(e) => setRescheduleDate(e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label className="field-label-light">Select Time Slot</label>
+              {rescheduleSlots.length === 0 ? (
+                <p className="text-sm text-slate-500">No open slots for this date.</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                  {rescheduleSlots.map((slot) => (
+                    <button
+                      key={slot.scheduleId}
+                      onClick={() => setSelectedRescheduleSlot(slot)}
+                      className={`rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
+                        selectedRescheduleSlot?.scheduleId === slot.scheduleId
+                          ? 'border-vital-500 bg-vital-500/10 text-vital-700'
+                          : 'border-mist-200 text-slate-600 hover:border-vital-300'
+                      }`}
+                    >
+                      {slot.startTime.slice(0, 5)} – {slot.endTime.slice(0, 5)}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button className="btn-secondary" onClick={() => setRescheduleTarget(null)}>Cancel</button>
+              <button 
+                className="btn-primary" 
+                onClick={confirmReschedule} 
+                disabled={!selectedRescheduleSlot || isRescheduling}
+              >
+                {isRescheduling ? 'Rescheduling...' : 'Confirm Reschedule'}
+              </button>
+            </div>
           </div>
         </Modal>
       )}

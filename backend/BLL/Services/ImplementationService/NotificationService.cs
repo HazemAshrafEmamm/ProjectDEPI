@@ -29,7 +29,9 @@ namespace BLL.Services.ImplementationService
         public async Task<List<NotificationDto>> GetNotificationsAsync(int UserId)
         {
             var notifications = await _unitOfWork.GetRepository<Notification>().GetAllAsync(new NotificationsByUserIdSpecs(UserId));
-            return notifications.Select(n => new NotificationDto 
+            return notifications
+                .OrderByDescending(n => n.CreatedAt)
+                .Select(n => new NotificationDto 
             { 
                 Id = n.Id, 
                 Message = n.Message, 

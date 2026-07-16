@@ -54,7 +54,7 @@ export default function NurseRequests() {
             {pending.map((r, idx) => (
               <div key={`${r.patientId}-${idx}`} className="card flex flex-col justify-between gap-3 p-5">
                 <div>
-                  <p className="font-display text-sm font-semibold text-ink-900">Patient #{r.patientId}</p>
+                  <p className="font-display text-sm font-semibold text-ink-900">{r.patientName || `Patient #${r.patientId}`}</p>
                   <p className="text-xs font-medium text-vital-600">{r.careType}</p>
                 </div>
                 <div className="flex items-center justify-between mt-2">
@@ -85,12 +85,33 @@ export default function NurseRequests() {
         <div className="space-y-3">
           {assigned.length === 0 && <p className="text-sm text-slate-500">No assigned visits.</p>}
           {assigned.map((r, idx) => (
-            <div key={`${r.patientId}-${idx}`} className="card flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-display text-sm font-semibold text-ink-900">Patient #{r.patientId}</p>
-                <p className="text-xs font-medium text-vital-600">{r.careType}</p>
+            <div key={`${r.patientId}-${idx}`} className="card flex flex-col p-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="font-display text-sm font-semibold text-ink-900">{r.patientName || `Patient #${r.patientId}`}</p>
+                  <p className="text-xs font-medium text-vital-600">{r.careType}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <StatusBadge status={r.status} />
+                  {r.status === 'Accepted' && (
+                    <button
+                      onClick={() => handleUpdateStatus(r.id, 'Completed')}
+                      className="text-xs font-semibold text-vital-500 hover:text-vital-600"
+                    >
+                      Mark as Complete
+                    </button>
+                  )}
+                </div>
               </div>
-              <StatusBadge status={r.status} />
+              {r.review && (
+                <div className="mt-3 w-full rounded-lg bg-mist-50 p-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-ink-900">{r.patientName || `Patient #${r.patientId}`}</span>
+                    <span className="font-medium text-vital-600">★ {r.review.rating}/5</span>
+                  </div>
+                  <p className="mt-1 text-slate-600">{r.review.comment}</p>
+                </div>
+              )}
             </div>
           ))}
         </div>

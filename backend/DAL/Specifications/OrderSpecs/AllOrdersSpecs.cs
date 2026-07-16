@@ -8,6 +8,8 @@ namespace DAL.Specifications.OrderSpecs
         public AllOrdersSpecs() : base()
         {
             Includes.Add(o => o.OrderItem);
+            Includes.Add(o => o.Patient);
+            ApplyOrderByDescending(o => o.OrderDate);
         }
     }
 }

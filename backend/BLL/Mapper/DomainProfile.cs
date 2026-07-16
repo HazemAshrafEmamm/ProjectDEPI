@@ -60,7 +60,10 @@ namespace BLL.Mapper
             CreateMap<Medication, AllMedicationDto>().ReverseMap();
 
             
-            CreateMap<Consultation, ConsultationDto>().ReverseMap();
+            CreateMap<Consultation, ConsultationDto>()
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient != null ? src.Patient.Fullname : string.Empty))
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor != null ? src.Doctor.Fullname : string.Empty))
+                .ReverseMap();
             CreateMap<Consultation, CreateConsultationDto>().ReverseMap();
 
             CreateMap<ConsultationMessage, ConsultationMessageDto>().ReverseMap();
@@ -81,7 +84,8 @@ namespace BLL.Mapper
 
             
             CreateMap<Order, OrderDto>()
-                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.OrderItem));
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.OrderItem))
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient != null ? src.Patient.Fullname : string.Empty));
             CreateMap<Order, CreateOrderDto>().ReverseMap();
 
             CreateMap<OrderItem, OrderItemDto>().ReverseMap();
@@ -105,7 +109,10 @@ namespace BLL.Mapper
                     src.BasketItems.Sum(i => i.Price * i.Quantity) + src.ShippingPrice));
 
             
-            CreateMap<NursingRequest, NursingRequestDto>().ReverseMap();
+            CreateMap<NursingRequest, NursingRequestDto>()
+                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient != null ? src.Patient.Fullname : string.Empty))
+                .ForMember(dest => dest.NurseName, opt => opt.MapFrom(src => src.Nurse != null ? src.Nurse.Fullname : string.Empty))
+                .ReverseMap();
             CreateMap<NursingReview, NursingReviewDto>().ReverseMap();
             CreateMap<NursingReview, CreateNursingReviewDto>().ReverseMap();
 

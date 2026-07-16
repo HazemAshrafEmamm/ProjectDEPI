@@ -16,7 +16,7 @@ export default function DoctorChatRoom() {
   const [draft, setDraft] = useState('')
   const [showChatOnMobile, setShowChatOnMobile] = useState(false)
   const connectionRef = useRef(null)
-  const scrollRef = useRef(null)
+  const chatContainerRef = useRef(null)
 
   const accepted = consultations.filter((c) => c.status === 'Accepted')
   const active = accepted.find((c) => c.id === activeId)
@@ -55,7 +55,9 @@ export default function DoctorChatRoom() {
   }, [activeId])
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight })
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
   }, [messages])
 
   const onSend = async (e) => {
@@ -69,6 +71,19 @@ export default function DoctorChatRoom() {
       setDraft('')
     } catch (err) {
       toast.error(err.message || 'Could not send message')
+    }
+  }
+
+  const onEndConsultation = async () => {
+    if (!window.confirm('Are you sure you want to end this consultation?')) return
+    try {
+      await consultationsApi.updateStatus(active.id, 'Completed')
+      toast.success('Consultation ended successfully')
+      setConsultations((prev) => prev.filter((c) => c.id !== active.id))
+      setActiveId(null)
+      setShowChatOnMobile(false)
+    } catch (err) {
+      toast.error(err.message || 'Could not end consultation')
     }
   }
 
@@ -102,7 +117,7 @@ export default function DoctorChatRoom() {
                 P{c.patientId}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-display text-sm font-semibold text-ink-900">Patient #{c.patientId}</p>
+                <p className="truncate font-display text-sm font-semibold text-ink-900">{c.patientName || `Patient #${c.patientId}`}</p>
                 <div className="mt-1.5"><StatusBadge status={c.status} /></div>
               </div>
             </button>
@@ -110,7 +125,7 @@ export default function DoctorChatRoom() {
         </div>
       </div>
 
-      <div className={`flex-col lg:flex ${showChatOnMobile ? 'flex' : 'hidden'}`}>
+      <div className={`flex-col overflow-hidden lg:flex ${showChatOnMobile ? 'flex' : 'hidden'}`}>
         {active && (
           <>
             <div className="flex items-center gap-3 border-b border-mist-200 p-4">
@@ -120,14 +135,16 @@ export default function DoctorChatRoom() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-900 font-display text-sm font-bold text-vital-400">
                 P{active.patientId}
               </div>
-              <div>
-                <p className="font-display text-sm font-semibold text-ink-900">Patient #{active.patientId}</p>
+              <div className="flex-1">
+                <p className="font-display text-sm font-semibold text-ink-900">{active.patientName || `Patient #${active.patientId}`}</p>
                 <p className="text-xs text-slate-500">Patient</p>
               </div>
-              <StatusBadge status={active.status} />
+              <button onClick={onEndConsultation} className="btn-secondary !px-3 !py-1 text-xs text-pulse-600 hover:bg-pulse-50 hover:text-pulse-700 hover:border-pulse-200">
+                End Chat
+              </button>
             </div>
 
-            <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-mist-50 p-5">
+            <div ref={chatContainerRef} className="flex-1 space-y-3 overflow-y-auto bg-mist-50 p-5">
               {messages.map((m) => {
                 const mine = m.senderUserId === user?.id
                 return (

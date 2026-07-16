@@ -35,13 +35,13 @@ export default function AppointmentCard({ appointment, onCancel, onReschedule, o
       </div>
 
       <div className="flex gap-2 sm:justify-end">
-        {appointment.status === 'Pending' && (
-          <button onClick={() => onCancel?.(appointment)} className="btn-secondary !py-2 text-sm">
+        {appointment.status === 'Pending' && onCancel && (
+          <button onClick={() => onCancel(appointment)} className="btn-secondary !py-2 text-sm">
             Cancel
           </button>
         )}
-        {appointment.status === 'Confirmed' && (
-          <button onClick={() => onReschedule?.(appointment)} className="btn-secondary !py-2 text-sm">
+        {appointment.status === 'Confirmed' && onReschedule && (
+          <button onClick={() => onReschedule(appointment)} className="btn-secondary !py-2 text-sm">
             Reschedule
           </button>
         )}

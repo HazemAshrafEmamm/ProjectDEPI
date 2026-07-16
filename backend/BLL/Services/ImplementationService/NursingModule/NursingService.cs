@@ -36,6 +36,9 @@ namespace BLL.Services.ImplementationService.NursingModule
                         as Nurse
                         ?? throw new NurseNotFoundException(dto.NurseId);
 
+            if (!nurse.IsActive)
+                throw new BadRequestException(new List<string> { "This nurse is currently inactive." });
+
             var activeRequests = await _unitOfWork
                         .GetRepository<NursingRequest>()
                         .GetAllAsync(new RequestByUserIdAndNurseId(patientId, dto.NurseId));
@@ -56,8 +59,11 @@ namespace BLL.Services.ImplementationService.NursingModule
             await _unitOfWork.GetRepository<NursingRequest>().AddAsync(request);
             await _unitOfWork.SaveChangesAsync();
 
+            var patient = await _userManager.FindByIdAsync(patientId.ToString());
+            var patientName = patient?.Fullname ?? $"patient {patientId}";
+
             await _notificationService.SendNotificationAsync(
-                $"You have a new nursing request from patient {patientId}.",
+                $"You have a new nursing request from {patientName}.",
                 NotificationType.System,
                 dto.NurseId
             );
@@ -93,8 +99,11 @@ namespace BLL.Services.ImplementationService.NursingModule
             _unitOfWork.GetRepository<NursingRequest>().Update(request);
             await _unitOfWork.SaveChangesAsync();
 
+            var nurse = await _userManager.FindByIdAsync(userId.ToString());
+            var nurseName = nurse?.Fullname ?? $"nurse {userId}";
+
             await _notificationService.SendNotificationAsync(
-                $"Your nursing request status has been updated to '{dto.Status}'.",
+                $"Your nursing request status has been updated to '{dto.Status}' by {nurseName}.",
                 NotificationType.System,
                 request.PatientId
             );
@@ -118,8 +127,11 @@ namespace BLL.Services.ImplementationService.NursingModule
             _unitOfWork.GetRepository<NursingRequest>().Update(request);
             await _unitOfWork.SaveChangesAsync();
 
+            var patient = await _userManager.FindByIdAsync(userId.ToString());
+            var patientName = patient?.Fullname ?? $"patient {userId}";
+
             await _notificationService.SendNotificationAsync(
-                "Your nursing request has been cancelled.",
+                $"Your nursing request has been cancelled by {patientName}.",
                 NotificationType.System,
                 request.NurseId
             );
@@ -153,8 +165,11 @@ namespace BLL.Services.ImplementationService.NursingModule
             await _unitOfWork.GetRepository<NursingReview>().AddAsync(review);
             await _unitOfWork.SaveChangesAsync();
 
+            var patient = await _userManager.FindByIdAsync(patientId.ToString());
+            var patientName = patient?.Fullname ?? $"patient {patientId}";
+
             await _notificationService.SendNotificationAsync(
-                $"You received a new review with rating {dto.Rating}/5.",
+                $"You received a new review with rating {dto.Rating}/5 from {patientName}.",
                 NotificationType.System,
                 request.NurseId
             );

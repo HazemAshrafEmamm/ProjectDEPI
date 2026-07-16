@@ -7,6 +7,7 @@ import { consultationsApi } from '../../api/endpoints/consultations'
 import { doctorsApi } from '../../api/endpoints/doctors'
 import { createChatConnection } from '../../api/signalr'
 import { formatTime } from '../../utils/format'
+import ReviewModal from '../../components/common/ReviewModal'
 
 export default function Consultations() {
   const toast = useToast()
@@ -17,8 +18,9 @@ export default function Consultations() {
   const [messages, setMessages] = useState([])
   const [draft, setDraft] = useState('')
   const [showChatOnMobile, setShowChatOnMobile] = useState(false)
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const connectionRef = useRef(null)
-  const scrollRef = useRef(null)
+  const chatContainerRef = useRef(null)
 
   const active = consultations.find((c) => c.id === activeId)
   const activeDoctor = active ? doctorsById[active.doctorId] : null
@@ -63,7 +65,9 @@ export default function Consultations() {
   }, [activeId])
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight })
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
   }, [messages])
 
   const onSend = async (e) => {
@@ -80,11 +84,22 @@ export default function Consultations() {
     }
   }
 
+  const handleReviewSubmit = async (data) => {
+    try {
+      await consultationsApi.addReview(active.id, data)
+      toast.success('Review submitted successfully!')
+      consultationsApi.myConsultations().then(list => setConsultations(list || []))
+    } catch (err) {
+      toast.error(err.message || 'Could not submit review')
+      throw err 
+    }
+  }
+
   const list = useMemo(
     () =>
       consultations.map((c) => ({
         ...c,
-        doctorName: doctorsById[c.doctorId]?.name || `Doctor #${c.doctorId}`,
+        doctorName: doctorsById[c.doctorId]?.name || c.doctorName || `Doctor #${c.doctorId}`,
         specialty: doctorsById[c.doctorId]?.specialty || '',
       })),
     [consultations, doctorsById],
@@ -136,7 +151,7 @@ export default function Consultations() {
       </div>
 
       {/* Chat window */}
-      <div className={`flex-col lg:flex ${showChatOnMobile ? 'flex' : 'hidden'}`}>
+      <div className={`flex-col overflow-hidden lg:flex ${showChatOnMobile ? 'flex' : 'hidden'}`}>
         {active && (
           <>
             <div className="flex items-center gap-3 border-b border-mist-200 p-4">
@@ -147,23 +162,40 @@ export default function Consultations() {
                 {(activeDoctor?.name || '?').replace('Dr. ', '').split(' ').map((p) => p[0]).slice(0, 2).join('')}
               </div>
               <div>
-                <p className="font-display text-sm font-semibold text-ink-900">{activeDoctor?.name || `Doctor #${active.doctorId}`}</p>
+                <p className="font-display text-sm font-semibold text-ink-900">{activeDoctor?.name || active.doctorName || `Doctor #${active.doctorId}`}</p>
                 <p className="text-xs text-slate-500">{activeDoctor?.specialty}</p>
               </div>
               <StatusBadge status={active.status} />
             </div>
 
             {active.status !== 'Accepted' ? (
-              <div className="flex flex-1 items-center justify-center bg-mist-50 p-5 text-center">
-                <p className="text-sm text-slate-500">
+              <div className="flex flex-1 flex-col items-center justify-center bg-mist-50 p-5 text-center">
+                <p className="text-sm text-slate-500 mb-4">
                   {active.status === 'Pending'
                     ? 'Chat opens once the doctor accepts your consultation request.'
                     : `This consultation is ${active.status.toLowerCase()}.`}
                 </p>
+                {active.status === 'Completed' && !active.review && (
+                  <button 
+                    onClick={() => setReviewModalOpen(true)}
+                    className="btn-primary"
+                  >
+                    Leave a Review
+                  </button>
+                )}
+                {active.review && (
+                  <div className="mt-4 rounded-lg bg-white p-4 text-left shadow-sm w-full max-w-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-ink-900">Your Review</span>
+                      <span className="font-medium text-vital-600">★ {active.review.rating}/5</span>
+                    </div>
+                    <p className="mt-2 text-slate-600 text-sm">{active.review.comment}</p>
+                  </div>
+                )}
               </div>
             ) : (
               <>
-                <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto bg-mist-50 p-5">
+                <div ref={chatContainerRef} className="flex-1 space-y-3 overflow-y-auto bg-mist-50 p-5">
                   {messages.map((m) => {
                     const mine = m.senderUserId === user?.id
                     return (
@@ -200,6 +232,13 @@ export default function Consultations() {
           </>
         )}
       </div>
+
+      <ReviewModal 
+        isOpen={reviewModalOpen} 
+        onClose={() => setReviewModalOpen(false)} 
+        onSubmit={handleReviewSubmit}
+        title={`Review Dr. ${activeDoctor?.name?.replace('Dr. ', '') || ''}`}
+      />
     </div>
   )
 }

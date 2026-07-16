@@ -1,4 +1,4 @@
-﻿using DAL.Models.OrderModule;
+using DAL.Models.OrderModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +13,7 @@ namespace DAL.Specifications.OrderSpecs
         {
             AddInclude(o => o.OrderItem);
             AddInclude(o => o.Address);
+            ApplyOrderByDescending(o => o.OrderDate);
         }
     }
 }

@@ -38,6 +38,11 @@ namespace BLL.Services.ImplementationService.AppointmentModule
             await ValidatePatientAsync(patientId);
             ValidateFutureDate(dto.AppointmentDate);
 
+            var doctor = await _userRepository.GetDoctorByIdAsync(dto.DoctorId)
+                         ?? throw new DoctorNotFoundException(dto.DoctorId);
+            if (!doctor.IsActive)
+                throw new BadRequestException(new List<string> { "This doctor is currently inactive." });
+
             var schedule = await ValidateScheduleAsync(dto.ScheduleId, dto.DoctorId);
             ValidateDayOfWeek(dto.AppointmentDate, schedule.DayOfWeek);
             await ValidateSlotAvailabilityAsync(dto.DoctorId, dto.AppointmentDate, dto.ScheduleId);
@@ -181,6 +186,11 @@ namespace BLL.Services.ImplementationService.AppointmentModule
                 var checkDate = dto.AppointmentDate ?? appointment.AppointmentDate;
                 var checkScheduleId = dto.ScheduleId ?? appointment.ScheduleId;
                 await ValidateSlotAvailabilityAsync(appointment.DoctorId, checkDate, checkScheduleId, appointmentId);
+
+                if (appointment.Status == AppointmentStatus.Confirmed)
+                {
+                    appointment.Status = AppointmentStatus.Pending;
+                }
             }
 
             _mapper.Map(dto, appointment);

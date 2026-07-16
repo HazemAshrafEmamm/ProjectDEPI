@@ -44,7 +44,7 @@ namespace DAL.Repository
 
         public async Task<IEnumerable<Doctor>> SearchDoctorsAsync(string? name, string? specialization, string? location, int pageNumber, int pageSize)
         {
-            var query = _context.Set<Doctor>().AsQueryable();
+            var query = _context.Set<Doctor>().Where(d => d.IsActive).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(name))
                 query = query.Where(d => d.Fullname.ToLower().Contains(name.ToLower()));
@@ -64,7 +64,7 @@ namespace DAL.Repository
 
         public async Task<IEnumerable<Nurse>> SearchNursesAsync(string? name, string? specialization, int pageNumber, int pageSize)
         {
-            var query = _context.Set<Nurse>().AsQueryable();
+            var query = _context.Set<Nurse>().Where(n => n.IsActive).AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(name))
                 query = query.Where(n => n.Fullname.ToLower().Contains(name.ToLower()));

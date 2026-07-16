@@ -15,6 +15,7 @@ namespace DAL.Specifications.Appointment
             AddInclude(a => a.Patient!);
             AddInclude(a => a.Doctor!);
             AddInclude(a => a.Schedule);
+            ApplyOrderByDescending(a => a.CreatedAt);
         }
     }
 }

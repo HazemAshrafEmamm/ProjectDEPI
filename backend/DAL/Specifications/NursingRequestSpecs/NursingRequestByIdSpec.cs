@@ -8,6 +8,8 @@ namespace DAL.Specifications.NursingRequestSpecs
             : base(r => r.Id == requestId)
         {
             AddInclude(r => r.Review);
+            Includes.Add(r => r.Patient);
+            Includes.Add(r => r.Nurse);
         }
     }
 }
